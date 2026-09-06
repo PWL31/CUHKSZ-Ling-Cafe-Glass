@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f3eee4" />
+  <title>Ling Coffee — Glass Redesign Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Caslon+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+  <div class="bg-shade" aria-hidden="true"></div>
+
+  <div class="site-shell">
+    <header class="glass header">
+      <button class="brand" data-page="home" aria-label="Ling Coffee home">
+        <span class="brand-title">Ling Coffee</span>
+        <span class="brand-sub">AT LING COLLEGE</span>
+      </button>
+
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <button class="nav-item active" data-page="home">Home</button>
+        <button class="nav-item" data-page="menu">Menu</button>
+        <button class="nav-item" data-page="schedule">Schedule</button>
+        <button class="nav-item" data-page="more">More</button>
+      </nav>
+
+      <div class="header-actions">
+        <div class="theme-switch" role="group" aria-label="Theme">
+          <button class="theme-choice active" data-theme-choice="light" aria-label="Light mode">☀</button>
+          <button class="theme-choice" data-theme-choice="dark" aria-label="Dark mode">☾</button>
+        </div>
+        <button class="support-btn" data-page="more">Support us ♡</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="page active" id="home">
+        <div class="home-hero">
+          <div class="hero-copy">
+            <div class="eyebrow">STUDENT RUN / COMMUNITY DRIVEN</div>
+            <h1>Coffee,<br>when you actually <em>want it.</em></h1>
+            <p class="lead">Good coffee. A stronger community.<br>Ling Coffee is a student-run, non-profit coffee space at Ling College.</p>
+
+            <div class="status-card glass-soft">
+              <div class="status-line">
+                <span class="live-dot"></span>
+                <strong>Open now</strong>
+                <span class="hours">10:00 – 22:00</span>
+              </div>
+              <div class="divider"></div>
+              <div class="status-line compact">
+                <span class="heart">♡</span>
+                <div>
+                  <strong>Suggested donation only</strong>
+                  <small>Good coffee should be for everyone.</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-actions">
+              <button class="primary" data-page="menu">Order / Reserve <span>→</span></button>
+              <button class="secondary" data-page="schedule">Who’s on bar?</button>
+            </div>
+          </div>
+
+          <aside class="today-panel glass-soft">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">TODAY</div>
+                <h2>Schedule detail</h2>
+              </div>
+              <button class="text-link" data-page="schedule">Full schedule →</button>
+            </div>
+            <div class="timeline-axis"><span>10</span><span>14</span><span>18</span><span>22</span></div>
+            <div class="timeline-row cafe-row">
+              <span class="person">Cafe</span>
+              <div class="timeline-track"><span class="shift cafe" style="left:0;width:100%"></span></div>
+              <span class="time">10–22</span>
+            </div>
+            <div class="timeline-row">
+              <span class="person">Ling</span>
+              <div class="timeline-track"><span class="shift ling" style="left:0;width:50%"></span></div>
+              <span class="time">10–16</span>
+            </div>
+            <div class="timeline-row">
+              <span class="person">Trent</span>
+              <div class="timeline-track"><span class="shift trent" style="left:33.3%;width:58.3%"></span></div>
+              <span class="time">14–21</span>
+            </div>
+            <div class="onbar-note"><span class="live-dot small"></span> Two baristas overlap from 14:00–16:00.</div>
+          </aside>
+        </div>
+
+        <section class="glass content-strip">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">TODAY’S EASY PICKS</div>
+              <h2>Popular drinks</h2>
+            </div>
+            <button class="text-link" data-page="menu">See full menu →</button>
+          </div>
+          <div id="homeDrinks" class="drink-grid compact-grid"></div>
+        </section>
+
+        <section class="community-card glass">
+          <div class="community-photo" aria-hidden="true"></div>
+          <div class="community-copy">
+            <div class="eyebrow">IN OUR MIND · 爱心补给站</div>
+            <h2>A stronger tomorrow, together.</h2>
+            <p>咖啡馆由书院自主运营，坚持非营利原则。每一笔爱心捐赠都继续用于支持咖啡馆的长期运转与书院建设。</p>
+            <button class="text-link" data-page="more">Our story →</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="page" id="menu">
+        <div class="page-hero glass">
+          <div>
+            <div class="eyebrow">ORDER / RESERVE</div>
+            <h1>Today’s Menu</h1>
+            <p>Choose a drink, set a pickup time, and come by. The amount shown is a suggested donation, not a price.</p>
+          </div>
+          <div class="open-pill"><span class="live-dot small"></span> Open now · 10:00–22:00</div>
+        </div>
+
+        <div class="menu-layout">
+          <div class="menu-main">
+            <div class="filter-row glass-soft" id="filters"></div>
+            <div id="menuGrid" class="drink-grid"></div>
+          </div>
+
+          <aside class="reserve glass">
+            <div class="eyebrow">PICKUP ORDER</div>
+            <h2>Reserve for pickup</h2>
+            <p class="muted">Skip the wait. Place your order and pick it up at the bar.</p>
+            <div id="cartList" class="cart"></div>
+            <div class="form-grid">
+              <label><span>Date</span><input id="reserveDate" type="date"></label>
+              <label><span>Time</span><select id="reserveTime"></select></label>
+            </div>
+            <label><span>Your name</span><input id="reserveName" placeholder="e.g. Alex Tan"></label>
+            <label><span>Order notes</span><textarea id="reserveNote" placeholder="oat milk, less ice…"></textarea></label>
+            <button id="reserveBtn" class="primary full">Place order / Reserve <span>→</span></button>
+            <button id="clearCartBtn" class="clear-btn">Clear order</button>
+            <div class="microcopy">Demo only · no backend request is sent.</div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="page" id="schedule">
+        <div class="page-hero glass schedule-hero">
+          <div>
+            <div class="eyebrow">PEOPLE / COFFEE / COMMUNITY</div>
+            <h1>Who’s on bar?</h1>
+            <p>Date-based shifts with café opening hours shown as the reference timeline.</p>
+          </div>
+          <div class="open-pill"><span class="live-dot small"></span> Today · 10:00–22:00</div>
+        </div>
+
+        <div class="schedule-layout">
+          <section class="glass schedule-main">
+            <div class="week-switcher">
+              <button id="prevWeek" class="icon-btn">←</button>
+              <strong id="weekLabel">Sep 7 – Sep 13, 2026</strong>
+              <button id="nextWeek" class="icon-btn">→</button>
+            </div>
+            <div id="dayStrip" class="day-strip"></div>
+
+            <div class="schedule-title-row">
+              <div>
+                <div class="eyebrow">SELECTED DAY</div>
+                <h2 id="selectedDayTitle">Monday, Sep 7</h2>
+              </div>
+            </div>
+
+            <div class="timeline-axis schedule-axis"><span>10</span><span>12</span><span>14</span><span>16</span><span>18</span><span>20</span><span>22</span></div>
+            <div id="scheduleRows"></div>
+          </section>
+
+          <aside class="glass roster">
+            <div class="eyebrow">BARISTA ROSTER</div>
+            <h2>People behind the bar</h2>
+            <div id="rosterList"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="page" id="more">
+        <div class="page-hero glass">
+          <div>
+            <div class="eyebrow">PROFILE / SETTINGS / ACCESS</div>
+            <h1>More</h1>
+            <p>Preferences, history, feedback, theme and barista/admin access live here.</p>
+          </div>
+        </div>
+
+        <div class="more-layout">
+          <aside class="glass more-nav">
+            <button class="more-nav-btn active" data-panel="profile">Profile</button>
+            <button class="more-nav-btn" data-panel="settings">Settings</button>
+            <button class="more-nav-btn" data-panel="feedback">Feedback</button>
+            <button class="more-nav-btn" data-panel="access">Editing access</button>
+          </aside>
+
+          <div class="more-panels">
+            <section class="more-panel glass active" id="panel-profile">
+              <div class="profile-head">
+                <div class="avatar">T</div>
+                <div><div class="eyebrow">USER</div><h2>Trent</h2><p>Good coffee, better afternoons.</p></div>
+              </div>
+              <div class="list-block">
+                <div class="list-title">Preferences</div>
+                <div class="list-row"><span>Preferred drinks</span><strong>Latte · Dirty · Pour-over</strong></div>
+                <div class="list-row"><span>Pickup</span><strong>Late afternoon</strong></div>
+              </div>
+              <div class="list-block">
+                <div class="list-title">Recent reservations</div>
+                <div class="history-row"><strong>Sep 04</strong><span>Latte ×1 · 16:30</span></div>
+                <div class="history-row"><strong>Sep 02</strong><span>Dirty ×1 · 15:00</span></div>
+                <div class="history-row"><strong>Aug 31</strong><span>Pour-over ×1 · 18:00</span></div>
+              </div>
+            </section>
+
+            <section class="more-panel glass" id="panel-settings">
+              <div class="eyebrow">SETTINGS</div><h2>Appearance & language</h2>
+              <div class="setting-row">
+                <div><strong>Appearance</strong><small>Persistent on this device.</small></div>
+                <div class="theme-switch large"><button class="theme-choice active" data-theme-choice="light">Light</button><button class="theme-choice" data-theme-choice="dark">Dark</button></div>
+              </div>
+              <div class="setting-row">
+                <div><strong>Language</strong><small>Demo switch; core content stays English.</small></div>
+                <select class="small-select"><option>English</option><option>中文</option></select>
+              </div>
+            </section>
+
+            <section class="more-panel glass" id="panel-feedback">
+              <div class="eyebrow">FEEDBACK</div><h2>Tell us something</h2>
+              <label><span>Message</span><textarea placeholder="What should Ling Coffee improve?"></textarea></label>
+              <button class="primary">Send feedback <span>→</span></button>
+              <div class="list-block compact-block">
+                <div class="list-row"><span>Email</span><strong>lingcoffee@example.com</strong></div>
+                <div class="list-row"><span>WeChat</span><strong>Ling College team</strong></div>
+              </div>
+            </section>
+
+            <section class="more-panel glass" id="panel-access">
+              <div class="eyebrow">EDITING ACCESS</div><h2>Barista / Admin</h2>
+              <p class="muted">Public visitors remain users. Authenticated staff can edit schedules, notices and menu availability.</p>
+              <div class="auth-box glass-soft">
+                <label><span>Email</span><input value="barista@ling.local"></label>
+                <label><span>Password</span><input type="password" value="demo1234"></label>
+                <button id="loginDemo" class="primary full">Demo login</button>
+              </div>
+              <div id="adminPreview" class="admin-preview hidden">
+                <div class="list-title">Staff tools preview</div>
+                <div class="admin-grid">
+                  <button>Schedule editor</button><button>Menu availability</button><button>Notices</button><button>IN OUR MIND</button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="mobile-nav glass" aria-label="Mobile navigation">
+      <button class="mobile-nav-item active" data-page="home"><span>⌂</span><small>Home</small></button>
+      <button class="mobile-nav-item" data-page="menu"><span>☕</span><small>Menu</small></button>
+      <button class="mobile-nav-item" data-page="schedule"><span>♙</span><small>Schedule</small></button>
+      <button class="mobile-nav-item" data-page="more"><span>◎</span><small>More</small></button>
+    </nav>
+  </div>
+
+  <div id="toast" class="toast">Saved</div>
+  <script src="app.js"></script>
+</body>
+</html>
