@@ -13,7 +13,7 @@ class_name = "MenuStore"
 
 [[migrations]]
 tag = "v1"
-new_classes = ["MenuStore"]
+new_sqlite_classes = ["MenuStore"]
 
 [vars]
 ADMIN_USERNAME = "Trent"
