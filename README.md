@@ -1,26 +1,45 @@
-# Ling Coffee — glass redesign static demo
+# Ling Coffee — glass redesign prototype
 
-This is a presentation-layer prototype based on the current repository's public information architecture and core user-facing flows:
+This repository contains the current glass / liquid-glass prototype for Ling Cafe.
 
-- Home: opening hours, today’s schedule, Menu / Schedule shortcuts, IN OUR MIND
-- Menu: categories, availability, suggested donation amount, cart, pickup reservation
-- Schedule: date-based shifts with the Cafe row as the reference timeline, plus barista roster / summon action
-- More: profile / preferences / reservation history, settings, feedback, barista/admin access preview
-- Persistent Light / Dark theme
-- Responsive desktop and portrait/mobile layouts
+## Current user-facing flows
 
-## Run
+- Home: opening state, today’s barista schedule, Order shortcut, Popular drinks, IN OUR MIND.
+- Menu: categories, menu cards and Personal Preference. Pickup reservation is intentionally hidden for now.
+- Personal Preference: drink preferences, downloadable preference card.
+- Schedule: date-based shifts and barista roster. Admin editing logic for Schedule will be defined separately.
+- More: Settings, Feedback and Admin Tools. The old Profile section is intentionally removed.
+- Persistent Light / Dark theme.
+- Responsive desktop and portrait/mobile layouts.
 
-Open `index.html` directly, or serve the folder:
+## Admin Tools
 
-```bash
-python3 -m http.server 8000
-```
+Admin Tools are intended for Ling Cafe baristas; normal users can ignore this section.
 
-Then open http://localhost:8000
+Authentication is handled by `worker.js` through:
 
-## Notes
+- `POST /api/admin/login`
+- `GET /api/admin/session`
+- `POST /api/admin/logout`
 
-- Static prototype only: reservation, feedback and staff login are local front-end interactions.
-- The café and menu photography is loaded from Unsplash URLs, so an internet connection is needed for those images.
-- The visual direction intentionally moves from the repository's restrained editorial presentation toward a full-background warm glassmorphism system, while keeping the same core information architecture and Tiffany accent for brand continuity.
+The current demo admin username is configured as `Trent`. The password is compared on the Worker using a SHA-256 hash rather than being stored in the browser bundle.
+
+After login, the header shows a `User / Admin` preview switch. The Menu editor currently supports:
+
+- item name
+- short note / description
+- suggested donation amount
+- photo URL
+- inclusion in Home → Popular drinks (maximum four)
+
+For this prototype, menu content edits are persisted in the current browser with `localStorage` so the barista can immediately preview the user-facing result. Server-side menu persistence can be connected later (for example with Cloudflare KV or D1) once the content model is finalized.
+
+## Cloudflare Worker
+
+`wrangler.toml` configures the Worker and static assets binding. The Worker serves the existing static site and handles `/api/*` routes first.
+
+Before production use, replace the demo session secret and preferably configure admin credentials through Cloudflare secrets / environment variables rather than relying on demo defaults.
+
+## Local static preview
+
+Opening `index.html` directly still previews the UI, but backend admin login requires running through Cloudflare Worker / Wrangler.
