@@ -244,7 +244,7 @@ async function staticAsset(request, env) {
   const headers = new Headers(response.headers);
   headers.delete('content-length');
   if (html.includes('</head>')) html = html.replace('</head>', `${ADMIN_UI_POLISH}</head>`);
-  if (html.includes('</body>')) html = html.replace('</body>', `${ADMIN_POPULAR_LIMIT_SCRIPT}</body>`);
+  if (html.includes('</body>')) html = html.replace('</body>', `${ADMIN_POPULAR_LIMIT_SCRIPT}<script src="/support.js" defer></script></body>`);
   return new Response(html, { status: response.status, statusText: response.statusText, headers });
 }
 
