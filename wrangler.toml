@@ -7,6 +7,14 @@ directory = "."
 binding = "ASSETS"
 run_worker_first = true
 
+[[durable_objects.bindings]]
+name = "MENU_STORE"
+class_name = "MenuStore"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["MenuStore"]
+
 [vars]
 ADMIN_USERNAME = "Trent"
 ADMIN_PASSWORD_HASH = "6d19ca72de1fe7973e5a763cdbaf47af34674d4f45a8a2cacd881b751d680a4f"
