@@ -36,19 +36,19 @@
       .download-card-layout{display:grid;grid-template-columns:minmax(0,520px) minmax(280px,1fr);gap:26px;align-items:center;margin-top:22px}
       .download-card-copy p{color:var(--muted);line-height:1.6;margin:12px 0 20px;max-width:520px}
       .download-card-btn{width:100%;min-height:60px}
-      .preference-export-card{aspect-ratio:4/5;width:100%;max-width:520px;border-radius:38px;padding:24px;position:relative;overflow:hidden;color:#3e2417;background:radial-gradient(160px 160px at 18% 10%,rgba(255,255,255,.66),transparent 65%),radial-gradient(200px 180px at 88% 22%,rgba(10,186,181,.16),transparent 65%),linear-gradient(160deg,rgba(255,255,255,.42),rgba(255,255,255,.18));border:1px solid rgba(255,255,255,.58);box-shadow:0 24px 70px rgba(65,36,20,.18),inset 0 1px 0 rgba(255,255,255,.7);backdrop-filter:blur(28px) saturate(125%);-webkit-backdrop-filter:blur(28px) saturate(125%)}
+      .preference-export-card{width:100%;max-width:520px;min-height:680px;border-radius:38px;padding:24px;position:relative;overflow:hidden;color:#3e2417;display:flex;flex-direction:column;background:radial-gradient(160px 160px at 18% 10%,rgba(255,255,255,.66),transparent 65%),radial-gradient(200px 180px at 88% 22%,rgba(10,186,181,.16),transparent 65%),linear-gradient(160deg,rgba(255,255,255,.42),rgba(255,255,255,.18));border:1px solid rgba(255,255,255,.58);box-shadow:0 24px 70px rgba(65,36,20,.18),inset 0 1px 0 rgba(255,255,255,.7);backdrop-filter:blur(28px) saturate(125%);-webkit-backdrop-filter:blur(28px) saturate(125%)}
       .preference-export-card:before{content:"";position:absolute;inset:0;background:linear-gradient(140deg,rgba(255,255,255,.24),transparent 30%,transparent 72%,rgba(255,255,255,.12)),linear-gradient(180deg,rgba(255,255,255,.10),transparent 30%);pointer-events:none}
       .preference-export-card:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:-36px;bottom:-26px;background:radial-gradient(circle at 35% 35%,rgba(18,198,191,.30),rgba(18,198,191,.10) 45%,transparent 70%);filter:blur(10px);pointer-events:none}
       .export-top,.export-main,.export-footer{position:relative;z-index:1}.export-top{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
-      .export-brand h3{margin:0;font:400 28px/.95 var(--serif);letter-spacing:-.03em;color:#3e2417}.export-brand small{display:block;margin-top:8px;font-size:10px;letter-spacing:.22em;font-weight:700;color:rgba(62,36,23,.72)}
+      .export-brand h3{margin:0;font:400 30px/.95 var(--serif);letter-spacing:-.03em;color:#3e2417}
       .export-tag{min-height:38px;padding:0 14px;border-radius:999px;display:inline-flex;align-items:center;background:rgba(255,255,255,.34);border:1px solid rgba(255,255,255,.56);font-size:12px;font-weight:700;color:rgba(62,36,23,.86)}
-      .export-main{margin-top:28px}.export-kicker{font-size:11px;letter-spacing:.18em;font-weight:700;text-transform:uppercase;color:rgba(7,143,139,.88)}.export-title{margin:10px 0 16px;font:400 54px/.92 var(--serif);letter-spacing:-.05em;color:#3e2417}
+      .export-main{margin-top:34px;flex:1}.export-kicker{font-size:11px;letter-spacing:.18em;font-weight:700;text-transform:uppercase;color:rgba(7,143,139,.88)}.export-title{margin:10px 0 18px;font:400 54px/.92 var(--serif);letter-spacing:-.05em;color:#3e2417}
       .export-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.export-item{padding:14px 14px 15px;border-radius:20px;background:rgba(255,255,255,.24);border:1px solid rgba(255,255,255,.44)}.export-item small{display:block;font-size:10px;letter-spacing:.16em;font-weight:700;text-transform:uppercase;color:rgba(120,95,83,.92);margin-bottom:8px}.export-item strong{font-size:16px;color:#3e2417}
       .export-summary{margin-top:16px;padding:16px 18px;border-radius:22px;background:rgba(255,255,255,.28);border:1px solid rgba(255,255,255,.44)}.export-summary small{display:block;font-size:10px;letter-spacing:.16em;font-weight:700;text-transform:uppercase;color:rgba(120,95,83,.92);margin-bottom:8px}.export-summary p{margin:0;color:#3e2417;line-height:1.55;font-size:14px}
-      .export-footer{position:absolute;left:24px;right:24px;bottom:22px;display:flex;justify-content:space-between;align-items:center;gap:14px}.export-enjoy{font-size:16px;font-weight:800;color:#3e2417}.export-dot{width:54px;height:54px;border-radius:50%;background:linear-gradient(180deg,rgba(18,198,191,.98),rgba(10,186,181,.86));box-shadow:0 12px 26px rgba(10,186,181,.20),inset 0 1px 0 rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.52)}
+      .export-footer{position:relative;left:auto;right:auto;bottom:auto;margin-top:18px;padding-top:18px;border-top:1px solid rgba(120,95,83,.14);display:flex;justify-content:space-between;align-items:center;gap:14px}.export-enjoy{font-size:16px;font-weight:800;color:#3e2417}.export-dot{width:48px;height:48px;flex:0 0 48px;border-radius:50%;background:linear-gradient(180deg,rgba(18,198,191,.98),rgba(10,186,181,.86));box-shadow:0 12px 26px rgba(10,186,181,.20),inset 0 1px 0 rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.52)}
       #preferenceExportCanvas{display:none}
       @media(max-width:960px){.download-card-layout{grid-template-columns:1fr}.preference-export-card{justify-self:center}}
-      @media(max-width:760px),(orientation:portrait){.download-card-panel{padding:20px 18px;border-radius:24px}.download-card-panel h2{font-size:31px}.download-card-layout{gap:18px}.export-title{font-size:44px}.export-grid{gap:9px}.export-item{padding:12px;border-radius:17px}.export-item strong{font-size:14px}.export-summary p{font-size:12px}.export-enjoy{font-size:15px}}
+      @media(max-width:760px),(orientation:portrait){.download-card-panel{padding:20px 18px;border-radius:24px;margin-bottom:calc(130px + env(safe-area-inset-bottom))}.download-card-panel h2{font-size:31px}.download-card-layout{gap:20px}.preference-export-card{min-height:0;padding:20px;border-radius:30px}.export-top{align-items:center;gap:12px}.export-brand h3{font-size:27px}.export-tag{min-height:34px;padding:0 12px;font-size:11px}.export-main{margin-top:28px}.export-title{font-size:44px;margin-bottom:16px}.export-grid{gap:10px}.export-item{padding:13px 12px;border-radius:17px;min-height:88px}.export-item small{font-size:9px;margin-bottom:7px}.export-item strong{font-size:14px;line-height:1.2}.export-summary{margin-top:12px;padding:14px 15px}.export-summary p{font-size:12px;line-height:1.45}.export-footer{margin-top:16px;padding-top:15px}.export-enjoy{font-size:15px}.export-dot{width:42px;height:42px;flex-basis:42px}.download-card-copy{padding-bottom:8px}}
     `;
     document.head.appendChild(style);
 
@@ -58,7 +58,7 @@
       <div class="eyebrow">PREFERENCE CARD</div><h2>Your card</h2>
       <div class="download-card-layout">
         <div class="preference-export-card">
-          <div class="export-top"><div class="export-brand"><h3>Ling Cafe</h3><small>YOUR DEFAULT CUP</small></div><div class="export-tag">Personal Preference</div></div>
+          <div class="export-top"><div class="export-brand"><h3>Ling Cafe</h3></div><div class="export-tag">Personal Preference</div></div>
           <div class="export-main"><div class="export-kicker">Saved style</div><div class="export-title">My usual</div>
             <div class="export-grid">
               <div class="export-item"><small>Temperature</small><strong id="exportTemp"></strong></div>
@@ -72,7 +72,7 @@
           </div>
           <div class="export-footer"><div class="export-enjoy">Enjoy Your Cup!✨</div><div class="export-dot"></div></div>
         </div>
-        <div class="download-card-copy"><div class="eyebrow">DOWNLOAD</div><h2>Keep your usual.</h2><p>The card updates with your current selections. Download it as a PNG and keep it locally or share it.</p><button class="primary download-card-btn" id="downloadPreferenceCard">Download card as image <span>→</span></button></div>
+        <div class="download-card-copy"><div class="eyebrow">DOWNLOAD</div><h2>Keep your usual.</h2><p>The card updates with your current selections. Download it as a PNG and keep it locally or share it.</p><button class="primary download-card-btn" id="downloadPreferenceCard">Save card to phone <span>→</span></button></div>
       </div><canvas id="preferenceExportCanvas" width="1200" height="1500"></canvas>`;
     prefStack.after(panel);
 
@@ -102,14 +102,41 @@
     let g=x.createLinearGradient(0,0,w,h);g.addColorStop(0,'#f7efe4');g.addColorStop(.55,'#eadccd');g.addColorStop(1,'#dcc5b5');x.fillStyle=g;x.fillRect(0,0,w,h);
     let r=x.createRadialGradient(180,140,10,180,140,320);r.addColorStop(0,'rgba(255,255,255,.9)');r.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=r;x.fillRect(0,0,w,h);r=x.createRadialGradient(w-100,220,20,w-100,220,280);r.addColorStop(0,'rgba(10,186,181,.22)');r.addColorStop(1,'rgba(10,186,181,0)');x.fillStyle=r;x.fillRect(0,0,w,h);
     const bx=70,by=70,bw=w-140,bh=h-140;rr(x,bx,by,bw,bh,64);x.fillStyle='rgba(255,255,255,.34)';x.fill();x.strokeStyle='rgba(255,255,255,.62)';x.lineWidth=2;x.stroke();
-    x.fillStyle='#3e2417';x.font='400 54px Georgia';x.fillText('Ling Cafe',bx+44,by+74);x.fillStyle='rgba(62,36,23,.72)';x.font='700 18px sans-serif';x.fillText('YOUR DEFAULT CUP',bx+46,by+106);
+    x.fillStyle='#3e2417';x.font='400 58px Georgia';x.fillText('Ling Cafe',bx+44,by+82);
     rr(x,bx+bw-280,by+34,220,56,28);x.fillStyle='rgba(255,255,255,.38)';x.fill();x.strokeStyle='rgba(255,255,255,.62)';x.stroke();x.fillStyle='rgba(62,36,23,.88)';x.font='700 22px sans-serif';x.fillText('Personal Preference',bx+bw-255,by+69);
-    x.fillStyle='#078F8B';x.font='700 18px sans-serif';x.fillText('SAVED STYLE',bx+46,by+182);x.fillStyle='#3e2417';x.font='400 108px Georgia';x.fillText('My usual',bx+42,by+286);
-    const items=[['Temperature',options.temp[p.temp]],[Number(p.temp)===1?'Heat':'Ice',second(p)],['Coffee',options.strength[p.strength]],['Milk type',options.milkType[p.milkType]],['Milk level',options.milk[p.milk]],['Sweetness',options.sweet[p.sweet]]],cw=(bw-102)/2,sy=by+340;
+    x.fillStyle='#078F8B';x.font='700 18px sans-serif';x.fillText('SAVED STYLE',bx+46,by+166);x.fillStyle='#3e2417';x.font='400 108px Georgia';x.fillText('My usual',bx+42,by+270);
+    const items=[['Temperature',options.temp[p.temp]],[Number(p.temp)===1?'Heat':'Ice',second(p)],['Coffee',options.strength[p.strength]],['Milk type',options.milkType[p.milkType]],['Milk level',options.milk[p.milk]],['Sweetness',options.sweet[p.sweet]]],cw=(bw-102)/2,sy=by+320;
     items.forEach((it,i)=>{const col=i%2,row=Math.floor(i/2),ix=bx+44+col*(cw+14),iy=sy+row*118;rr(x,ix,iy,cw,100,30);x.fillStyle='rgba(255,255,255,.26)';x.fill();x.strokeStyle='rgba(255,255,255,.52)';x.stroke();x.fillStyle='rgba(120,95,83,.96)';x.font='700 16px sans-serif';x.fillText(it[0].toUpperCase(),ix+18,iy+28);x.fillStyle='#3e2417';x.font='700 30px sans-serif';wrap(x,it[1],ix+18,iy+66,cw-36,32,2)});
-    const iy=by+718;rr(x,bx+44,iy,bw-88,132,34);x.fillStyle='rgba(255,255,255,.28)';x.fill();x.strokeStyle='rgba(255,255,255,.54)';x.stroke();x.fillStyle='rgba(120,95,83,.96)';x.font='700 16px sans-serif';x.fillText('SUMMARY',bx+64,iy+28);x.fillStyle='#3e2417';x.font='500 26px sans-serif';wrap(x,summary(p),bx+64,iy+66,bw-128,36,3);
+    const iy=by+698;rr(x,bx+44,iy,bw-88,132,34);x.fillStyle='rgba(255,255,255,.28)';x.fill();x.strokeStyle='rgba(255,255,255,.54)';x.stroke();x.fillStyle='rgba(120,95,83,.96)';x.font='700 16px sans-serif';x.fillText('SUMMARY',bx+64,iy+28);x.fillStyle='#3e2417';x.font='500 26px sans-serif';wrap(x,summary(p),bx+64,iy+66,bw-128,36,3);
     x.fillStyle='#3e2417';x.font='800 28px sans-serif';x.fillText('Enjoy Your Cup!✨',bx+44,by+bh-28);g=x.createLinearGradient(bx+bw-112,by+bh-92,bx+bw-72,by+bh-32);g.addColorStop(0,'rgba(18,198,191,.98)');g.addColorStop(1,'rgba(10,186,181,.86)');x.beginPath();x.arc(bx+bw-70,by+bh-48,30,0,Math.PI*2);x.fillStyle=g;x.fill();x.strokeStyle='rgba(255,255,255,.62)';x.lineWidth=2;x.stroke();return c;
   }
-  function download(){const c=canvasCard(),a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='ling-cafe-preference-card.png';document.body.appendChild(a);a.click();a.remove();if(window.toast)window.toast('Preference card downloaded')}
+  function canvasBlob(canvas){
+    const data=canvas.toDataURL('image/png');
+    const base64=data.split(',')[1];
+    const raw=atob(base64);
+    const bytes=new Uint8Array(raw.length);
+    for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+    return new Blob([bytes],{type:'image/png'});
+  }
+  async function download(){
+    const c=canvasCard();
+    const blob=canvasBlob(c);
+    const file=new File([blob],'ling-cafe-preference-card.png',{type:'image/png'});
+    if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){
+      try{
+        await navigator.share({files:[file],title:'Ling Cafe Preference Card'});
+        if(window.toast)window.toast('Card ready to save');
+        return;
+      }catch(err){
+        if(err&&err.name==='AbortError')return;
+      }
+    }
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download='ling-cafe-preference-card.png';a.rel='noopener';
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+    if(window.toast)window.toast('Preference card downloaded');
+  }
   install();
 })();
