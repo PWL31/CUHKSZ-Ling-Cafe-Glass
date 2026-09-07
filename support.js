@@ -3,6 +3,7 @@
   window.__lingSupportStationInstalled=true;
 
   const DONATE_URL='https://alumni-sys.cuhk.edu.cn/donate-h5/#/subject-detail?id=37';
+  const LANGUAGE_KEY='ling-glass-language';
 
   const styles=document.createElement('style');
   styles.id='ling-support-station-styles';
@@ -47,31 +48,6 @@
       letter-spacing:.24em;
       text-transform:uppercase;
     }
-    .support-lang-switch{
-      display:flex;
-      gap:4px;
-      padding:4px;
-      border:1px solid var(--line-soft);
-      border-radius:999px;
-      background:rgba(255,255,255,.10);
-      flex:0 0 auto;
-    }
-    .support-lang-btn{
-      min-width:54px;
-      height:36px;
-      padding:0 13px;
-      border:0;
-      border-radius:999px;
-      background:transparent;
-      color:var(--muted);
-      font:700 11px/1 var(--sans);
-      cursor:pointer;
-    }
-    .support-lang-btn.active{
-      background:rgba(255,255,255,.34);
-      color:var(--text-strong);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.45);
-    }
     .support-title{
       margin:0 0 28px;
       color:var(--text-strong);
@@ -96,7 +72,6 @@
     }
     .support-copy a:hover{color:var(--accent)}
     .support-pane[hidden]{display:none!important}
-    .support-pane.zh .support-kicker-inline{letter-spacing:.12em}
 
     @media(max-width:760px),(orientation:portrait){
       .support-station{
@@ -113,8 +88,7 @@
         letter-spacing:.26em;
       }
       .support-topline{align-items:flex-start;margin-bottom:16px}
-      .support-kicker{font-size:10px;letter-spacing:.18em;padding-top:9px}
-      .support-lang-btn{min-width:48px;height:34px;padding:0 11px}
+      .support-kicker{font-size:10px;letter-spacing:.18em;padding-top:0}
       .support-title{
         font-size:clamp(50px,14vw,72px);
         line-height:.84;
@@ -125,6 +99,56 @@
     }
   `;
   document.head.appendChild(styles);
+
+  function normalizeLanguage(value){
+    const raw=String(value||'').trim().toLowerCase();
+    return /中文|chi|chinese|zh/.test(raw)?'zh':'en';
+  }
+
+  function getSettingsLanguageSelect(){
+    return document.querySelector('#panel-settings .small-select');
+  }
+
+  function getCurrentLanguage(){
+    const saved=localStorage.getItem(LANGUAGE_KEY);
+    if(saved==='zh'||saved==='en') return saved;
+    const select=getSettingsLanguageSelect();
+    return normalizeLanguage(select?.value||'English');
+  }
+
+  function syncSettingsSelect(lang){
+    const select=getSettingsLanguageSelect();
+    if(!select) return;
+    const matching=[...select.options].find(opt=>normalizeLanguage(opt.value||opt.textContent)===lang);
+    if(matching && select.value!==matching.value) select.value=matching.value;
+  }
+
+  function applySupportLanguage(section,lang){
+    const next=lang==='zh'?'zh':'en';
+    section.querySelectorAll('[data-support-pane]').forEach(pane=>{
+      pane.hidden=pane.dataset.supportPane!==next;
+    });
+    const kicker=section.querySelector('[data-support-kicker]');
+    if(kicker) kicker.textContent=next==='zh'?'爱心补给站':'LOVE & SUPPORT STATION';
+    section.lang=next==='zh'?'zh-CN':'en';
+  }
+
+  function bindLanguageSetting(section){
+    const select=getSettingsLanguageSelect();
+    const initial=getCurrentLanguage();
+    syncSettingsSelect(initial);
+    applySupportLanguage(section,initial);
+
+    if(!select||select.dataset.supportLanguageBound==='true') return;
+    select.dataset.supportLanguageBound='true';
+    select.addEventListener('change',()=>{
+      const lang=normalizeLanguage(select.value);
+      localStorage.setItem(LANGUAGE_KEY,lang);
+      const current=document.querySelector('#home .support-station');
+      if(current) applySupportLanguage(current,lang);
+      window.dispatchEvent(new CustomEvent('ling:languagechange',{detail:{language:lang}}));
+    });
+  }
 
   function render(){
     const old=document.querySelector('#home .community-card');
@@ -137,10 +161,6 @@
       <div class="support-main">
         <div class="support-topline">
           <div class="support-kicker" data-support-kicker>LOVE &amp; SUPPORT STATION</div>
-          <div class="support-lang-switch" aria-label="Support section language">
-            <button class="support-lang-btn active" type="button" data-support-lang="en">ENG</button>
-            <button class="support-lang-btn" type="button" data-support-lang="zh">中文</button>
-          </div>
         </div>
 
         <h2 class="support-title"><span>LOVE❤️</span><span>&amp;COFFEE☕</span></h2>
@@ -165,16 +185,7 @@
       </div>`;
 
     old.replaceWith(section);
-
-    const kicker=section.querySelector('[data-support-kicker]');
-    const panes=[...section.querySelectorAll('[data-support-pane]')];
-    const buttons=[...section.querySelectorAll('[data-support-lang]')];
-    buttons.forEach(btn=>btn.addEventListener('click',()=>{
-      const lang=btn.dataset.supportLang;
-      buttons.forEach(b=>b.classList.toggle('active',b===btn));
-      panes.forEach(p=>p.hidden=p.dataset.supportPane!==lang);
-      kicker.textContent=lang==='zh'?'爱心补给站':'LOVE & SUPPORT STATION';
-    }));
+    bindLanguageSetting(section);
     return true;
   }
 
