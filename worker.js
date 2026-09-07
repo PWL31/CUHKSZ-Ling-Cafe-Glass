@@ -6,117 +6,16 @@ const DEMO_PASSWORD_SHA256 = '6d19ca72de1fe7973e5a763cdbaf47af34674d4f45a8a2cacd
 const DEMO_SESSION_SECRET = 'ling-cafe-glass-demo-session-secret-2026-change-before-production';
 const COOKIE_NAME = 'ling_admin_session';
 const SESSION_SECONDS = 60 * 60 * 8;
+const MENU_STORE_NAME = 'ling-cafe-menu';
 
-const ADMIN_UI_POLISH = `<style id="admin-ui-polish">
-  .admin-popular-toggle{
-    border:0!important;
-    background:transparent!important;
-    border-radius:0!important;
-    min-height:42px!important;
-    width:auto!important;
-    max-width:100%!important;
-    padding:0!important;
-    gap:10px!important;
-    display:inline-flex!important;
-    align-items:center!important;
-    justify-content:flex-start!important;
-    overflow:visible!important;
-    cursor:pointer;
-    color:var(--muted)!important;
-    font-size:12px!important;
-    white-space:nowrap;
-  }
-  .admin-popular-toggle input[type="checkbox"]{
-    position:absolute!important;
-    opacity:0!important;
-    pointer-events:none!important;
-    width:1px!important;
-    height:1px!important;
-    margin:0!important;
-  }
-  .admin-popular-toggle::before{
-    content:""!important;
-    position:static!important;
-    width:34px!important;
-    min-width:34px!important;
-    height:34px!important;
-    display:inline-flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    transform:none!important;
-    border-radius:50%!important;
-    border:1px solid var(--line-soft)!important;
-    background:rgba(255,255,255,.42)!important;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 2px 8px rgba(62,36,23,.08)!important;
-    color:#fff!important;
-    font:800 21px/1 var(--sans)!important;
-    transition:background .16s ease,border-color .16s ease,opacity .16s ease!important;
-  }
-  .admin-popular-toggle::after{
-    content:none!important;
-  }
-  .admin-popular-toggle:has(input:checked)::before{
-    content:"✓"!important;
-    background:var(--accent)!important;
-    border-color:rgba(10,186,181,.72)!important;
-    box-shadow:0 5px 14px rgba(10,186,181,.18),inset 0 1px 0 rgba(255,255,255,.40)!important;
-  }
-  .admin-popular-toggle:has(input:focus-visible)::before{
-    outline:2px solid rgba(10,186,181,.38)!important;
-    outline-offset:2px!important;
-  }
-  .admin-popular-toggle:has(input:disabled){
-    opacity:.38!important;
-    cursor:not-allowed!important;
-  }
-  @media(max-width:760px),(orientation:portrait){
-    .admin-popular-toggle{
-      grid-column:1/-1!important;
-      justify-self:end!important;
-      width:auto!important;
-      min-width:0!important;
-      min-height:42px!important;
-      padding:0!important;
-    }
-  }
-</style>`;
-
-const ADMIN_POPULAR_LIMIT_SCRIPT = `<script id="admin-popular-limit">
-(() => {
-  const selector = '[data-admin-field="popular"]';
-
-  function syncPopularLimit() {
-    const boxes = [...document.querySelectorAll(selector)];
-    if (!boxes.length) return;
-    const checked = boxes.filter(box => box.checked);
-    const atLimit = checked.length >= 4;
-    boxes.forEach(box => {
-      box.disabled = atLimit && !box.checked;
-      const label = box.closest('.admin-popular-toggle');
-      if (label) label.title = box.disabled ? 'Maximum of four Popular drinks' : 'Show in Popular drinks';
-    });
-  }
-
-  document.addEventListener('change', event => {
-    const box = event.target.closest?.(selector);
-    if (!box) return;
-    const checked = [...document.querySelectorAll(selector)].filter(item => item.checked);
-    if (checked.length > 4) {
-      box.checked = false;
-      if (typeof window.toast === 'function') window.toast('Popular drinks are limited to four');
-    }
-    syncPopularLimit();
-  }, true);
-
-  const observer = new MutationObserver(syncPopularLimit);
-  observer.observe(document.documentElement, { childList: true, subtree: true });
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', syncPopularLimit, { once: true });
-  } else {
-    syncPopularLimit();
-  }
-})();
-<\/script>`;
+const SEED_MENU = [
+  {id:1, cat:'Espresso', name:'Americano', desc:'Classic espresso + water', amount:28, available:true, popular:true, image:'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=88'},
+  {id:2, cat:'Milk', name:'Latte', desc:'Espresso · steamed milk', amount:32, available:true, popular:true, image:'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?auto=format&fit=crop&w=900&q=88'},
+  {id:3, cat:'Milk', name:'Dirty', desc:'Cold milk · espresso', amount:34, available:true, popular:true, image:'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=900&q=88'},
+  {id:4, cat:'Filter', name:'Today’s Pour-over', desc:'Bean list updates daily', amount:38, available:true, popular:true, image:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=88'},
+  {id:5, cat:'Non-coffee', name:'Matcha Milk', desc:'Matcha · milk', amount:29, available:true, popular:false, image:'https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?auto=format&fit=crop&w=900&q=88'},
+  {id:6, cat:'Food', name:'Croissant', desc:'Daily limited', amount:18, available:false, popular:false, image:'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=900&q=88'}
+];
 
 function json(data, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(data), {
@@ -127,6 +26,123 @@ function json(data, status = 200, extraHeaders = {}) {
       ...extraHeaders,
     },
   });
+}
+
+function cleanText(value, maxLength) {
+  return String(value ?? '').trim().slice(0, maxLength);
+}
+
+function normalizeMenuInput(body, current = null) {
+  const next = {
+    cat: cleanText(body.cat ?? current?.cat, 40),
+    name: cleanText(body.name ?? current?.name, 80),
+    desc: cleanText(body.desc ?? current?.desc, 180),
+    amount: Math.max(0, Math.min(9999, Number(body.amount ?? current?.amount ?? 0) || 0)),
+    available: body.available === undefined ? Boolean(current?.available ?? true) : Boolean(body.available),
+    popular: body.popular === undefined ? Boolean(current?.popular ?? false) : Boolean(body.popular),
+  };
+  if (!next.cat) throw new Error('Category is required.');
+  if (!next.name) throw new Error('Name is required.');
+  return next;
+}
+
+export class MenuStore {
+  constructor(state) {
+    this.state = state;
+    this.ready = state.blockConcurrencyWhile(async () => {
+      const existing = await state.storage.get('menu');
+      if (!Array.isArray(existing) || !existing.length) {
+        await state.storage.put('menu', SEED_MENU.map(item => ({...item})));
+      }
+    });
+  }
+
+  async readMenu() {
+    await this.ready;
+    const items = await this.state.storage.get('menu');
+    return Array.isArray(items) ? items : [];
+  }
+
+  async writeMenu(items) {
+    await this.state.storage.put('menu', items);
+  }
+
+  popularCount(items) {
+    return items.filter(item => item.popular).length;
+  }
+
+  async fetch(request) {
+    await this.ready;
+    const url = new URL(request.url);
+    const path = url.pathname;
+    const method = request.method.toUpperCase();
+
+    if (path === '/menu' && method === 'GET') {
+      return json({items: await this.readMenu()});
+    }
+
+    if (path === '/menu' && method === 'POST') {
+      let body;
+      try { body = await request.json(); } catch { return json({error:'Invalid request body.'},400); }
+      let clean;
+      try { clean = normalizeMenuInput(body); } catch (err) { return json({error:err.message},400); }
+      const items = await this.readMenu();
+      const id = items.reduce((max,item)=>Math.max(max,Number(item.id)||0),0) + 1;
+      const next = {
+        id,
+        ...clean,
+        image:'/menu-placeholder.svg',
+      };
+      const candidate = [...items, next];
+      if (this.popularCount(candidate) > 4) return json({error:'Popular drinks are limited to four.'},409);
+      await this.writeMenu(candidate);
+      return json({item:next, items:candidate},201);
+    }
+
+    const itemMatch = path.match(/^\/menu\/(\d+)$/);
+    if (itemMatch && method === 'PUT') {
+      const id = Number(itemMatch[1]);
+      let body;
+      try { body = await request.json(); } catch { return json({error:'Invalid request body.'},400); }
+      const items = await this.readMenu();
+      const index = items.findIndex(item => Number(item.id) === id);
+      if (index < 0) return json({error:'Menu item not found.'},404);
+      let clean;
+      try { clean = normalizeMenuInput(body, items[index]); } catch (err) { return json({error:err.message},400); }
+      const updated = {...items[index], ...clean};
+      const candidate = items.map((item,i)=>i===index?updated:item);
+      if (this.popularCount(candidate) > 4) return json({error:'Popular drinks are limited to four.'},409);
+      await this.writeMenu(candidate);
+      return json({item:updated, items:candidate});
+    }
+
+    if (itemMatch && method === 'DELETE') {
+      const id = Number(itemMatch[1]);
+      const items = await this.readMenu();
+      if (!items.some(item => Number(item.id) === id)) return json({error:'Menu item not found.'},404);
+      const next = items.filter(item => Number(item.id) !== id);
+      await this.writeMenu(next);
+      return json({ok:true, items:next});
+    }
+
+    const imageMatch = path.match(/^\/menu\/(\d+)\/image$/);
+    if (imageMatch && method === 'PUT') {
+      const id = Number(imageMatch[1]);
+      let body;
+      try { body = await request.json(); } catch { return json({error:'Invalid request body.'},400); }
+      const image = cleanText(body.image, 1200);
+      if (!image) return json({error:'Image path or URL is required.'},400);
+      const items = await this.readMenu();
+      const index = items.findIndex(item => Number(item.id) === id);
+      if (index < 0) return json({error:'Menu item not found.'},404);
+      const updated = {...items[index], image};
+      const next = items.map((item,i)=>i===index?updated:item);
+      await this.writeMenu(next);
+      return json({item:updated, items:next});
+    }
+
+    return json({error:'Not found.'},404);
+  }
 }
 
 function bytesToHex(buffer) {
@@ -199,75 +215,80 @@ function expiredCookie() {
   return `${COOKIE_NAME}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`;
 }
 
+async function requireAdmin(request, env) {
+  return verifySession(getCookie(request, COOKIE_NAME), env);
+}
+
 async function login(request, env) {
   let body;
-  try {
-    body = await request.json();
-  } catch {
-    return json({ error: 'Invalid request body.' }, 400);
-  }
-
+  try { body = await request.json(); } catch { return json({error:'Invalid request body.'},400); }
   const username = String(body.username || '').trim();
   const password = String(body.password || '');
   const expectedUsername = env.ADMIN_USERNAME || DEMO_USERNAME;
   const expectedHash = env.ADMIN_PASSWORD_HASH || DEMO_PASSWORD_SHA256;
   const passwordHash = await sha256Hex(password);
-
   if (username !== expectedUsername || passwordHash !== expectedHash) {
-    return json({ error: 'Invalid username or password.' }, 401);
+    return json({error:'Invalid username or password.'},401);
   }
-
   const token = await makeSession(username, env);
-  return json(
-    { ok: true, authenticated: true, username },
-    200,
-    { 'set-cookie': sessionCookie(token) }
-  );
+  return json({ok:true, authenticated:true, username},200,{'set-cookie':sessionCookie(token)});
 }
 
 async function session(request, env) {
-  const data = await verifySession(getCookie(request, COOKIE_NAME), env);
-  if (!data) return json({ authenticated: false }, 200);
-  return json({ authenticated: true, username: data.username }, 200);
+  const data = await requireAdmin(request, env);
+  return json(data ? {authenticated:true, username:data.username} : {authenticated:false});
 }
 
 function logout() {
-  return json({ ok: true }, 200, { 'set-cookie': expiredCookie() });
+  return json({ok:true},200,{'set-cookie':expiredCookie()});
+}
+
+function menuStore(env) {
+  const id = env.MENU_STORE.idFromName(MENU_STORE_NAME);
+  return env.MENU_STORE.get(id);
+}
+
+async function forwardMenu(request, env, internalPath) {
+  if (!env.MENU_STORE) return json({error:'Menu storage is not configured.'},500);
+  const url = `https://menu.internal${internalPath}`;
+  return menuStore(env).fetch(new Request(url, request));
 }
 
 async function staticAsset(request, env) {
   const response = await env.ASSETS.fetch(request);
   const type = response.headers.get('content-type') || '';
   if (!type.includes('text/html')) return response;
-
   let html = await response.text();
   const headers = new Headers(response.headers);
   headers.delete('content-length');
-  if (html.includes('</head>')) html = html.replace('</head>', `${ADMIN_UI_POLISH}</head>`);
-  if (html.includes('</body>')) html = html.replace('</body>', `${ADMIN_POPULAR_LIMIT_SCRIPT}<script src="/support.js" defer></script></body>`);
-  return new Response(html, { status: response.status, statusText: response.statusText, headers });
+  if (html.includes('</body>')) html = html.replace('</body>', '<script src="/support.js" defer></script></body>');
+  return new Response(html,{status:response.status,statusText:response.statusText,headers});
 }
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    if (url.pathname === '/api/admin/login' && request.method === 'POST') {
-      return login(request, env);
-    }
-    if (url.pathname === '/api/admin/session' && request.method === 'GET') {
-      return session(request, env);
-    }
-    if (url.pathname === '/api/admin/logout' && request.method === 'POST') {
-      return logout();
-    }
-    if (url.pathname.startsWith('/api/')) {
-      return json({ error: 'Not found.' }, 404);
+    if (url.pathname === '/api/admin/login' && request.method === 'POST') return login(request, env);
+    if (url.pathname === '/api/admin/session' && request.method === 'GET') return session(request, env);
+    if (url.pathname === '/api/admin/logout' && request.method === 'POST') return logout();
+
+    if (url.pathname === '/api/menu' && request.method === 'GET') {
+      return forwardMenu(request, env, '/menu');
     }
 
-    if (!env.ASSETS) {
-      return new Response('Static assets binding is not configured.', { status: 500 });
+    const adminMenuMatch = url.pathname.match(/^\/api\/admin\/menu(?:\/(\d+))?(\/image)?$/);
+    if (adminMenuMatch) {
+      const admin = await requireAdmin(request, env);
+      if (!admin) return json({error:'Authentication required.'},401);
+      const id = adminMenuMatch[1];
+      const imageSuffix = adminMenuMatch[2] || '';
+      const path = id ? `/menu/${id}${imageSuffix}` : '/menu';
+      return forwardMenu(request, env, path);
     }
+
+    if (url.pathname.startsWith('/api/')) return json({error:'Not found.'},404);
+    if (!env.ASSETS) return new Response('Static assets binding is not configured.',{status:500});
     return staticAsset(request, env);
   },
 };
