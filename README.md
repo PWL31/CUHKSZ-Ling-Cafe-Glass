@@ -4,12 +4,12 @@ This repository contains the current glass / liquid-glass prototype for Ling Caf
 
 ## Current user-facing flows
 
-- Home: opening state, today’s barista schedule, Order shortcut, Popular drinks, IN OUR MIND.
-- Menu: categories, menu cards and Personal Preference. Pickup reservation is intentionally hidden for now.
-- Personal Preference: drink preferences, downloadable preference card.
+- Home: opening state, today’s barista schedule, Order shortcut, Popular drinks, and the bilingual Love & Support section.
+- Menu: category-aware menu cards and Personal Preference. Pickup reservation is intentionally hidden for now.
+- Personal Preference: drink preferences and a downloadable preference card.
 - Schedule: date-based shifts and barista roster. Admin editing logic for Schedule will be defined separately.
 - More: Settings, Feedback and Admin Tools. The old Profile section is intentionally removed.
-- Persistent Light / Dark theme.
+- Persistent Light / Dark theme and language preference.
 - Responsive desktop and portrait/mobile layouts.
 
 ## Admin Tools
@@ -24,25 +24,44 @@ Authentication is handled by `worker.js` through:
 
 The current demo admin username is configured as `Trent`. The password is compared on the Worker using a SHA-256 hash rather than being stored in the browser bundle.
 
-After login, the header shows a `User / Admin` preview switch. The Menu editor currently supports:
+After login, the header shows a `User / Admin` preview switch.
 
+### Menu backend
+
+Menu data is now server-side and persistent. It is stored in a Cloudflare Durable Object (`MenuStore`) rather than browser `localStorage`, so edits are shared across devices and public visitors.
+
+Public API:
+
+- `GET /api/menu`
+
+Authenticated admin API:
+
+- `POST /api/admin/menu` — add an item
+- `PUT /api/admin/menu/:id` — update editable metadata
+- `DELETE /api/admin/menu/:id` — delete an item
+
+The Admin Menu editor supports:
+
+- add item
+- delete item
+- category
 - item name
 - short note / description
 - suggested donation amount
-- photo URL
-- inclusion in Home → Popular drinks (maximum four)
+- availability today
+- inclusion in Home → Popular drinks
 
-For this prototype, menu content edits are persisted in the current browser with `localStorage` so the barista can immediately preview the user-facing result. Server-side menu persistence can be connected later (for example with Cloudflare KV or D1) once the content model is finalized.
+Popular drinks are capped at **four** in both the UI and backend validation.
+
+Images are intentionally **not editable from Admin Tools**. Existing image data remains attached to each menu record, while a newly created item receives `menu-placeholder.svg` until its final product image is installed through the GPT-managed image workflow below.
 
 ## Product image workflow
 
-Product-image prompting should **not** be exposed in the Admin UI. The intended workflow is:
+Product images are handled separately from normal barista editing so the visual language stays consistent.
 
-1. Add the new menu item metadata first: name, category, short note, suggested donation, and Popular-drink status.
-2. Ask ChatGPT to generate the missing product image using the canonical Ling Cafe image style below.
-3. Save the generated image locally and add it to the project / menu item.
-
-When requesting a new product image, providing the product name plus any important visual detail is enough. ChatGPT should preserve the visual language below unless explicitly asked otherwise.
+1. Add or update the menu metadata in Admin Tools first: category, name, short note, suggested donation, availability and Popular status.
+2. Ask ChatGPT to generate the missing image using the canonical Ling Cafe image style below.
+3. Install the generated image for that item separately. Do not expose free-form image editing in the barista Admin UI.
 
 ### Canonical Ling Cafe product-image prompt
 
@@ -91,25 +110,33 @@ Output:
 
 ### New-product handoff convention
 
-For future menu additions, the preferred handoff is simply:
+For future menu additions, the preferred handoff is:
 
 ```text
 Name: ...
 Category: ...
 Short note: ...
 Suggested donation: ...
+Available: yes / no
 Popular: yes / no
 Optional image detail: ...
 ```
 
-The image can then be generated separately by ChatGPT in the established Ling Cafe style, so the menu-data workflow does not need to include an image URL or custom prompt each time.
+The metadata can be created first through Admin Tools. ChatGPT then handles the image separately using the established Ling Cafe style.
 
 ## Cloudflare Worker
 
-`wrangler.toml` configures the Worker and static assets binding. The Worker serves the existing static site and handles `/api/*` routes first.
+`wrangler.toml` configures:
+
+- the Worker entrypoint
+- static assets
+- the `MENU_STORE` Durable Object binding
+- the initial `MenuStore` migration
+
+This keeps the menu backend self-contained in the Worker deployment; there is no separate D1 database ID to configure.
 
 Before production use, replace the demo session secret and preferably configure admin credentials through Cloudflare secrets / environment variables rather than relying on demo defaults.
 
 ## Local static preview
 
-Opening `index.html` directly still previews the UI, but backend admin login requires running through Cloudflare Worker / Wrangler.
+Opening `index.html` directly still previews the fallback static UI, but persistent menu data and admin login require running through the Cloudflare Worker / Wrangler deployment.
