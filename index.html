@@ -22,11 +22,12 @@
     .home-open-heading{display:flex;align-items:center;gap:14px;min-width:0}
     .home-open-heading h2{margin:4px 0 0}
     .home-open-hours{font:600 21px/1 var(--sans);color:var(--text-strong);white-space:nowrap;margin-left:8px}
-    .home-schedule-meta{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;margin:22px 0 12px;padding:18px 0;border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)}
+    .home-schedule-meta{display:grid;grid-template-columns:1fr;gap:18px;align-items:center;margin:22px 0 12px;padding:18px 0;border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)}
     .donation-note{display:flex;align-items:center;gap:14px;min-width:0}
     .donation-note strong{display:block;font-size:14px;color:var(--text-strong)}
     .donation-note small{display:block;color:var(--muted);margin-top:4px}
-    .schedule-order{min-width:220px}
+    .schedule-order{width:100%;min-width:0}
+    .preference-cta{width:100%;min-height:64px;margin:0 0 22px;font-size:17px;letter-spacing:.01em}
 
     @media(max-width:1160px){
       .home-hero{padding:52px 34px 28px;min-height:0}
@@ -49,6 +50,7 @@
       .donation-note strong{font-size:13px}
       .donation-note small{font-size:11px}
       .schedule-order{width:100%;min-width:0}
+      .preference-cta{min-height:60px;margin-bottom:18px;font-size:16px}
     }
 
     @media(max-width:430px){
@@ -91,7 +93,6 @@
             <div class="eyebrow">STUDENT RUN / COMMUNITY DRIVEN</div>
             <h1>Coffee,<br>when you actually <em>want it.</em></h1>
             <p class="lead">Good coffee. A stronger community.<br>Ling Coffee is a student-run, non-profit coffee space at Ling College.</p>
-
           </div>
         </div>
 
@@ -109,14 +110,7 @@
           </div>
 
           <div class="home-schedule-meta">
-            <div class="donation-note">
-              <span class="heart">♡</span>
-              <div>
-                <strong>Suggested donation only</strong>
-                <small>Good coffee should be for everyone.</small>
-              </div>
-            </div>
-            <button class="primary schedule-order" data-page="menu">Order / Reserve <span>→</span></button>
+            <button class="primary schedule-order" data-page="menu">Order <span>→</span></button>
           </div>
 
           <div class="timeline-axis"><span>10</span><span>14</span><span>18</span><span>22</span></div>
@@ -152,10 +146,9 @@
         <section class="community-card glass">
           <div class="community-photo" aria-hidden="true"></div>
           <div class="community-copy">
-            <div class="eyebrow">IN OUR MIND · 爱心补给站</div>
+            <div class="eyebrow">IN OUR MIND</div>
             <h2>A stronger tomorrow, together.</h2>
             <p>咖啡馆由书院自主运营，坚持非营利原则。每一笔爱心捐赠都继续用于支持咖啡馆的长期运转与书院建设。</p>
-            <button class="text-link" data-page="more">Our story →</button>
           </div>
         </section>
       </section>
@@ -170,6 +163,8 @@
           </div>
           <div class="open-pill"><span class="live-dot small"></span> Open now · 10:00–22:00</div>
         </div>
+
+        <button class="primary preference-cta" data-page="more">Personal Preference <span>→</span></button>
 
         <div class="menu-layout">
           <div class="menu-main">
