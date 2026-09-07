@@ -104,29 +104,43 @@
       .export-enjoy{font-size:16px;font-weight:800;color:#3e2417}
       .export-dot{width:48px;height:48px;flex:0 0 48px;border-radius:50%;background:linear-gradient(180deg,rgba(18,198,191,.98),rgba(10,186,181,.86));box-shadow:0 12px 26px rgba(10,186,181,.20),inset 0 1px 0 rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.52)}
 
-      .preference-export-card.export-capture-mode{
+      /* Export-only flattening: this class is added only inside html2canvas' cloned DOM.
+         The live webpage keeps the original liquid-glass styling above. */
+      .preference-export-card.export-capture-mode,
+      .preference-export-card.export-capture-mode *{
         backdrop-filter:none!important;
         -webkit-backdrop-filter:none!important;
-        background:
-          radial-gradient(210px 180px at 84% 18%,rgba(151,222,215,.20),transparent 68%),
-          radial-gradient(180px 160px at 20% 8%,rgba(255,255,255,.70),transparent 70%),
-          linear-gradient(155deg,#f6f0e8 0%,#efe7df 58%,#e8dfd7 100%)!important;
-        box-shadow:0 18px 42px rgba(65,36,20,.12),inset 0 1px 0 rgba(255,255,255,.78)!important;
+        filter:none!important;
+        text-shadow:none!important;
       }
-      .preference-export-card.export-capture-mode:before{
-        background:linear-gradient(140deg,rgba(255,255,255,.22),transparent 34%,transparent 74%,rgba(255,255,255,.08))!important;
+      .preference-export-card.export-capture-mode{
+        background:linear-gradient(155deg,#faf6f1 0%,#f3ece5 58%,#dcefeb 100%)!important;
+        border-color:#fffaf6!important;
+        box-shadow:none!important;
       }
+      .preference-export-card.export-capture-mode:before,
       .preference-export-card.export-capture-mode:after{
-        width:150px;height:150px;right:-22px;bottom:-18px;filter:none!important;
-        background:radial-gradient(circle at 42% 42%,rgba(18,198,191,.24),rgba(18,198,191,.09) 56%,transparent 76%)!important;
+        display:none!important;
+        content:none!important;
       }
-      .preference-export-card.export-capture-mode .export-tag,
+      .preference-export-card.export-capture-mode .export-tag{
+        background:#f6f3ef!important;
+        border-color:#ffffff!important;
+        box-shadow:none!important;
+      }
       .preference-export-card.export-capture-mode .export-item,
       .preference-export-card.export-capture-mode .export-summary{
-        backdrop-filter:none!important;
-        -webkit-backdrop-filter:none!important;
-        background:rgba(255,255,255,.30)!important;
-        border-color:rgba(255,255,255,.58)!important;
+        background:#f8f4ef!important;
+        border-color:#ffffff!important;
+        box-shadow:none!important;
+      }
+      .preference-export-card.export-capture-mode .export-dot{
+        background:#0abab5!important;
+        border-color:#bcebe8!important;
+        box-shadow:none!important;
+      }
+      .preference-export-card.export-capture-mode .export-footer{
+        border-top-color:#ded4cc!important;
       }
 
       @media(max-width:960px){
@@ -186,7 +200,7 @@
         <div class="download-card-copy">
           <div class="eyebrow">DOWNLOAD</div>
           <h2>Keep your usual.</h2>
-          <p>The exported image uses the same layout you see above while flattening only the glass blur during capture for a clean PNG.</p>
+          <p>The saved image keeps the same layout while using a flattened export surface to avoid browser glass-rendering artifacts.</p>
           <button class="primary download-card-btn" id="downloadPreferenceCard">Save card to phone <span>→</span></button>
         </div>
       </div>`;
@@ -219,8 +233,8 @@
     const html2canvas=await loadHtml2Canvas();
     const rect=card.getBoundingClientRect();
     const canvas=await html2canvas(card,{
-      backgroundColor:null,
-      scale:Math.min(3,Math.max(2,window.devicePixelRatio||2)),
+      backgroundColor:'#efe7df',
+      scale:2,
       useCORS:true,
       allowTaint:false,
       logging:false,
@@ -232,7 +246,13 @@
       scrollY:-window.scrollY,
       onclone:clonedDocument=>{
         const clonedCard=clonedDocument.querySelector('#preferenceExportCard');
-        if(clonedCard) clonedCard.classList.add('export-capture-mode');
+        if(!clonedCard) return;
+        clonedCard.classList.add('export-capture-mode');
+        clonedCard.querySelectorAll('*').forEach(node=>{
+          node.style.webkitBackdropFilter='none';
+          node.style.backdropFilter='none';
+          node.style.filter='none';
+        });
       }
     });
 
