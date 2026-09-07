@@ -148,4 +148,10 @@ renderHome();renderFilters();renderMenu();renderCart();renderDayStrip();renderSc
 const preferenceScript=document.createElement('script');
 preferenceScript.src='preference.js';
 preferenceScript.defer=true;
+preferenceScript.onload=()=>{
+  const cardScript=document.createElement('script');
+  cardScript.src='preference-card.js';
+  cardScript.defer=true;
+  document.body.appendChild(cardScript);
+};
 document.body.appendChild(preferenceScript);
