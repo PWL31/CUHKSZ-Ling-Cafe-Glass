@@ -155,3 +155,31 @@ preferenceScript.onload=()=>{
   document.body.appendChild(cardScript);
 };
 document.body.appendChild(preferenceScript);
+
+const navPolish=document.createElement('style');
+navPolish.id='ling-nav-polish';
+navPolish.textContent=`
+  .mobile-nav-item[data-page="menu"] > span,
+  .mobile-nav-item[data-page="schedule"] > span{
+    width:24px;height:24px;display:block;position:relative;font-size:0;line-height:0;
+  }
+  .mobile-nav-item[data-page="menu"] > span::before,
+  .mobile-nav-item[data-page="schedule"] > span::before{
+    content:"";display:block;width:24px;height:24px;background:currentColor;
+    -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+    -webkit-mask-position:center;mask-position:center;
+    -webkit-mask-size:24px 24px;mask-size:24px 24px;
+  }
+  .mobile-nav-item[data-page="menu"] > span::before{
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h12v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V7Z'/%3E%3Cpath d='M16 9h1.5a2.5 2.5 0 0 1 0 5H16'/%3E%3Cpath d='M3 20h15'/%3E%3C/svg%3E");
+    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h12v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V7Z'/%3E%3Cpath d='M16 9h1.5a2.5 2.5 0 0 1 0 5H16'/%3E%3Cpath d='M3 20h15'/%3E%3C/svg%3E");
+  }
+  .mobile-nav-item[data-page="schedule"] > span::before{
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='3'/%3E%3Cpath d='M8 3v4M16 3v4M3 10h18'/%3E%3Cpath d='M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01'/%3E%3C/svg%3E");
+    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='3'/%3E%3Cpath d='M8 3v4M16 3v4M3 10h18'/%3E%3Cpath d='M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01'/%3E%3C/svg%3E");
+  }
+  @media (orientation:landscape){
+    .header-actions{display:none!important}
+  }
+`;
+document.head.appendChild(navPolish);
