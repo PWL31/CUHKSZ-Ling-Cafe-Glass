@@ -95,7 +95,7 @@
         .admin-menu-fields label:nth-of-type(1),.admin-menu-fields label:nth-of-type(2){grid-column:1/-1}
         .admin-menu-fields label:nth-of-type(3){grid-column:1}
         .admin-menu-photo{grid-column:1/-1!important}
-        .admin-popular-toggle{grid-column:1/-1!important;min-height:48px;width:100%;justify-self:stretch;padding-right:16px}
+        .admin-popular-toggle{grid-column:1/-1!important;justify-self:end!important;width:156px!important;max-width:100%;min-height:48px;padding:0 16px 0 62px;overflow:visible}
       }
     `;
     document.head.appendChild(style);
