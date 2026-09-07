@@ -76,16 +76,8 @@
         backdrop-filter:blur(28px) saturate(125%);
         -webkit-backdrop-filter:blur(28px) saturate(125%);
       }
-      .preference-export-card:before{
-        content:"";position:absolute;inset:0;
-        background:linear-gradient(140deg,rgba(255,255,255,.24),transparent 30%,transparent 72%,rgba(255,255,255,.12)),linear-gradient(180deg,rgba(255,255,255,.10),transparent 30%);
-        pointer-events:none
-      }
-      .preference-export-card:after{
-        content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:-36px;bottom:-26px;
-        background:radial-gradient(circle at 35% 35%,rgba(18,198,191,.30),rgba(18,198,191,.10) 45%,transparent 70%);
-        filter:blur(10px);pointer-events:none
-      }
+      .preference-export-card:before{content:"";position:absolute;inset:0;background:linear-gradient(140deg,rgba(255,255,255,.24),transparent 30%,transparent 72%,rgba(255,255,255,.12)),linear-gradient(180deg,rgba(255,255,255,.10),transparent 30%);pointer-events:none}
+      .preference-export-card:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:-36px;bottom:-26px;background:radial-gradient(circle at 35% 35%,rgba(18,198,191,.30),rgba(18,198,191,.10) 45%,transparent 70%);filter:blur(10px);pointer-events:none}
       .export-top,.export-main,.export-footer{position:relative;z-index:1}
       .export-top{display:flex;align-items:center;justify-content:space-between;gap:18px}
       .export-brand h3{margin:0;font:400 30px/.95 var(--serif);letter-spacing:-.03em;color:#3e2417}
@@ -104,49 +96,18 @@
       .export-enjoy{font-size:16px;font-weight:800;color:#3e2417}
       .export-dot{width:48px;height:48px;flex:0 0 48px;border-radius:50%;background:linear-gradient(180deg,rgba(18,198,191,.98),rgba(10,186,181,.86));box-shadow:0 12px 26px rgba(10,186,181,.20),inset 0 1px 0 rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.52)}
 
-      /* Export-only flattening: this class is added only inside html2canvas' cloned DOM.
-         The live webpage keeps the original liquid-glass styling above. */
       .preference-export-card.export-capture-mode,
-      .preference-export-card.export-capture-mode *{
-        backdrop-filter:none!important;
-        -webkit-backdrop-filter:none!important;
-        filter:none!important;
-        text-shadow:none!important;
-      }
-      .preference-export-card.export-capture-mode{
-        background:linear-gradient(155deg,#faf6f1 0%,#f3ece5 58%,#dcefeb 100%)!important;
-        border-color:#fffaf6!important;
-        box-shadow:none!important;
-      }
+      .preference-export-card.export-capture-mode *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;filter:none!important;text-shadow:none!important}
+      .preference-export-card.export-capture-mode{background:linear-gradient(155deg,#faf6f1 0%,#f3ece5 58%,#dcefeb 100%)!important;border-color:#fffaf6!important;box-shadow:none!important}
       .preference-export-card.export-capture-mode:before,
-      .preference-export-card.export-capture-mode:after{
-        display:none!important;
-        content:none!important;
-      }
-      .preference-export-card.export-capture-mode .export-tag{
-        background:#f6f3ef!important;
-        border-color:#ffffff!important;
-        box-shadow:none!important;
-      }
+      .preference-export-card.export-capture-mode:after{display:none!important;content:none!important}
+      .preference-export-card.export-capture-mode .export-tag{background:#f6f3ef!important;border-color:#ffffff!important;box-shadow:none!important}
       .preference-export-card.export-capture-mode .export-item,
-      .preference-export-card.export-capture-mode .export-summary{
-        background:#f8f4ef!important;
-        border-color:#ffffff!important;
-        box-shadow:none!important;
-      }
-      .preference-export-card.export-capture-mode .export-dot{
-        background:#0abab5!important;
-        border-color:#bcebe8!important;
-        box-shadow:none!important;
-      }
-      .preference-export-card.export-capture-mode .export-footer{
-        border-top-color:#ded4cc!important;
-      }
+      .preference-export-card.export-capture-mode .export-summary{background:#f8f4ef!important;border-color:#ffffff!important;box-shadow:none!important}
+      .preference-export-card.export-capture-mode .export-dot{background:#0abab5!important;border-color:#bcebe8!important;box-shadow:none!important}
+      .preference-export-card.export-capture-mode .export-footer{border-top-color:#ded4cc!important}
 
-      @media(max-width:960px){
-        .download-card-layout{grid-template-columns:1fr}
-        .preference-export-card{justify-self:center}
-      }
+      @media(max-width:960px){.download-card-layout{grid-template-columns:1fr}.preference-export-card{justify-self:center}}
       @media(max-width:760px),(orientation:portrait){
         .download-card-panel{padding:20px 18px;border-radius:24px;margin-bottom:calc(130px + env(safe-area-inset-bottom))}
         .download-card-panel h2{font-size:31px}
@@ -178,10 +139,7 @@
       <h2>Your card</h2>
       <div class="download-card-layout">
         <div class="preference-export-card" id="preferenceExportCard">
-          <div class="export-top">
-            <div class="export-brand"><h3>Ling Cafe</h3></div>
-            <div class="export-tag">Personal Preference</div>
-          </div>
+          <div class="export-top"><div class="export-brand"><h3>Ling Cafe</h3></div><div class="export-tag">Personal Preference</div></div>
           <div class="export-main">
             <div class="export-kicker">Saved style</div>
             <div class="export-title">My usual</div>
@@ -198,8 +156,7 @@
           <div class="export-footer"><div class="export-enjoy">Enjoy Your Cup!✨</div><div class="export-dot"></div></div>
         </div>
         <div class="download-card-copy">
-          <div class="eyebrow">DOWNLOAD</div>
-          <h2>Keep your usual.</h2>
+          <div class="eyebrow">DOWNLOAD</div><h2>Keep your usual.</h2>
           <p>The saved image keeps the same layout while using a flattened export surface to avoid browser glass-rendering artifacts.</p>
           <button class="primary download-card-btn" id="downloadPreferenceCard">Save card to phone <span>→</span></button>
         </div>
@@ -234,7 +191,7 @@
     const rect=card.getBoundingClientRect();
     const canvas=await html2canvas(card,{
       backgroundColor:'#efe7df',
-      scale:2,
+      scale:2.75,
       useCORS:true,
       allowTaint:false,
       logging:false,
