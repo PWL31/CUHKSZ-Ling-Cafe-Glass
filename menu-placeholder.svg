@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" role="img" aria-label="Ling Cafe menu image pending">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f5eee4"/>
+      <stop offset="0.55" stop-color="#e8d9cc"/>
+      <stop offset="1" stop-color="#cfe7e2"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.78" cy="0.22" r="0.55">
+      <stop offset="0" stop-color="#0abab5" stop-opacity="0.24"/>
+      <stop offset="1" stop-color="#0abab5" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="900" fill="url(#bg)"/>
+  <rect width="900" height="900" fill="url(#glow)"/>
+  <rect x="110" y="110" width="680" height="680" rx="92" fill="#ffffff" fill-opacity="0.28" stroke="#ffffff" stroke-opacity="0.72" stroke-width="4"/>
+  <g fill="none" stroke="#4b2b20" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.84">
+    <path d="M300 365h235v115c0 90-58 145-132 145h-12c-74 0-132-55-132-145V365h41"/>
+    <path d="M535 405h40c58 0 58 92 0 92h-40"/>
+    <path d="M265 650h330"/>
+  </g>
+  <text x="450" y="720" text-anchor="middle" fill="#078f8b" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" letter-spacing="7">IMAGE PENDING</text>
+  <text x="450" y="762" text-anchor="middle" fill="#785f53" font-family="Arial, Helvetica, sans-serif" font-size="22">Generate with the Ling Cafe GPT prompt</text>
+</svg>
