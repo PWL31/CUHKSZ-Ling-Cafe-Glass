@@ -12,8 +12,50 @@
   <style>
     /* Small layout refinements kept local to the static demo. */
     .header-capsule{width:94px;height:46px;flex:0 0 94px;padding:0;pointer-events:none}
+
+    /* Home: merge status, order CTA, and schedule into one full-width card. */
+    .home-hero{min-height:500px;display:block;padding:58px 54px 34px}
+    .hero-copy{max-width:900px}
+    .today-panel{width:100%;border-radius:var(--radius-lg);padding:30px;margin:0 0 22px}
+    .home-schedule-card{width:100%}
+    .home-status-head{align-items:center}
+    .home-open-heading{display:flex;align-items:center;gap:14px;min-width:0}
+    .home-open-heading h2{margin:4px 0 0}
+    .home-open-hours{font:600 21px/1 var(--sans);color:var(--text-strong);white-space:nowrap;margin-left:8px}
+    .home-schedule-meta{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;margin:22px 0 12px;padding:18px 0;border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)}
+    .donation-note{display:flex;align-items:center;gap:14px;min-width:0}
+    .donation-note strong{display:block;font-size:14px;color:var(--text-strong)}
+    .donation-note small{display:block;color:var(--muted);margin-top:4px}
+    .schedule-order{min-width:220px}
+
     @media(max-width:1160px){
+      .home-hero{padding:52px 34px 28px;min-height:0}
+      .today-panel{width:100%;margin:0 0 22px}
       .mobile-nav{bottom:max(4px,calc(env(safe-area-inset-bottom) - 8px)) !important}
+    }
+
+    @media(max-width:760px),(orientation:portrait){
+      .home-hero{padding:40px 26px 20px}
+      .today-panel{width:100%;padding:20px 14px;border-radius:24px;margin-bottom:22px}
+      .today-panel .panel-head{padding:0 6px;align-items:center}
+      .today-panel .panel-head h2{font-size:34px}
+      .today-panel .panel-head .text-link{display:block;font-size:12px;white-space:nowrap}
+      .home-open-heading{gap:10px}
+      .home-open-heading .live-dot{width:12px;height:12px}
+      .home-open-hours{font-size:14px;margin-left:2px}
+      .home-schedule-meta{grid-template-columns:1fr;margin:16px 6px 14px;padding:14px 0;gap:12px}
+      .donation-note{gap:10px}
+      .donation-note .heart{font-size:25px}
+      .donation-note strong{font-size:13px}
+      .donation-note small{font-size:11px}
+      .schedule-order{width:100%;min-width:0}
+    }
+
+    @media(max-width:430px){
+      .home-status-head{align-items:flex-start !important}
+      .home-open-heading{flex-wrap:wrap}
+      .home-open-hours{width:100%;margin:2px 0 0 22px}
+      .today-panel .panel-head .text-link{font-size:11px}
     }
   </style>
 </head>
@@ -50,55 +92,51 @@
             <h1>Coffee,<br>when you actually <em>want it.</em></h1>
             <p class="lead">Good coffee. A stronger community.<br>Ling Coffee is a student-run, non-profit coffee space at Ling College.</p>
 
-            <div class="status-card glass-soft">
-              <div class="status-line">
-                <span class="live-dot"></span>
-                <strong>Open now</strong>
-                <span class="hours">10:00 – 22:00</span>
-              </div>
-              <div class="divider"></div>
-              <div class="status-line compact">
-                <span class="heart">♡</span>
-                <div>
-                  <strong>Suggested donation only</strong>
-                  <small>Good coffee should be for everyone.</small>
-                </div>
-              </div>
-            </div>
-
-            <div class="hero-actions">
-              <button class="primary" data-page="menu">Order / Reserve <span>→</span></button>
-              <button class="secondary" data-page="schedule">Who’s on bar?</button>
-            </div>
           </div>
+        </div>
 
-          <aside class="today-panel glass-soft">
-            <div class="panel-head">
+        <section class="today-panel glass home-schedule-card">
+          <div class="panel-head home-status-head">
+            <div class="home-open-heading">
+              <span class="live-dot"></span>
               <div>
                 <div class="eyebrow">TODAY</div>
-                <h2>Schedule detail</h2>
+                <h2>Open now</h2>
               </div>
-              <button class="text-link" data-page="schedule">Full schedule →</button>
+              <strong class="home-open-hours">10:00 – 22:00</strong>
             </div>
-            <div class="timeline-axis"><span>10</span><span>14</span><span>18</span><span>22</span></div>
-            <div class="timeline-row cafe-row">
-              <span class="person">Cafe</span>
-              <div class="timeline-track"><span class="shift cafe" style="left:0;width:100%"></span></div>
-              <span class="time">10–22</span>
+            <button class="text-link" data-page="schedule">See detailed schedule →</button>
+          </div>
+
+          <div class="home-schedule-meta">
+            <div class="donation-note">
+              <span class="heart">♡</span>
+              <div>
+                <strong>Suggested donation only</strong>
+                <small>Good coffee should be for everyone.</small>
+              </div>
             </div>
-            <div class="timeline-row">
-              <span class="person">Ling</span>
-              <div class="timeline-track"><span class="shift ling" style="left:0;width:50%"></span></div>
-              <span class="time">10–16</span>
-            </div>
-            <div class="timeline-row">
-              <span class="person">Trent</span>
-              <div class="timeline-track"><span class="shift trent" style="left:33.3%;width:58.3%"></span></div>
-              <span class="time">14–21</span>
-            </div>
-            <div class="onbar-note"><span class="live-dot small"></span> Two baristas overlap from 14:00–16:00.</div>
-          </aside>
-        </div>
+            <button class="primary schedule-order" data-page="menu">Order / Reserve <span>→</span></button>
+          </div>
+
+          <div class="timeline-axis"><span>10</span><span>14</span><span>18</span><span>22</span></div>
+          <div class="timeline-row cafe-row">
+            <span class="person">Cafe</span>
+            <div class="timeline-track"><span class="shift cafe" style="left:0;width:100%"></span></div>
+            <span class="time">10–22</span>
+          </div>
+          <div class="timeline-row">
+            <span class="person">Ling</span>
+            <div class="timeline-track"><span class="shift ling" style="left:0;width:50%"></span></div>
+            <span class="time">10–16</span>
+          </div>
+          <div class="timeline-row">
+            <span class="person">Trent</span>
+            <div class="timeline-track"><span class="shift trent" style="left:33.3%;width:58.3%"></span></div>
+            <span class="time">14–21</span>
+          </div>
+          <div class="onbar-note"><span class="live-dot small"></span> Two baristas overlap from 14:00–16:00.</div>
+        </section>
 
         <section class="glass content-strip">
           <div class="section-head">
