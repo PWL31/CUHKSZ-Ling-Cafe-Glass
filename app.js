@@ -24,9 +24,9 @@ const weekData = [
 ];
 
 const state = {
-  theme: localStorage.getItem('ling-glass-theme') || 'light',
-  page: 'home',
-  filter:'All',
+  theme: localStorage.getItem("ling-glass-theme") || "light",
+  page: "home",
+  filter:"All",
   cart: {},
   selectedDay:0,
   weekOffset:0
@@ -34,26 +34,28 @@ const state = {
 
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
-const esc = value => String(value).replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+const esc = value => String(value).replace(/[&<>'\"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[ch]));
 
 function toast(text){
-  const el=$('#toast'); el.textContent=text; el.classList.add('show');
-  clearTimeout(toast.timer); toast.timer=setTimeout(()=>el.classList.remove('show'),1500);
+  const el = $("#toast"); el.textContent = text; el.classList.add("show");
+  clearTimeout(toast.timer); toast.timer = setTimeout(()=>el.classList.remove("show"),1500);
 }
 
 function applyTheme(theme){
-  state.theme=theme; document.documentElement.dataset.theme=theme;
-  localStorage.setItem('ling-glass-theme',theme);
-  $$('[data-theme-choice]').forEach(btn=>btn.classList.toggle('active',btn.dataset.themeChoice===theme));
-  document.querySelector('meta[name="theme-color"]').setAttribute('content', theme==='light' ? '#eee7db' : '#17110e');
+  state.theme = theme; document.documentElement.dataset.theme = theme;
+  localStorage.setItem("ling-glass-theme",theme);
+  $$('[data-theme-choice]').forEach(btn=>btn.classList.toggle("active",btn.dataset.themeChoice===theme));
+  document.querySelector('meta[name="theme-color"]').setAttribute("content", theme==="light" ? "#eee7db" : "#17110e");
 }
 
 function setPage(id){
-  state.page=id;
-  $$('.page').forEach(p=>p.classList.toggle('active',p.id===id));
-  $$('.nav-item,.mobile-nav-item').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
-  window.scrollTo({top:0,behavior:'smooth'});
+  state.page = id;
+  $$(".page").forEach(p=>p.classList.toggle("active",p.id===id));
+  $$(".nav-item,.mobile-nav-item").forEach(b=>b.classList.toggle("active",b.dataset.page===id));
+  window.scrollTo({top:0,behavior:"smooth"});
 }
+window.setPage=setPage;
+window.toast=toast;
 
 function cardHTML(m, compact=false){
   return `<article class="drink-card">
@@ -63,82 +65,87 @@ function cardHTML(m, compact=false){
       <p>${esc(m.desc)}</p>
       <div class="drink-foot">
         <div class="amount">Suggested <strong>¥${m.amount}</strong></div>
-        <button class="add-btn" data-add="${m.id}" ${m.available?'':'disabled'}>${m.available?'+ Add':'Not today'}</button>
+        <button class="add-btn" data-add="${m.id}" ${m.available?"":"disabled"}>${m.available?"+ Add":"Not today"}</button>
       </div>
     </div>
   </article>`;
 }
 
 function bindAddButtons(root=document){
-  root.querySelectorAll('[data-add]').forEach(btn=>btn.addEventListener('click',()=>{
+  root.querySelectorAll("[data-add]").forEach(btn=>btn.addEventListener("click",()=>{
     const id=Number(btn.dataset.add); state.cart[id]=(state.cart[id]||0)+1; renderCart(); toast(`${menu.find(x=>x.id===id).name} added`);
   }));
 }
 
 function renderHome(){
-  const root=$('#homeDrinks'); root.innerHTML=menu.slice(0,4).map(m=>cardHTML(m,true)).join(''); bindAddButtons(root);
+  const root = $("#homeDrinks"); root.innerHTML=menu.slice(0,4).map(m=>cardHTML(m,true)).join(""); bindAddButtons(root);
 }
 
 function renderFilters(){
-  const cats=['All',...new Set(menu.map(m=>m.cat))];
-  const root=$('#filters'); root.innerHTML=cats.map(cat=>`<button class="filter-btn ${cat===state.filter?'active':''}" data-filter="${cat}">${cat}</button>`).join('');
-  root.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{state.filter=btn.dataset.filter;renderFilters();renderMenu();}));
+  const cats=["All",...new Set(menu.map(m=>m.cat))];
+  const root=$("#filters"); root.innerHTML=cats.map(cat=>`<button class="filter-btn ${cat===state.filter?"active":""}" data-filter="${cat}">${cat}</button>`).join("");
+  root.querySelectorAll("[data-filter]").forEach(btn=>btn.addEventListener("click",()=>{state.filter=btn.dataset.filter;renderFilters();renderMenu();}));
 }
 
 function renderMenu(){
-  const list=state.filter==='All'?menu:menu.filter(m=>m.cat===state.filter);
-  const root=$('#menuGrid'); root.innerHTML=list.map(m=>cardHTML(m)).join(''); bindAddButtons(root);
+  const list=state.filter==="All"?menu:menu.filter(m=>m.cat===state.filter);
+  const root=$("#menuGrid"); root.innerHTML=list.map(m=>cardHTML(m)).join(""); bindAddButtons(root);
 }
 
 function renderCart(){
-  const root=$('#cartList');
+  const root=$("#cartList");
   const entries=Object.entries(state.cart).filter(([,q])=>q>0).map(([id,q])=>({item:menu.find(m=>m.id===Number(id)),q}));
-  if(!entries.length){root.innerHTML='<div class="cart-empty">No items yet.</div>';return;}
+  if(!entries.length){root.innerHTML="<div class=\"cart-empty\">No items yet.</div>";return;}
   const total=entries.reduce((s,{item,q})=>s+item.amount*q,0);
-  root.innerHTML=entries.map(({item,q})=>`<div class="cart-row"><div><strong>${esc(item.name)}</strong><div class="muted" style="font-size:11px">¥${item.amount} × ${q}</div></div><div class="qty"><button data-qty="${item.id}" data-delta="-1">−</button><span>${q}</span><button data-qty="${item.id}" data-delta="1">+</button></div></div>`).join('')+`<div class="cart-total"><span>Total suggested</span><span>¥${total}</span></div>`;
-  root.querySelectorAll('[data-qty]').forEach(btn=>btn.addEventListener('click',()=>{const id=Number(btn.dataset.qty);state.cart[id]=(state.cart[id]||0)+Number(btn.dataset.delta);if(state.cart[id]<=0)delete state.cart[id];renderCart();}));
+  root.innerHTML=entries.map(({item,q})=>`<div class="cart-row"><div><strong>${esc(item.name)}</strong><div class="muted" style="font-size:11px">¥${item.amount} × ${q}</div></div><div class="qty"><button data-qty="${item.id}" data-delta="-1">−</button><span>${q}</span><button data-qty="${item.id}" data-delta="1">+</button></div></div>`).join("")+`<div class="cart-total"><span>Total suggested</span><span>¥${total}</span></div>`;
+  root.querySelectorAll("[data-qty]").forEach(btn=>btn.addEventListener("click",()=>{const id=Number(btn.dataset.qty);state.cart[id]=(state.cart[id]||0)+Number(btn.dataset.delta);if(state.cart[id]<=0)delete state.cart[id];renderCart();}));
 }
 
-function minutes(v){const [h,m]=v.split(':').map(Number);return h*60+m}
+function minutes(v){const [h,m]=v.split(":").map(Number);return h*60+m}
 function pct(v){return ((minutes(v)-600)/(720))*100}
 function renderDayStrip(){
-  const root=$('#dayStrip'); root.innerHTML=weekData.map((d,i)=>`<button class="day-btn ${i===state.selectedDay?'active':''}" data-day="${i}"><small>${d.label}</small><strong>${d.day}</strong></button>`).join('');
-  root.querySelectorAll('[data-day]').forEach(btn=>btn.addEventListener('click',()=>{state.selectedDay=Number(btn.dataset.day);renderDayStrip();renderScheduleRows();}));
+  const root=$("#dayStrip"); root.innerHTML=weekData.map((d,i)=>`<button class="day-btn ${i===state.selectedDay?"active":""}" data-day="${i}"><small>${d.label}</small><strong>${d.day}</strong></button>`).join("");
+  root.querySelectorAll("[data-day]").forEach(btn=>btn.addEventListener("click",()=>{state.selectedDay=Number(btn.dataset.day);renderDayStrip();renderScheduleRows();}));
 }
 function renderScheduleRows(){
   const day=weekData[state.selectedDay];
-  $('#selectedDayTitle').textContent=`${day.label}, Sep ${day.day}`;
-  const rows=[['Cafe','10:00','22:00','cafe'],...day.shifts.map(([n,s,e])=>[n,s,e,n.toLowerCase()])];
-  $('#scheduleRows').innerHTML=rows.map(([name,start,end,klass],idx)=>`<div class="timeline-row ${idx===0?'cafe-row':''}"><span class="person">${esc(name)}</span><div class="timeline-track"><span class="shift ${klass}" style="left:${Math.max(0,pct(start))}%;width:${Math.max(0,pct(end)-pct(start))}%"></span></div><span class="time">${start}–${end}</span></div>`).join('');
+  $("#selectedDayTitle").textContent=`${day.label}, Sep ${day.day}`;
+  const rows=[["Cafe","10:00","22:00","cafe"],...day.shifts.map(([n,s,e])=>[n,s,e,n.toLowerCase()])];
+  $("#scheduleRows").innerHTML=rows.map(([name,start,end,klass],idx)=>`<div class="timeline-row ${idx===0?"cafe-row":""}"><span class="person">${esc(name)}</span><div class="timeline-track"><span class="shift ${klass}" style="left:${Math.max(0,pct(start))}%;width:${Math.max(0,pct(end)-pct(start))}%"></span></div><span class="time">${start}–${end}</span></div>`).join("");
 }
 function renderRoster(){
-  $('#rosterList').innerHTML=roster.map(r=>`<div class="roster-person"><div class="avatar-dot" style="background:${r.color}">${r.name[0]}</div><div><strong>${r.name}</strong><div class="muted" style="font-size:11px;margin-top:3px">${r.bio}</div></div><button class="summon-btn" data-summon="${r.name}">Summon</button></div>`).join('');
-  $$('[data-summon]').forEach(b=>b.addEventListener('click',()=>toast(`Request sent for ${b.dataset.summon}`)));
+  $("#rosterList").innerHTML=roster.map(r=>`<div class="roster-person"><div class="avatar-dot" style="background:${r.color}">${r.name[0]}</div><div><strong>${r.name}</strong><div class="muted" style="font-size:11px;margin-top:3px">${r.bio}</div></div><button class="summon-btn" data-summon="${r.name}">Summon</button></div>`).join("");
+  $$("[data-summon]").forEach(b=>b.addEventListener("click",()=>toast(`Request sent for ${b.dataset.summon}`)));
 }
 
 function fillTimes(){
-  const sel=$('#reserveTime'); let html='';
-  for(let h=10;h<22;h+=.5){const hour=Math.floor(h);const min=h%1?'30':'00';html+=`<option>${String(hour).padStart(2,'0')}:${min}</option>`} sel.innerHTML=html;
-  const d=new Date(); $('#reserveDate').value=d.toISOString().slice(0,10);
+  const sel=$("#reserveTime"); let html="";
+  for(let h=10;h<22;h+=.5){const hour=Math.floor(h);const min=h%1?"30":"00";html+=`<option>${String(hour).padStart(2,"0")}:${min}</option>`} sel.innerHTML=html;
+  const d=new Date(); $("#reserveDate").value=d.toISOString().slice(0,10);
 }
 
 function bindGlobal(){
-  $$('[data-page]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();setPage(el.dataset.page)}));
-  $$('[data-theme-choice]').forEach(btn=>btn.addEventListener('click',()=>applyTheme(btn.dataset.themeChoice)));
-  $$('.more-nav-btn').forEach(btn=>btn.addEventListener('click',()=>{
-    $$('.more-nav-btn').forEach(x=>x.classList.remove('active'));btn.classList.add('active');
-    $$('.more-panel').forEach(x=>x.classList.remove('active'));$('#panel-'+btn.dataset.panel).classList.add('active');
+  $$('[data-page]').forEach(el=>el.addEventListener("click",e=>{e.preventDefault();setPage(el.dataset.page)}));
+  $$('[data-theme-choice]').forEach(btn=>btn.addEventListener("click",()=>applyTheme(btn.dataset.themeChoice)));
+  $$(".more-nav-btn").forEach(btn=>btn.addEventListener("click",()=>{
+    $$(".more-nav-btn").forEach(x=>x.classList.remove("active"));btn.classList.add("active");
+    $$(".more-panel").forEach(x=>x.classList.remove("active"));$("#panel-"+btn.dataset.panel).classList.add("active");
   }));
-  $('#reserveBtn').addEventListener('click',()=>{
-    if(!Object.keys(state.cart).length)return toast('Choose something first');
-    if(!$('#reserveName').value.trim())return toast('Leave a name');
-    state.cart={};renderCart();$('#reserveName').value='';$('#reserveNote').value='';toast('Reservation saved in demo');
+  $("#reserveBtn").addEventListener("click",()=>{
+    if(!Object.keys(state.cart).length)return toast("Choose something first");
+    if(!$("#reserveName").value.trim())return toast("Leave a name");
+    state.cart={};renderCart();$("#reserveName").value="";$("#reserveNote").value="";toast("Reservation saved in demo");
   });
-  $('#clearCartBtn').addEventListener('click',()=>{state.cart={};renderCart()});
-  $('#loginDemo').addEventListener('click',()=>{$('#adminPreview').classList.remove('hidden');toast('Staff tools unlocked in demo')});
-  $('#prevWeek').addEventListener('click',()=>toast('Previous week · static demo'));
-  $('#nextWeek').addEventListener('click',()=>toast('Next week · static demo'));
+  $("#clearCartBtn").addEventListener("click",()=>{state.cart={};renderCart()});
+  $("#loginDemo").addEventListener("click",()=>{$("#adminPreview").classList.remove("hidden");toast("Staff tools unlocked in demo")});
+  $("#prevWeek").addEventListener("click",()=>toast("Previous week · static demo"));
+  $("#nextWeek").addEventListener("click",()=>toast("Next week · static demo"));
 }
 
 applyTheme(state.theme);
 renderHome();renderFilters();renderMenu();renderCart();renderDayStrip();renderScheduleRows();renderRoster();fillTimes();bindGlobal();
+
+const preferenceScript=document.createElement('script');
+preferenceScript.src='preference.js';
+preferenceScript.defer=true;
+document.body.appendChild(preferenceScript);
