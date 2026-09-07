@@ -1,3 +1,5 @@
+import { DurableObject } from "cloudflare:workers";
+
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
@@ -46,25 +48,24 @@ function normalizeMenuInput(body, current = null) {
   return next;
 }
 
-export class MenuStore {
-  constructor(state) {
-    this.state = state;
-    this.ready = state.blockConcurrencyWhile(async () => {
-      const existing = await state.storage.get('menu');
-      if (!Array.isArray(existing) || !existing.length) {
-        await state.storage.put('menu', SEED_MENU.map(item => ({...item})));
+export class MenuStore extends DurableObject {
+  constructor(ctx, env) {
+    super(ctx, env);
+    ctx.blockConcurrencyWhile(async () => {
+      const existing = await ctx.storage.get('menu');
+      if (!Array.isArray(existing) || existing.length === 0) {
+        await ctx.storage.put('menu', SEED_MENU.map(item => ({...item})));
       }
     });
   }
 
   async readMenu() {
-    await this.ready;
-    const items = await this.state.storage.get('menu');
+    const items = await this.ctx.storage.get('menu');
     return Array.isArray(items) ? items : [];
   }
 
   async writeMenu(items) {
-    await this.state.storage.put('menu', items);
+    await this.ctx.storage.put('menu', items);
   }
 
   popularCount(items) {
@@ -72,7 +73,6 @@ export class MenuStore {
   }
 
   async fetch(request) {
-    await this.ready;
     const url = new URL(request.url);
     const path = url.pathname;
     const method = request.method.toUpperCase();
@@ -88,11 +88,7 @@ export class MenuStore {
       try { clean = normalizeMenuInput(body); } catch (err) { return json({error:err.message},400); }
       const items = await this.readMenu();
       const id = items.reduce((max,item)=>Math.max(max,Number(item.id)||0),0) + 1;
-      const next = {
-        id,
-        ...clean,
-        image:'/menu-placeholder.svg',
-      };
+      const next = { id, ...clean, image:'/menu-placeholder.svg' };
       const candidate = [...items, next];
       if (this.popularCount(candidate) > 4) return json({error:'Popular drinks are limited to four.'},409);
       await this.writeMenu(candidate);
@@ -244,51 +240,68 @@ function logout() {
 }
 
 function menuStore(env) {
-  const id = env.MENU_STORE.idFromName(MENU_STORE_NAME);
-  return env.MENU_STORE.get(id);
+  return env.MENU_STORE.getByName(MENU_STORE_NAME);
 }
 
 async function forwardMenu(request, env, internalPath) {
   if (!env.MENU_STORE) return json({error:'Menu storage is not configured.'},500);
-  const url = `https://menu.internal${internalPath}`;
-  return menuStore(env).fetch(new Request(url, request));
+  const target = `https://menu.internal${internalPath}`;
+  const method = request.method.toUpperCase();
+  const init = { method, headers: new Headers(request.headers) };
+  if (method !== 'GET' && method !== 'HEAD') {
+    init.body = await request.arrayBuffer();
+  }
+  return menuStore(env).fetch(new Request(target, init));
 }
 
-async function staticAsset(request, env) {
-  const response = await env.ASSETS.fetch(request);
-  const type = response.headers.get('content-type') || '';
-  if (!type.includes('text/html')) return response;
-  let html = await response.text();
-  const headers = new Headers(response.headers);
-  headers.delete('content-length');
-  if (html.includes('</body>')) html = html.replace('</body>', '<script src="/support.js" defer></script></body>');
-  return new Response(html,{status:response.status,statusText:response.statusText,headers});
+async function health(env) {
+  const result = {
+    ok: true,
+    worker: true,
+    assets: Boolean(env.ASSETS),
+    menuStore: Boolean(env.MENU_STORE),
+  };
+  if (env.MENU_STORE) {
+    try {
+      const response = await menuStore(env).fetch('https://menu.internal/menu');
+      result.menuBackend = response.ok;
+    } catch (error) {
+      result.menuBackend = false;
+      result.menuError = String(error?.message || error);
+    }
+  }
+  return json(result, result.menuBackend === false ? 503 : 200);
 }
 
 export default {
   async fetch(request, env) {
-    const url = new URL(request.url);
+    try {
+      const url = new URL(request.url);
 
-    if (url.pathname === '/api/admin/login' && request.method === 'POST') return login(request, env);
-    if (url.pathname === '/api/admin/session' && request.method === 'GET') return session(request, env);
-    if (url.pathname === '/api/admin/logout' && request.method === 'POST') return logout();
+      if (url.pathname === '/api/health' && request.method === 'GET') return health(env);
+      if (url.pathname === '/api/admin/login' && request.method === 'POST') return login(request, env);
+      if (url.pathname === '/api/admin/session' && request.method === 'GET') return session(request, env);
+      if (url.pathname === '/api/admin/logout' && request.method === 'POST') return logout();
 
-    if (url.pathname === '/api/menu' && request.method === 'GET') {
-      return forwardMenu(request, env, '/menu');
+      if (url.pathname === '/api/menu' && request.method === 'GET') {
+        return forwardMenu(request, env, '/menu');
+      }
+
+      const adminMenuMatch = url.pathname.match(/^\/api\/admin\/menu(?:\/(\d+))?(\/image)?$/);
+      if (adminMenuMatch) {
+        const admin = await requireAdmin(request, env);
+        if (!admin) return json({error:'Authentication required.'},401);
+        const id = adminMenuMatch[1];
+        const imageSuffix = adminMenuMatch[2] || '';
+        const path = id ? `/menu/${id}${imageSuffix}` : '/menu';
+        return forwardMenu(request, env, path);
+      }
+
+      if (url.pathname.startsWith('/api/')) return json({error:'Not found.'},404);
+      return env.ASSETS ? env.ASSETS.fetch(request) : new Response('Not found.',{status:404});
+    } catch (error) {
+      console.error('Worker request failed', error);
+      return json({error:'Worker runtime error.', detail:String(error?.message || error)},500);
     }
-
-    const adminMenuMatch = url.pathname.match(/^\/api\/admin\/menu(?:\/(\d+))?(\/image)?$/);
-    if (adminMenuMatch) {
-      const admin = await requireAdmin(request, env);
-      if (!admin) return json({error:'Authentication required.'},401);
-      const id = adminMenuMatch[1];
-      const imageSuffix = adminMenuMatch[2] || '';
-      const path = id ? `/menu/${id}${imageSuffix}` : '/menu';
-      return forwardMenu(request, env, path);
-    }
-
-    if (url.pathname.startsWith('/api/')) return json({error:'Not found.'},404);
-    if (!env.ASSETS) return new Response('Static assets binding is not configured.',{status:500});
-    return staticAsset(request, env);
   },
 };
