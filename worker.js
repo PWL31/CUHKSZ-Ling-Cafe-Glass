@@ -9,51 +9,114 @@ const SESSION_SECONDS = 60 * 60 * 8;
 
 const ADMIN_UI_POLISH = `<style id="admin-ui-polish">
   .admin-popular-toggle{
-    border-radius:999px!important;
-    min-height:52px!important;
-    padding:6px 14px!important;
-    gap:11px!important;
+    border:0!important;
+    background:transparent!important;
+    border-radius:0!important;
+    min-height:42px!important;
+    width:auto!important;
+    max-width:100%!important;
+    padding:0!important;
+    gap:10px!important;
+    display:inline-flex!important;
+    align-items:center!important;
     justify-content:flex-start!important;
-    overflow:hidden;
+    overflow:visible!important;
     cursor:pointer;
+    color:var(--muted)!important;
+    font-size:12px!important;
+    white-space:nowrap;
   }
   .admin-popular-toggle input[type="checkbox"]{
-    -webkit-appearance:none!important;
-    appearance:none!important;
-    width:44px!important;
-    min-width:44px!important;
-    height:26px!important;
+    position:absolute!important;
+    opacity:0!important;
+    pointer-events:none!important;
+    width:1px!important;
+    height:1px!important;
     margin:0!important;
-    padding:0!important;
-    border:1px solid rgba(92,63,47,.18)!important;
-    border-radius:999px!important;
-    background:
-      radial-gradient(circle at 12px 50%,rgba(255,255,255,.98) 0 8px,transparent 9px),
-      rgba(92,63,47,.14)!important;
-    box-shadow:inset 0 1px 3px rgba(62,36,23,.10),0 1px 0 rgba(255,255,255,.38)!important;
-    transition:background .18s ease,border-color .18s ease,box-shadow .18s ease!important;
-    cursor:pointer;
   }
-  .admin-popular-toggle input[type="checkbox"]:checked{
-    border-color:rgba(10,186,181,.38)!important;
-    background:
-      radial-gradient(circle at calc(100% - 12px) 50%,rgba(255,255,255,.98) 0 8px,transparent 9px),
-      var(--accent)!important;
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.08),0 5px 14px rgba(10,186,181,.16)!important;
+  .admin-popular-toggle::before{
+    content:""!important;
+    position:static!important;
+    width:34px!important;
+    min-width:34px!important;
+    height:34px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    transform:none!important;
+    border-radius:50%!important;
+    border:1px solid var(--line-soft)!important;
+    background:rgba(255,255,255,.42)!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 2px 8px rgba(62,36,23,.08)!important;
+    color:#fff!important;
+    font:800 21px/1 var(--sans)!important;
+    transition:background .16s ease,border-color .16s ease,opacity .16s ease!important;
   }
-  .admin-popular-toggle input[type="checkbox"]:focus-visible{
-    outline:2px solid rgba(10,186,181,.42)!important;
-    outline-offset:2px;
+  .admin-popular-toggle::after{
+    content:none!important;
+  }
+  .admin-popular-toggle:has(input:checked)::before{
+    content:"✓"!important;
+    background:var(--accent)!important;
+    border-color:rgba(10,186,181,.72)!important;
+    box-shadow:0 5px 14px rgba(10,186,181,.18),inset 0 1px 0 rgba(255,255,255,.40)!important;
+  }
+  .admin-popular-toggle:has(input:focus-visible)::before{
+    outline:2px solid rgba(10,186,181,.38)!important;
+    outline-offset:2px!important;
+  }
+  .admin-popular-toggle:has(input:disabled){
+    opacity:.38!important;
+    cursor:not-allowed!important;
   }
   @media(max-width:760px),(orientation:portrait){
     .admin-popular-toggle{
-      width:100%;
-      min-width:0;
-      min-height:50px!important;
-      padding:6px 12px!important;
+      grid-column:1/-1!important;
+      justify-self:end!important;
+      width:auto!important;
+      min-width:0!important;
+      min-height:42px!important;
+      padding:0!important;
     }
   }
 </style>`;
+
+const ADMIN_POPULAR_LIMIT_SCRIPT = `<script id="admin-popular-limit">
+(() => {
+  const selector = '[data-admin-field="popular"]';
+
+  function syncPopularLimit() {
+    const boxes = [...document.querySelectorAll(selector)];
+    if (!boxes.length) return;
+    const checked = boxes.filter(box => box.checked);
+    const atLimit = checked.length >= 4;
+    boxes.forEach(box => {
+      box.disabled = atLimit && !box.checked;
+      const label = box.closest('.admin-popular-toggle');
+      if (label) label.title = box.disabled ? 'Maximum of four Popular drinks' : 'Show in Popular drinks';
+    });
+  }
+
+  document.addEventListener('change', event => {
+    const box = event.target.closest?.(selector);
+    if (!box) return;
+    const checked = [...document.querySelectorAll(selector)].filter(item => item.checked);
+    if (checked.length > 4) {
+      box.checked = false;
+      if (typeof window.toast === 'function') window.toast('Popular drinks are limited to four');
+    }
+    syncPopularLimit();
+  }, true);
+
+  const observer = new MutationObserver(syncPopularLimit);
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', syncPopularLimit, { once: true });
+  } else {
+    syncPopularLimit();
+  }
+})();
+<\/script>`;
 
 function json(data, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(data), {
@@ -177,13 +240,12 @@ async function staticAsset(request, env) {
   const type = response.headers.get('content-type') || '';
   if (!type.includes('text/html')) return response;
 
-  const html = await response.text();
+  let html = await response.text();
   const headers = new Headers(response.headers);
   headers.delete('content-length');
-  return new Response(
-    html.includes('</head>') ? html.replace('</head>', `${ADMIN_UI_POLISH}</head>`) : html,
-    { status: response.status, statusText: response.statusText, headers }
-  );
+  if (html.includes('</head>')) html = html.replace('</head>', `${ADMIN_UI_POLISH}</head>`);
+  if (html.includes('</body>')) html = html.replace('</body>', `${ADMIN_POPULAR_LIMIT_SCRIPT}</body>`);
+  return new Response(html, { status: response.status, statusText: response.statusText, headers });
 }
 
 export default {
