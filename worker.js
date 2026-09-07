@@ -7,6 +7,54 @@ const DEMO_SESSION_SECRET = 'ling-cafe-glass-demo-session-secret-2026-change-bef
 const COOKIE_NAME = 'ling_admin_session';
 const SESSION_SECONDS = 60 * 60 * 8;
 
+const ADMIN_UI_POLISH = `<style id="admin-ui-polish">
+  .admin-popular-toggle{
+    border-radius:999px!important;
+    min-height:52px!important;
+    padding:6px 14px!important;
+    gap:11px!important;
+    justify-content:flex-start!important;
+    overflow:hidden;
+    cursor:pointer;
+  }
+  .admin-popular-toggle input[type="checkbox"]{
+    -webkit-appearance:none!important;
+    appearance:none!important;
+    width:44px!important;
+    min-width:44px!important;
+    height:26px!important;
+    margin:0!important;
+    padding:0!important;
+    border:1px solid rgba(92,63,47,.18)!important;
+    border-radius:999px!important;
+    background:
+      radial-gradient(circle at 12px 50%,rgba(255,255,255,.98) 0 8px,transparent 9px),
+      rgba(92,63,47,.14)!important;
+    box-shadow:inset 0 1px 3px rgba(62,36,23,.10),0 1px 0 rgba(255,255,255,.38)!important;
+    transition:background .18s ease,border-color .18s ease,box-shadow .18s ease!important;
+    cursor:pointer;
+  }
+  .admin-popular-toggle input[type="checkbox"]:checked{
+    border-color:rgba(10,186,181,.38)!important;
+    background:
+      radial-gradient(circle at calc(100% - 12px) 50%,rgba(255,255,255,.98) 0 8px,transparent 9px),
+      var(--accent)!important;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.08),0 5px 14px rgba(10,186,181,.16)!important;
+  }
+  .admin-popular-toggle input[type="checkbox"]:focus-visible{
+    outline:2px solid rgba(10,186,181,.42)!important;
+    outline-offset:2px;
+  }
+  @media(max-width:760px),(orientation:portrait){
+    .admin-popular-toggle{
+      width:100%;
+      min-width:0;
+      min-height:50px!important;
+      padding:6px 12px!important;
+    }
+  }
+</style>`;
+
 function json(data, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(data), {
     status,
@@ -124,6 +172,20 @@ function logout() {
   return json({ ok: true }, 200, { 'set-cookie': expiredCookie() });
 }
 
+async function staticAsset(request, env) {
+  const response = await env.ASSETS.fetch(request);
+  const type = response.headers.get('content-type') || '';
+  if (!type.includes('text/html')) return response;
+
+  const html = await response.text();
+  const headers = new Headers(response.headers);
+  headers.delete('content-length');
+  return new Response(
+    html.includes('</head>') ? html.replace('</head>', `${ADMIN_UI_POLISH}</head>`) : html,
+    { status: response.status, statusText: response.statusText, headers }
+  );
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -144,6 +206,6 @@ export default {
     if (!env.ASSETS) {
       return new Response('Static assets binding is not configured.', { status: 500 });
     }
-    return env.ASSETS.fetch(request);
+    return staticAsset(request, env);
   },
 };
