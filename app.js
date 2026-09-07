@@ -191,6 +191,11 @@ navPolish.textContent=`
 `;
 document.head.appendChild(navPolish);
 
+const supportScript=document.createElement('script');
+supportScript.src='support.js';
+supportScript.defer=true;
+document.body.appendChild(supportScript);
+
 const adminScript=document.createElement('script');
 adminScript.src='admin.js';
 adminScript.defer=true;
