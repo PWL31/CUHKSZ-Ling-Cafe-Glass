@@ -1,10 +1,10 @@
 const menu = [
-  {id:1, cat:'Espresso', name:'Americano', desc:'Classic espresso + water', amount:28, available:true, image:'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=88'},
-  {id:2, cat:'Milk', name:'Latte', desc:'Espresso · steamed milk', amount:32, available:true, image:'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?auto=format&fit=crop&w=900&q=88'},
-  {id:3, cat:'Milk', name:'Dirty', desc:'Cold milk · espresso', amount:34, available:true, image:'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=900&q=88'},
-  {id:4, cat:'Filter', name:'Today’s Pour-over', desc:'Bean list updates daily', amount:38, available:true, image:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=88'},
-  {id:5, cat:'Non-coffee', name:'Matcha Milk', desc:'Matcha · milk', amount:29, available:true, image:'https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?auto=format&fit=crop&w=900&q=88'},
-  {id:6, cat:'Food', name:'Croissant', desc:'Daily limited', amount:18, available:false, image:'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=900&q=88'}
+  {id:1, cat:'Espresso', name:'Americano', desc:'Classic espresso + water', amount:28, available:true, popular:true, image:'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=88'},
+  {id:2, cat:'Milk', name:'Latte', desc:'Espresso · steamed milk', amount:32, available:true, popular:true, image:'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?auto=format&fit=crop&w=900&q=88'},
+  {id:3, cat:'Milk', name:'Dirty', desc:'Cold milk · espresso', amount:34, available:true, popular:true, image:'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=900&q=88'},
+  {id:4, cat:'Filter', name:'Today’s Pour-over', desc:'Bean list updates daily', amount:38, available:true, popular:true, image:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=88'},
+  {id:5, cat:'Non-coffee', name:'Matcha Milk', desc:'Matcha · milk', amount:29, available:true, popular:false, image:'https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?auto=format&fit=crop&w=900&q=88'},
+  {id:6, cat:'Food', name:'Croissant', desc:'Daily limited', amount:18, available:false, popular:false, image:'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=900&q=88'}
 ];
 
 const roster = [
@@ -78,7 +78,10 @@ function bindAddButtons(root=document){
 }
 
 function renderHome(){
-  const root = $("#homeDrinks"); root.innerHTML=menu.slice(0,4).map(m=>cardHTML(m,true)).join(""); bindAddButtons(root);
+  const root = $("#homeDrinks");
+  const popular = menu.filter(m=>m.popular).slice(0,4);
+  root.innerHTML=popular.map(m=>cardHTML(m,true)).join("");
+  bindAddButtons(root);
 }
 
 function renderFilters(){
@@ -94,6 +97,7 @@ function renderMenu(){
 
 function renderCart(){
   const root=$("#cartList");
+  if(!root) return;
   const entries=Object.entries(state.cart).filter(([,q])=>q>0).map(([id,q])=>({item:menu.find(m=>m.id===Number(id)),q}));
   if(!entries.length){root.innerHTML="<div class=\"cart-empty\">No items yet.</div>";return;}
   const total=entries.reduce((s,{item,q})=>s+item.amount*q,0);
@@ -119,9 +123,11 @@ function renderRoster(){
 }
 
 function fillTimes(){
-  const sel=$("#reserveTime"); let html="";
+  const sel=$("#reserveTime");
+  if(!sel) return;
+  let html="";
   for(let h=10;h<22;h+=.5){const hour=Math.floor(h);const min=h%1?"30":"00";html+=`<option>${String(hour).padStart(2,"0")}:${min}</option>`} sel.innerHTML=html;
-  const d=new Date(); $("#reserveDate").value=d.toISOString().slice(0,10);
+  const d=new Date(); const date=$("#reserveDate"); if(date) date.value=d.toISOString().slice(0,10);
 }
 
 function bindGlobal(){
@@ -129,15 +135,16 @@ function bindGlobal(){
   $$('[data-theme-choice]').forEach(btn=>btn.addEventListener("click",()=>applyTheme(btn.dataset.themeChoice)));
   $$(".more-nav-btn").forEach(btn=>btn.addEventListener("click",()=>{
     $$(".more-nav-btn").forEach(x=>x.classList.remove("active"));btn.classList.add("active");
-    $$(".more-panel").forEach(x=>x.classList.remove("active"));$("#panel-"+btn.dataset.panel).classList.add("active");
+    $$(".more-panel").forEach(x=>x.classList.remove("active"));const panel=$("#panel-"+btn.dataset.panel);if(panel)panel.classList.add("active");
   }));
-  $("#reserveBtn").addEventListener("click",()=>{
+  const reserveBtn=$("#reserveBtn");
+  if(reserveBtn) reserveBtn.addEventListener("click",()=>{
     if(!Object.keys(state.cart).length)return toast("Choose something first");
     if(!$("#reserveName").value.trim())return toast("Leave a name");
     state.cart={};renderCart();$("#reserveName").value="";$("#reserveNote").value="";toast("Reservation saved in demo");
   });
-  $("#clearCartBtn").addEventListener("click",()=>{state.cart={};renderCart()});
-  $("#loginDemo").addEventListener("click",()=>{$("#adminPreview").classList.remove("hidden");toast("Staff tools unlocked in demo")});
+  const clearCart=$("#clearCartBtn");if(clearCart)clearCart.addEventListener("click",()=>{state.cart={};renderCart()});
+  const loginDemo=$("#loginDemo");if(loginDemo)loginDemo.addEventListener("click",()=>{$("#adminPreview")?.classList.remove("hidden");toast("Staff tools unlocked in demo")});
   $("#prevWeek").addEventListener("click",()=>toast("Previous week · static demo"));
   $("#nextWeek").addEventListener("click",()=>toast("Next week · static demo"));
 }
@@ -183,3 +190,8 @@ navPolish.textContent=`
   }
 `;
 document.head.appendChild(navPolish);
+
+const adminScript=document.createElement('script');
+adminScript.src='admin.js';
+adminScript.defer=true;
+document.body.appendChild(adminScript);
