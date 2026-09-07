@@ -9,6 +9,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Caslon+Display&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Small layout refinements kept local to the static demo. */
+    .header-capsule{width:94px;height:46px;flex:0 0 94px;padding:0;pointer-events:none}
+    @media(max-width:1160px){
+      .mobile-nav{bottom:max(4px,calc(env(safe-area-inset-bottom) - 8px)) !important}
+    }
+  </style>
 </head>
 <body>
   <div class="bg" aria-hidden="true"></div>
@@ -29,15 +36,13 @@
       </nav>
 
       <div class="header-actions">
-        <div class="theme-switch" role="group" aria-label="Theme">
-          <button class="theme-choice active" data-theme-choice="light" aria-label="Light mode">☀</button>
-          <button class="theme-choice" data-theme-choice="dark" aria-label="Dark mode">☾</button>
-        </div>
+        <div class="theme-switch header-capsule" aria-hidden="true"></div>
         <button class="support-btn" data-page="more">Support us ♡</button>
       </div>
     </header>
 
     <main>
+      <!-- HOME -->
       <section class="page active" id="home">
         <div class="home-hero">
           <div class="hero-copy">
@@ -117,6 +122,7 @@
         </section>
       </section>
 
+      <!-- MENU -->
       <section class="page" id="menu">
         <div class="page-hero glass">
           <div>
@@ -151,6 +157,7 @@
         </div>
       </section>
 
+      <!-- SCHEDULE -->
       <section class="page" id="schedule">
         <div class="page-hero glass schedule-hero">
           <div>
@@ -189,6 +196,7 @@
         </div>
       </section>
 
+      <!-- MORE -->
       <section class="page" id="more">
         <div class="page-hero glass">
           <div>
