@@ -11,9 +11,22 @@
 
   function install(){
     const prefPage=$('#preference');
-    const prefSummary=$('.preference-summary');
-    if(!prefPage||!prefSummary){setTimeout(install,80);return}
+    const prefStack=$('.preference-stack');
+    if(!prefPage||!prefStack){setTimeout(install,80);return}
     if($('#downloadPreferenceCard')) return;
+
+    const hero=prefPage.querySelector('.preference-hero');
+    if(hero){
+      const title=hero.querySelector('h1');
+      const copy=hero.querySelector('p');
+      const back=hero.querySelector('[data-pref-page="menu"]');
+      if(title) title.innerHTML='<em>Personal</em> <em>Preference</em>';
+      if(copy) copy.textContent='Choose your drink preferences and save them as a structured preference card for easier communication with your barista.';
+      if(back) back.textContent='← Back to menu';
+    }
+
+    const oldSummary=prefPage.querySelector('.preference-summary');
+    if(oldSummary) oldSummary.remove();
 
     const style=document.createElement('style');
     style.id='ling-preference-card-styles';
@@ -61,7 +74,7 @@
         </div>
         <div class="download-card-copy"><div class="eyebrow">DOWNLOAD</div><h2>Keep your usual.</h2><p>The card updates with your current selections. Download it as a PNG and keep it locally or share it.</p><button class="primary download-card-btn" id="downloadPreferenceCard">Download card as image <span>→</span></button></div>
       </div><canvas id="preferenceExportCanvas" width="1200" height="1500"></canvas>`;
-    prefSummary.after(panel);
+    prefStack.after(panel);
 
     const refresh=()=>requestAnimationFrame(render);
     prefPage.addEventListener('input',refresh);
