@@ -2,7 +2,29 @@
   if(window.__lingAdminStabilityInstalled) return;
   window.__lingAdminStabilityInstalled=true;
 
-  let explicitLogin=false;
+  // admin.js used to attach a long-lived MutationObserver to the rendered menu
+  // roots. On iOS Safari that observer can keep the main thread busy enough to
+  // make the page appear loaded while taps and timers stop responding.
+  // Replace those observed roots once, then render them again. The old observer
+  // stays attached only to detached DOM nodes and can no longer react to live UI.
+  function detachObservedMenuRoots(){
+    const menuRoot=document.getElementById('menuGrid');
+    const homeRoot=document.getElementById('homeDrinks');
+
+    if(menuRoot && !menuRoot.dataset.touchFixDetached){
+      const fresh=menuRoot.cloneNode(false);
+      fresh.dataset.touchFixDetached='1';
+      menuRoot.replaceWith(fresh);
+    }
+    if(homeRoot && !homeRoot.dataset.touchFixDetached){
+      const fresh=homeRoot.cloneNode(false);
+      fresh.dataset.touchFixDetached='1';
+      homeRoot.replaceWith(fresh);
+    }
+
+    try{window.renderMenu?.()}catch(_){}
+    try{window.renderHome?.()}catch(_){}
+  }
 
   function applyPreview(mode){
     const normalized=mode==='user'?'user':'admin';
@@ -14,35 +36,28 @@
     });
   }
 
-  document.addEventListener('pointerdown',event=>{
-    if(event.target.closest?.('#adminLogin')) explicitLogin=true;
-  },true);
-
-  document.addEventListener('click',event=>{
-    const button=event.target.closest?.('[data-admin-view]');
-    if(!button) return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    applyPreview(button.dataset.adminView);
-  },true);
-
-  function stabilizeSwitch(){
+  // No document-wide MutationObserver here. Poll for a short, bounded period
+  // only to handle the async admin-session response that creates the switch.
+  let attempts=0;
+  function settleAdminUI(){
+    attempts+=1;
     const switcher=document.querySelector('.admin-view-switch');
-    if(!switcher||switcher.dataset.stabilityReady==='1') return;
-    switcher.dataset.stabilityReady='1';
-
-    let preferred='admin';
-    try{preferred=sessionStorage.getItem('ling-admin-preview')||'admin'}catch(_){}
-
-    queueMicrotask(()=>{
+    if(switcher){
+      let preferred='admin';
+      try{preferred=sessionStorage.getItem('ling-admin-preview')||'admin'}catch(_){}
       applyPreview(preferred);
-      if(!explicitLogin && document.body.classList.contains('admin-authenticated')){
+      if(document.body.classList.contains('admin-authenticated')){
         window.setPage?.('home');
       }
-    });
+      return;
+    }
+    if(attempts<30) setTimeout(settleAdminUI,100);
   }
 
-  const observer=new MutationObserver(stabilizeSwitch);
-  observer.observe(document.documentElement,{childList:true,subtree:true});
-  stabilizeSwitch();
+  // Let admin.js finish its synchronous initialization first, then sever the
+  // observer from the active menu DOM.
+  setTimeout(()=>{
+    detachObservedMenuRoots();
+    settleAdminUI();
+  },0);
 })();
