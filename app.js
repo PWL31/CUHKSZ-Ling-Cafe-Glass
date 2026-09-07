@@ -198,5 +198,11 @@ document.body.appendChild(supportScript);
 
 const adminScript=document.createElement('script');
 adminScript.src='admin.js';
-adminScript.defer=true;
+adminScript.async=false;
+adminScript.onload=()=>{
+  const stabilityScript=document.createElement('script');
+  stabilityScript.src='admin-stability.js';
+  stabilityScript.async=false;
+  document.body.appendChild(stabilityScript);
+};
 document.body.appendChild(adminScript);
