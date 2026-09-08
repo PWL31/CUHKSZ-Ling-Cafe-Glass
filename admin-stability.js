@@ -31,7 +31,6 @@
     });
   }
 
-  // Preview mode changes only visibility. Stay on the current page and retain scroll.
   document.addEventListener('click',event=>{
     const button=event.target.closest?.('[data-admin-view]');
     if(!button) return;
@@ -56,6 +55,13 @@
     if(menuCopy){
       menuCopy.textContent='Prices below are suggested. They help cover ingredients and daily operations. Feel free to pay more to support Ling Cafe, or less if needed.';
     }
+
+    const scheduleScope=[...document.querySelectorAll('.admin-scope-card')].find(card=>card.querySelector('strong')?.textContent.trim()==='Schedule');
+    if(scheduleScope){
+      scheduleScope.classList.remove('pending');
+      const copy=scheduleScope.querySelector('span');
+      if(copy) copy.textContent='Calendar-based backend scheduling: weekly opening hours, date overrides, frozen history, barista roster, and daily shifts.';
+    }
   }
 
   function loadOnce(src,id){
@@ -70,6 +76,7 @@
   let attempts=0;
   function settleAdminUI(){
     attempts+=1;
+    applyRequestedUIFixes();
     const switcher=document.querySelector('.admin-view-switch');
     if(switcher){
       let preferred='admin';
