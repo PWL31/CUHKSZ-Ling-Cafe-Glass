@@ -36,6 +36,17 @@
     });
   }
 
+  // The Admin/User control is a preview-mode switch, not navigation.
+  // Capture its click before admin.js handles it so the currently visible page
+  // (Home / Menu / Schedule / More) and scroll position stay unchanged.
+  document.addEventListener('click',event=>{
+    const button=event.target.closest?.('[data-admin-view]');
+    if(!button) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    applyPreview(button.dataset.adminView);
+  },true);
+
   function applyRequestedUIFixes(){
     // Existing menu items already have their installed product image. Keep the
     // admin editor focused on editable metadata; GPT image generation remains
@@ -67,9 +78,6 @@
       let preferred='admin';
       try{preferred=sessionStorage.getItem('ling-admin-preview')||'admin'}catch(_){}
       applyPreview(preferred);
-      if(document.body.classList.contains('admin-authenticated')){
-        window.setPage?.('home');
-      }
       return;
     }
     if(attempts<30) setTimeout(settleAdminUI,100);
