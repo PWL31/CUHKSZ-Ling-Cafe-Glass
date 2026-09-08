@@ -36,6 +36,27 @@
     });
   }
 
+  function applyRequestedUIFixes(){
+    // Existing menu items already have their installed product image. Keep the
+    // admin editor focused on editable metadata; GPT image generation remains
+    // only in the New menu item workflow.
+    if(!document.getElementById('ling-admin-editor-cleanup')){
+      const style=document.createElement('style');
+      style.id='ling-admin-editor-cleanup';
+      style.textContent=`
+        #adminMenuEditor .admin-menu-item{display:block!important;grid-template-columns:none!important}
+        #adminMenuEditor .admin-menu-item>div:first-child{display:none!important}
+        #adminMenuEditor .admin-copy-prompt{display:none!important}
+      `;
+      document.head.appendChild(style);
+    }
+
+    const menuCopy=document.querySelector('#menu .page-hero p');
+    if(menuCopy){
+      menuCopy.textContent='Prices below are suggested. They help cover ingredients and daily operations. Feel free to pay more to support Ling Cafe, or less if needed.';
+    }
+  }
+
   // No document-wide MutationObserver here. Poll for a short, bounded period
   // only to handle the async admin-session response that creates the switch.
   let attempts=0;
@@ -58,6 +79,7 @@
   // observer from the active menu DOM.
   setTimeout(()=>{
     detachObservedMenuRoots();
+    applyRequestedUIFixes();
     settleAdminUI();
   },0);
 })();
