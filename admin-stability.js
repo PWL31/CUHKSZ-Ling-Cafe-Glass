@@ -64,13 +64,25 @@
     }
   }
 
-  function loadOnce(src,id){
-    if(document.getElementById(id)) return;
+  function loadOnce(src,id,onload){
+    const existing=document.getElementById(id);
+    if(existing){
+      if(onload){
+        if(existing.dataset.loaded==='1') onload();
+        else existing.addEventListener('load',onload,{once:true});
+      }
+      return existing;
+    }
     const script=document.createElement('script');
     script.id=id;
     script.src=src;
     script.async=false;
+    script.addEventListener('load',()=>{
+      script.dataset.loaded='1';
+      onload?.();
+    },{once:true});
     document.body.appendChild(script);
+    return script;
   }
 
   let attempts=0;
@@ -92,6 +104,8 @@
     applyRequestedUIFixes();
     settleAdminUI();
     loadOnce('schedule-public.js','ling-schedule-public-script');
-    loadOnce('schedule-admin.js','ling-schedule-admin-script');
+    loadOnce('schedule-admin.js','ling-schedule-admin-script',()=>{
+      loadOnce('schedule-layout-fix.js','ling-schedule-layout-fix-script');
+    });
   },0);
 })();
