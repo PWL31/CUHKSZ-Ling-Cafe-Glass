@@ -2,11 +2,6 @@
   if(window.__lingAdminStabilityInstalled) return;
   window.__lingAdminStabilityInstalled=true;
 
-  // admin.js used to attach a long-lived MutationObserver to the rendered menu
-  // roots. On iOS Safari that observer can keep the main thread busy enough to
-  // make the page appear loaded while taps and timers stop responding.
-  // Replace those observed roots once, then render them again. The old observer
-  // stays attached only to detached DOM nodes and can no longer react to live UI.
   function detachObservedMenuRoots(){
     const menuRoot=document.getElementById('menuGrid');
     const homeRoot=document.getElementById('homeDrinks');
@@ -36,9 +31,7 @@
     });
   }
 
-  // The Admin/User control is a preview-mode switch, not navigation.
-  // Capture its click before admin.js handles it so the currently visible page
-  // (Home / Menu / Schedule / More) and scroll position stay unchanged.
+  // Preview mode changes only visibility. Stay on the current page and retain scroll.
   document.addEventListener('click',event=>{
     const button=event.target.closest?.('[data-admin-view]');
     if(!button) return;
@@ -48,9 +41,6 @@
   },true);
 
   function applyRequestedUIFixes(){
-    // Existing menu items already have their installed product image. Keep the
-    // admin editor focused on editable metadata; GPT image generation remains
-    // only in the New menu item workflow.
     if(!document.getElementById('ling-admin-editor-cleanup')){
       const style=document.createElement('style');
       style.id='ling-admin-editor-cleanup';
@@ -68,8 +58,15 @@
     }
   }
 
-  // No document-wide MutationObserver here. Poll for a short, bounded period
-  // only to handle the async admin-session response that creates the switch.
+  function loadOnce(src,id){
+    if(document.getElementById(id)) return;
+    const script=document.createElement('script');
+    script.id=id;
+    script.src=src;
+    script.async=false;
+    document.body.appendChild(script);
+  }
+
   let attempts=0;
   function settleAdminUI(){
     attempts+=1;
@@ -83,11 +80,11 @@
     if(attempts<30) setTimeout(settleAdminUI,100);
   }
 
-  // Let admin.js finish its synchronous initialization first, then sever the
-  // observer from the active menu DOM.
   setTimeout(()=>{
     detachObservedMenuRoots();
     applyRequestedUIFixes();
     settleAdminUI();
+    loadOnce('schedule-public.js','ling-schedule-public-script');
+    loadOnce('schedule-admin.js','ling-schedule-admin-script');
   },0);
 })();
