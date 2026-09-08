@@ -15,6 +15,7 @@ const DEFAULT_WEEKLY={
 };
 const SEED={
   weekly:DEFAULT_WEEKLY,
+  historyStart:'2026-09-01',
   overrides:{},
   baristas:[
     {id:1,name:'Ling',active:true,createdAt:'2026-09-01T00:00:00+08:00',removedAt:null},
@@ -50,7 +51,19 @@ function todayShanghai(){
 function weekdayKey(date){return ['sun','mon','tue','wed','thu','fri','sat'][new Date(`${date}T12:00:00Z`).getUTCDay()]}
 function nextDate(date,offset){const d=new Date(`${date}T12:00:00Z`);d.setUTCDate(d.getUTCDate()+offset);return d.toISOString().slice(0,10)}
 function mondayOf(date){const d=new Date(`${date}T12:00:00Z`),dow=d.getUTCDay();return nextDate(date,-(dow===0?6:dow-1))}
-function resolvedHours(s,date){const o=s.overrides?.[date];if(o)return o.closed?{closed:true,open:'',close:'',source:'override'}:{closed:false,open:o.open,close:o.close,source:'override'};return {...(s.weekly?.[weekdayKey(date)]||{open:'09:00',close:'22:00',closed:false}),source:'default'}}
+function hoursFromWeekly(weekly,date){return {...(weekly?.[weekdayKey(date)]||{open:'09:00',close:'22:00',closed:false})}}
+function resolvedHours(s,date){const o=s.overrides?.[date];if(o)return o.closed?{closed:true,open:'',close:'',source:'override'}:{closed:false,open:o.open,close:o.close,source:'override'};return {...hoursFromWeekly(s.weekly,date),source:'default'}}
+function freezePastHours(s){
+  const today=todayShanghai();let date=validDate(s.historyStart)?s.historyStart:'2026-09-01';
+  while(date<today){
+    if(!s.overrides[date]){
+      const base=hoursFromWeekly(s.weekly,date);
+      s.overrides[date]=base.closed?{closed:true,open:'',close:''}:{closed:false,open:base.open,close:base.close};
+    }
+    date=nextDate(date,1);
+  }
+  if(!s.historyStart)s.historyStart='2026-09-01';
+}
 function normalizeWeekly(body){
   const weekly={};
   for(const key of ['mon','tue','wed','thu','fri','sat','sun']){
@@ -89,7 +102,7 @@ export class ScheduleStore extends DurableObject{
     if(path==='/schedule'&&method==='GET')return json(this.publicView(await this.read(),url));
     if(path==='/schedule/admin'&&method==='GET'){const s=await this.read();return json({today:todayShanghai(),...s})}
     if(path==='/schedule/weekly'&&method==='PUT'){
-      let body;try{body=await request.json()}catch{return json({error:'Invalid request body.'},400)}const s=await this.read();try{s.weekly=normalizeWeekly(body)}catch(e){return json({error:e.message},400)}await this.write(s);return json({ok:true,weekly:s.weekly});
+      let body;try{body=await request.json()}catch{return json({error:'Invalid request body.'},400)}const s=await this.read();let weekly;try{weekly=normalizeWeekly(body)}catch(e){return json({error:e.message},400)}freezePastHours(s);s.weekly=weekly;await this.write(s);return json({ok:true,weekly:s.weekly});
     }
     const dayMatch=path.match(/^\/schedule\/day\/(\d{4}-\d{2}-\d{2})$/);
     if(dayMatch&&method==='PUT'){
