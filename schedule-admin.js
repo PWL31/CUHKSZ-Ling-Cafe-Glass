@@ -3,7 +3,7 @@
   window.__lingScheduleAdminInstalled=true;
 
   const $=s=>document.querySelector(s);
-  const esc=value=>String(value??'').replace(/[&<>'\"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[ch]));
+  const esc=value=>String(value??'').replace(/[&<>'\"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt',"'":'&#39;','\"':'&quot;'}[ch]));
   const weekdays=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   const weekdayKeys=['mon','tue','wed','thu','fri','sat','sun'];
   let data=null;
@@ -175,7 +175,13 @@
     root.innerHTML=active.length?active.map(b=>`<div class="barista-row"><strong>${esc(b.name)}</strong><button class="day-danger" data-remove-barista="${b.id}">Remove</button></div>`).join(''):'<div class="schedule-empty">No active baristas.</div>';
     root.querySelectorAll('[data-remove-barista]').forEach(btn=>btn.addEventListener('click',async()=>{
       if(!confirm('Remove this barista from future Add Shift choices? Existing shifts and history will remain.')) return;
-      await mutate(`/api/admin/schedule/baristas/${btn.dataset.removeBarista}`,{method:'DELETE'});
+      const id=Number(btn.dataset.removeBarista);
+      await mutate(`/api/admin/schedule/baristas/${id}`,{method:'DELETE'},result=>{
+        const index=data.baristas.findIndex(b=>Number(b.id)===id);
+        if(index>=0) data.baristas[index]={...data.baristas[index],...(result.barista||{}),active:false};
+        renderBaristas();
+        renderDayDetail();
+      });
     }));
   }
 
@@ -191,28 +197,117 @@
     }catch(error){setStatus(error.message,true)}
   }
 
-  async function mutate(path,options){
-    try{setStatus('Saving…');await requestJson(path,options);await load();setStatus('Updated')}catch(error){setStatus(error.message,true);if(window.toast)toast(error.message)}
+  function refreshPublicSchedule(){
+    if(typeof window.refreshLingSchedule==='function') window.refreshLingSchedule();
+    window.dispatchEvent(new CustomEvent('ling:schedule-updated'));
+  }
+
+  async function mutate(path,options,onSuccess){
+    try{
+      setStatus('Saving…');
+      const result=await requestJson(path,options);
+      if(typeof onSuccess==='function') onSuccess(result);
+      setStatus('Updated');
+      refreshPublicSchedule();
+      return result;
+    }catch(error){
+      setStatus(error.message,true);
+      if(window.toast) toast(error.message);
+      return null;
+    }
   }
 
   function bindDayActions(){
     if(isPast(selectedDate)) return;
-    $('#saveDayHours')?.addEventListener('click',()=>mutate(`/api/admin/schedule/day/${selectedDate}`,{method:'PUT',body:JSON.stringify({mode:'custom',open:$('#dayOpen').value,close:$('#dayClose').value})}));
-    $('#useDefaultHours')?.addEventListener('click',()=>mutate(`/api/admin/schedule/day/${selectedDate}`,{method:'PUT',body:JSON.stringify({mode:'default'})}));
-    $('#closeDay')?.addEventListener('click',()=>mutate(`/api/admin/schedule/day/${selectedDate}`,{method:'PUT',body:JSON.stringify({mode:'closed'})}));
-    document.querySelectorAll('[data-save-shift]').forEach(btn=>btn.addEventListener('click',()=>{const row=btn.closest('[data-shift-id]');mutate(`/api/admin/schedule/shifts/${row.dataset.shiftId}`,{method:'PUT',body:JSON.stringify({start:row.querySelector('[data-shift-start]').value,end:row.querySelector('[data-shift-end]').value})})}));
-    document.querySelectorAll('[data-delete-shift]').forEach(btn=>btn.addEventListener('click',()=>{const row=btn.closest('[data-shift-id]');if(confirm('Delete this shift?'))mutate(`/api/admin/schedule/shifts/${row.dataset.shiftId}`,{method:'DELETE'})}));
-    $('#addShift')?.addEventListener('click',()=>mutate('/api/admin/schedule/shifts',{method:'POST',body:JSON.stringify({date:selectedDate,baristaId:Number($('#shiftBarista').value),start:$('#shiftStart').value,end:$('#shiftEnd').value})}));
+
+    $('#saveDayHours')?.addEventListener('click',()=>{
+      const date=selectedDate;
+      const open=$('#dayOpen').value;
+      const close=$('#dayClose').value;
+      mutate(`/api/admin/schedule/day/${date}`,{method:'PUT',body:JSON.stringify({mode:'custom',open,close})},result=>{
+        data.overrides[date]=result.override||{closed:false,open,close};
+        renderCalendar();
+        renderDayDetail();
+      });
+    });
+
+    $('#useDefaultHours')?.addEventListener('click',()=>{
+      const date=selectedDate;
+      mutate(`/api/admin/schedule/day/${date}`,{method:'PUT',body:JSON.stringify({mode:'default'})},()=>{
+        delete data.overrides[date];
+        renderCalendar();
+        renderDayDetail();
+      });
+    });
+
+    $('#closeDay')?.addEventListener('click',()=>{
+      const date=selectedDate;
+      mutate(`/api/admin/schedule/day/${date}`,{method:'PUT',body:JSON.stringify({mode:'closed'})},result=>{
+        data.overrides[date]=result.override||{closed:true,open:'',close:''};
+        renderCalendar();
+        renderDayDetail();
+      });
+    });
+
+    document.querySelectorAll('[data-save-shift]').forEach(btn=>btn.addEventListener('click',()=>{
+      const row=btn.closest('[data-shift-id]');
+      const id=Number(row.dataset.shiftId);
+      const start=row.querySelector('[data-shift-start]').value;
+      const end=row.querySelector('[data-shift-end]').value;
+      mutate(`/api/admin/schedule/shifts/${id}`,{method:'PUT',body:JSON.stringify({start,end})},result=>{
+        const index=data.shifts.findIndex(shift=>Number(shift.id)===id);
+        if(index>=0) data.shifts[index]={...data.shifts[index],...(result.shift||{start,end})};
+      });
+    }));
+
+    document.querySelectorAll('[data-delete-shift]').forEach(btn=>btn.addEventListener('click',()=>{
+      const row=btn.closest('[data-shift-id]');
+      const id=Number(row.dataset.shiftId);
+      if(!confirm('Delete this shift?')) return;
+      mutate(`/api/admin/schedule/shifts/${id}`,{method:'DELETE'},()=>{
+        data.shifts=data.shifts.filter(shift=>Number(shift.id)!==id);
+        renderCalendar();
+        renderDayDetail();
+      });
+    }));
+
+    $('#addShift')?.addEventListener('click',()=>{
+      const payload={date:selectedDate,baristaId:Number($('#shiftBarista').value),start:$('#shiftStart').value,end:$('#shiftEnd').value};
+      mutate('/api/admin/schedule/shifts',{method:'POST',body:JSON.stringify(payload)},result=>{
+        if(result.shift) data.shifts.push(result.shift);
+        renderCalendar();
+        renderDayDetail();
+      });
+    });
   }
 
   function bindStatic(){
     $('#calendarPrev').addEventListener('click',()=>{viewMonth=addMonths(viewMonth,-1);renderCalendar()});
     $('#calendarNext').addEventListener('click',()=>{viewMonth=addMonths(viewMonth,1);renderCalendar()});
+
     $('#saveWeeklyHours').addEventListener('click',()=>{
-      const weekly={};document.querySelectorAll('.weekly-row').forEach(row=>{weekly[row.dataset.weekday]={open:row.querySelector('[data-open]').value,close:row.querySelector('[data-close]').value,closed:row.querySelector('[data-closed]').checked}});
-      mutate('/api/admin/schedule/weekly',{method:'PUT',body:JSON.stringify({weekly})});
+      const weekly={};
+      document.querySelectorAll('.weekly-row').forEach(row=>{
+        weekly[row.dataset.weekday]={open:row.querySelector('[data-open]').value,close:row.querySelector('[data-close]').value,closed:row.querySelector('[data-closed]').checked};
+      });
+      mutate('/api/admin/schedule/weekly',{method:'PUT',body:JSON.stringify({weekly})},result=>{
+        data.weekly=result.weekly||weekly;
+        renderCalendar();
+        renderDayDetail();
+      });
     });
-    $('#addBarista').addEventListener('click',()=>{const name=$('#newBaristaName').value.trim();if(!name)return;mutate('/api/admin/schedule/baristas',{method:'POST',body:JSON.stringify({name})});$('#newBaristaName').value=''});
+
+    $('#addBarista').addEventListener('click',()=>{
+      const input=$('#newBaristaName');
+      const name=input.value.trim();
+      if(!name) return;
+      mutate('/api/admin/schedule/baristas',{method:'POST',body:JSON.stringify({name})},result=>{
+        if(result.barista) data.baristas.push(result.barista);
+        input.value='';
+        renderBaristas();
+        renderDayDetail();
+      });
+    });
   }
 
   let tries=0;
