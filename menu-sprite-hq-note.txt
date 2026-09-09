@@ -1,0 +1,1 @@
+The high-resolution sprite is being installed as a binary Git blob. This marker can be removed after deployment.
