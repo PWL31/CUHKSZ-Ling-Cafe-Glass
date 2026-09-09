@@ -39,7 +39,8 @@
   }
 
   function statusFor(day){
-    if(!day||day.closed) return {label:'Closed today',open:false};
+    if(!day) return {label:'Schedule unavailable',open:false};
+    if(day.closed) return {label:'Closed today',open:false};
     const now=shanghaiMinutesNow(),open=minutesLocal(day.open),close=minutesLocal(day.close);
     if(now<open) return {label:`Opens at ${timeLocal(day.open)}`,open:false};
     if(now>=close) return {label:'Closed now',open:false};
@@ -103,7 +104,7 @@
     const status=statusFor(day);
     if(heading) heading.textContent=status.label;
     if(dot){dot.style.opacity=status.open?'1':'.35';dot.style.filter=status.open?'none':'grayscale(1)'}
-    if(hours) hours.textContent=day&&!day.closed?`${timeLocal(day.open)} – ${timeLocal(day.close)}`:'Closed';
+    if(hours) hours.textContent=!day?'—':day.closed?'Closed':`${timeLocal(day.open)} – ${timeLocal(day.close)}`;
     renderAxis(axis,day,4);
     if(rows){
       if(!day) rows.innerHTML='<div class="schedule-empty">Schedule unavailable.</div>';
@@ -115,11 +116,16 @@
   }
 
   function renderOpenPills(day){
-    const status=statusFor(day);
-    const hours=day&&!day.closed?`${timeLocal(day.open)}–${timeLocal(day.close)}`:'Closed';
     const menuPill=document.querySelector('#menuOpenPill');
     const schedulePill=document.querySelector('#scheduleOpenPill');
-    if(menuPill) menuPill.innerHTML=`<span class="live-dot small" style="opacity:${status.open?1:.35}"></span> ${escLocal(status.label)}${day&&!day.closed?` · ${hours}`:''}`;
+    if(!day){
+      if(menuPill) menuPill.textContent='Schedule unavailable';
+      if(schedulePill) schedulePill.textContent='Schedule unavailable';
+      return;
+    }
+    const status=statusFor(day);
+    const hours=day.closed?'Closed':`${timeLocal(day.open)}–${timeLocal(day.close)}`;
+    if(menuPill) menuPill.innerHTML=`<span class="live-dot small" style="opacity:${status.open?1:.35}"></span> ${escLocal(status.label)}${!day.closed?` · ${hours}`:''}`;
     if(schedulePill) schedulePill.innerHTML=`<span class="live-dot small" style="opacity:${status.open?1:.35}"></span> Today · ${escLocal(hours)}`;
   }
 
@@ -128,7 +134,8 @@
     const date=document.querySelector('#reserveDate');
     if(date&&day?.date) date.value=day.date;
     if(!sel) return;
-    if(!day||day.closed){sel.innerHTML='<option>Closed</option>';sel.disabled=true;return}
+    if(!day){sel.innerHTML='<option>Schedule unavailable</option>';sel.disabled=true;return}
+    if(day.closed){sel.innerHTML='<option>Closed</option>';sel.disabled=true;return}
     sel.disabled=false;
     const start=minutesLocal(day.open),end=minutesLocal(day.close);
     let html='';
@@ -206,7 +213,8 @@
         lastRefresh=Date.now();
       }catch(error){
         console.warn('Schedule backend unavailable.',error);
-        renderHome(null);renderOpenPills(null);
+        todayDay=null;
+        renderHome(null);renderOpenPills(null);fillReserveTimes(null);
         const label=document.querySelector('#weekLabel');if(label) label.textContent='Schedule unavailable';
       }finally{loading=null}
     })();
