@@ -159,9 +159,9 @@ function fillTimes(){
 }
 
 function shanghaiMonthDay(){
-  const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Shanghai',month:'numeric',day:'numeric'}).formatToParts(new Date());
+  const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Shanghai',month:'short',day:'numeric'}).formatToParts(new Date());
   const map=Object.fromEntries(parts.map(part=>[part.type,part.value]));
-  return `${Number(map.month)}/${Number(map.day)}`;
+  return `${map.month}/${Number(map.day)}`;
 }
 
 function updateHeaderDate(){
@@ -203,8 +203,8 @@ const navPolish=document.createElement('style');
 navPolish.id='ling-nav-polish';
 navPolish.textContent=`
   body .header-actions{display:flex!important;margin-left:auto!important;align-items:center!important}
-  .header-date-pill{min-width:86px;height:46px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;border:1px solid var(--line-soft);background:rgba(255,255,255,.10);color:var(--text-strong);font:700 17px/1 var(--sans);letter-spacing:.02em;box-shadow:inset 0 1px 0 rgba(255,255,255,.28);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-  @media(max-width:760px),(orientation:portrait){.header-date-pill{min-width:82px;height:42px;padding:0 16px;font-size:16px}}
+  .header-date-pill{min-width:94px;height:46px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;border:1px solid var(--line-soft);background:rgba(255,255,255,.10);color:var(--text-strong);font:400 25px/1 var(--serif);letter-spacing:.01em;box-shadow:inset 0 1px 0 rgba(255,255,255,.28);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+  @media(max-width:760px),(orientation:portrait){.header-date-pill{min-width:92px;height:42px;padding:0 14px;font:400 23px/1 var(--serif)}}
   .mobile-nav-item[data-page="menu"] > span,
   .mobile-nav-item[data-page="schedule"] > span{width:24px;height:24px;display:block;position:relative;font-size:0;line-height:0}
   .mobile-nav-item[data-page="menu"] > span::before,
