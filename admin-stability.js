@@ -35,10 +35,11 @@
         const row=Math.floor(index/MENU_COLUMNS);
         const x=col*(100/(MENU_COLUMNS-1));
         const y=row*(100/(MENU_ROWS-1));
-        image.style.setProperty('background-image',"url('/menu-sprite.jpg')",'important');
+        image.style.setProperty('background-image',"url('/menu-sprite-v3.jpg?v=3')",'important');
         image.style.setProperty('background-size','400% 500%','important');
         image.style.setProperty('background-position',`${x}% ${y}%`,'important');
         image.style.setProperty('background-repeat','no-repeat','important');
+        image.style.setProperty('image-rendering','auto','important');
       }
 
       const amount=card.querySelector('.amount');
