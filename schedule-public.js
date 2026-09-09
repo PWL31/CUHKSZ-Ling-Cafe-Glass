@@ -75,9 +75,10 @@
     root.innerHTML=ticks(day.open,day.close,count).map(v=>`<span>${escLocal(v)}</span>`).join('');
   }
 
-  function rowHtml(name,start,end,day,isCafe=false){
+  function rowHtml(name,start,end,day,isCafe=false,color=''){
     const left=pctInDay(start,day),right=pctInDay(end,day);
-    const style=isCafe?'':`background:${colorFor(name)}`;
+    const fill=color||colorFor(name);
+    const style=isCafe?'':`background:${escLocal(fill)}`;
     return `<div class="timeline-row ${isCafe?'cafe-row':''}"><span class="person">${escLocal(name)}</span><div class="timeline-track"><span class="shift ${isCafe?'cafe':'barista'}" style="left:${left}%;width:${Math.max(0,right-left)}%;${style}"></span></div><span class="time">${timeLocal(start)}–${timeLocal(end)}</span></div>`;
   }
 
@@ -109,7 +110,7 @@
     if(rows){
       if(!day) rows.innerHTML='<div class="schedule-empty">Schedule unavailable.</div>';
       else if(day.closed) rows.innerHTML='<div class="schedule-empty">Ling Cafe is closed today.</div>';
-      else rows.innerHTML=rowHtml('Cafe',day.open,day.close,day,true)+(day.shifts||[]).map(s=>rowHtml(s.name,s.start,s.end,day,false)).join('');
+      else rows.innerHTML=rowHtml('Cafe',day.open,day.close,day,true)+(day.shifts||[]).map(s=>rowHtml(s.name,s.start,s.end,day,false,s.color)).join('');
     }
     const overlap=day&&!day.closed?overlapMessage(day.shifts):'';
     if(note){note.textContent=overlap;note.style.display=overlap?'block':'none'}
@@ -163,7 +164,7 @@
         renderAxis(axis,day,7);
         if(!root) return;
         if(day.closed){root.innerHTML='<div class="schedule-empty">Ling Cafe is closed on this date.</div>';return}
-        root.innerHTML=rowHtml('Cafe',day.open,day.close,day,true)+(day.shifts||[]).map(([name,start,end])=>rowHtml(name,start,end,day,false)).join('');
+        root.innerHTML=rowHtml('Cafe',day.open,day.close,day,true)+(day.shifts||[]).map(shift=>rowHtml(shift.name,shift.start,shift.end,day,false,shift.color)).join('');
       };
     }catch(_){}
   }
@@ -176,10 +177,10 @@
       open:day.open,
       close:day.close,
       closed:Boolean(day.closed),
-      shifts:(day.shifts||[]).map(shift=>[shift.name,shift.start,shift.end])
+      shifts:(day.shifts||[]).map(shift=>({name:shift.name,start:shift.start,end:shift.end,color:shift.color,bio:shift.bio}))
     })));
     if(Array.isArray(data.baristas)){
-      roster.splice(0,roster.length,...data.baristas.map((barista,index)=>({name:barista.name,color:palette[index%palette.length],bio:'Ling Cafe barista'})));
+      roster.splice(0,roster.length,...data.baristas.map((barista,index)=>({name:barista.name,color:barista.color||palette[index%palette.length],bio:barista.bio||'Ling Cafe barista'})));
     }
     const label=document.querySelector('#weekLabel');if(label) label.textContent=weekLabel(data.days);
     state.selectedDay=Math.max(0,Math.min(state.selectedDay,weekData.length-1));
