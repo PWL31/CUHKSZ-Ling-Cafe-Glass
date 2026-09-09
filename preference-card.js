@@ -10,11 +10,12 @@
     strength:['Light','Normal','Extra'],
     milkType:['Dairy milk','Oat milk'],
     milk:['Less','Normal','More'],
-    sweet:['No sugar','Less sugar','Regular sugar']
+    sweet:['No sugar','Less sugar','Regular sugar'],
+    cream:['No','Yes']
   };
   const read=()=>{try{return JSON.parse(localStorage.getItem('ling-glass-preference-draft')||'{}')}catch(_){return {}}};
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,Number(v)||0));
-  const pref=()=>Object.assign({temp:0,ice:1,hot:1,strength:1,milkType:0,milk:1,sweet:1},read());
+  const pref=()=>Object.assign({temp:0,ice:1,hot:1,strength:1,milkType:0,milk:1,sweet:1,cream:0},read());
   const second=p=>Number(p.temp)===1?options.hot[clamp(p.hot,0,1)]:options.ice[clamp(p.ice,0,2)];
   const summary=p=>[
     options.temp[clamp(p.temp,0,1)],
@@ -22,7 +23,8 @@
     `${options.strength[clamp(p.strength,0,2)]} coffee`,
     options.milkType[clamp(p.milkType,0,1)],
     `${options.milk[clamp(p.milk,0,2)]} milk`,
-    options.sweet[clamp(p.sweet,0,2)]
+    options.sweet[clamp(p.sweet,0,2)],
+    Number(p.cream)===1?'Whipped cream':'No whipped cream'
   ].join(' · ');
 
   function loadHtml2Canvas(){
@@ -87,6 +89,7 @@
       .export-title{margin:10px 0 18px;font:400 54px/.92 var(--serif);letter-spacing:-.05em;color:#3e2417}
       .export-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
       .export-item{padding:14px 14px 15px;border-radius:20px;background:rgba(255,255,255,.24);border:1px solid rgba(255,255,255,.44)}
+      .export-item.wide{grid-column:1/-1}
       .export-item small{display:block;font-size:10px;letter-spacing:.16em;font-weight:700;text-transform:uppercase;color:rgba(120,95,83,.92);margin-bottom:8px}
       .export-item strong{font-size:16px;color:#3e2417}
       .export-summary{margin-top:16px;padding:16px 18px;border-radius:22px;background:rgba(255,255,255,.28);border:1px solid rgba(255,255,255,.44)}
@@ -150,6 +153,7 @@
               <div class="export-item"><small>Milk type</small><strong id="exportMilkType"></strong></div>
               <div class="export-item"><small>Milk level</small><strong id="exportMilk"></strong></div>
               <div class="export-item"><small>Sweetness</small><strong id="exportSweet"></strong></div>
+              <div class="export-item wide"><small>Whipped cream</small><strong id="exportCream"></strong></div>
             </div>
             <div class="export-summary"><small>Summary</small><p id="exportSummary"></p></div>
           </div>
@@ -179,6 +183,7 @@
     $('#exportMilkType').textContent=options.milkType[p.milkType];
     $('#exportMilk').textContent=options.milk[p.milk];
     $('#exportSweet').textContent=options.sweet[p.sweet];
+    $('#exportCream').textContent=options.cream[clamp(p.cream,0,1)];
     $('#exportSummary').textContent=summary(p);
   }
 
