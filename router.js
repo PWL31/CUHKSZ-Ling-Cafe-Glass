@@ -4,6 +4,8 @@ import { DurableObject } from 'cloudflare:workers';
 export { MenuStore };
 
 const STORE_NAME='ling-cafe-schedule';
+const DEFAULT_BARISTA_COLORS=['#c98592','#8fb969','#c98562','#789ec9','#a989c7','#d0a85c','#68a8a3','#bc7488'];
+const DEFAULT_BARISTA_BIO='Ling Cafe barista';
 const DEFAULT_WEEKLY={
   mon:{open:'09:00',close:'22:00',closed:false},
   tue:{open:'09:00',close:'22:00',closed:false},
@@ -18,9 +20,9 @@ const SEED={
   historyStart:'2026-09-01',
   overrides:{},
   baristas:[
-    {id:1,name:'Ling',active:true,createdAt:'2026-09-01T00:00:00+08:00',removedAt:null},
-    {id:2,name:'Trent',active:true,createdAt:'2026-09-01T00:00:00+08:00',removedAt:null},
-    {id:3,name:'Mori',active:true,createdAt:'2026-09-01T00:00:00+08:00',removedAt:null},
+    {id:1,name:'Ling',color:'#c98592',bio:DEFAULT_BARISTA_BIO,active:true,createdAt:'2026-09-01T00:00:00+08:00',removedAt:null},
+    {id:2,name:'Trent',color:'#8fb969',bio:DEFAULT_BARISTA_BIO,active:true,createdAt:'2026-09-01T00:00:00+08:00',removedAt:null},
+    {id:3,name:'Mori',color:'#c98562',bio:DEFAULT_BARISTA_BIO,active:true,createdAt:'2026-09-01T00:00:00+08:00',removedAt:null},
   ],
   shifts:[
     {id:1,date:'2026-09-07',baristaId:1,start:'10:00',end:'16:00'},
@@ -43,6 +45,7 @@ function clone(value){return JSON.parse(JSON.stringify(value))}
 function clean(value,max){return String(value??'').trim().slice(0,max)}
 function validDate(value){return /^\d{4}-\d{2}-\d{2}$/.test(String(value||''))}
 function validTime(value){return /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(String(value||''))}
+function validColor(value){return /^#[0-9a-fA-F]{6}$/.test(String(value||''))}
 function mins(value){const [h,m]=String(value).split(':').map(Number);return h*60+m}
 function todayShanghai(){
   const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
@@ -74,6 +77,24 @@ function normalizeWeekly(body){
   }
   return weekly;
 }
+function ensureBaristaProfiles(s){
+  let changed=false;
+  s.baristas.forEach((barista,index)=>{
+    if(!Object.prototype.hasOwnProperty.call(barista,'color')||!validColor(barista.color)){
+      barista.color=DEFAULT_BARISTA_COLORS[index%DEFAULT_BARISTA_COLORS.length];changed=true;
+    }
+    if(!Object.prototype.hasOwnProperty.call(barista,'bio')){barista.bio=DEFAULT_BARISTA_BIO;changed=true}
+  });
+  return changed;
+}
+function profileInput(body,current=null,index=0){
+  const name=clean(body?.name??current?.name,60);
+  const bio=clean(body?.bio??current?.bio??DEFAULT_BARISTA_BIO,90);
+  const color=clean(body?.color??current?.color??DEFAULT_BARISTA_COLORS[index%DEFAULT_BARISTA_COLORS.length],7);
+  if(!name)throw new Error('Barista name is required.');
+  if(!validColor(color))throw new Error('Display color must be a 6-digit hex color.');
+  return {name,bio,color:color.toLowerCase()};
+}
 function validateShift(s,input,excludeId=null,requireActive=true){
   const {date,baristaId,start,end}=input;
   if(!validDate(date))throw new Error('Valid date is required.');
@@ -89,13 +110,24 @@ function validateShift(s,input,excludeId=null,requireActive=true){
 
 export class ScheduleStore extends DurableObject{
   constructor(ctx,env){super(ctx,env);ctx.blockConcurrencyWhile(async()=>{const existing=await ctx.storage.get('schedule_v1');if(!existing||!existing.weekly||!Array.isArray(existing.baristas)||!Array.isArray(existing.shifts))await ctx.storage.put('schedule_v1',clone(SEED))})}
-  async read(){return clone((await this.ctx.storage.get('schedule_v1'))||SEED)}
+  async read(){
+    const s=clone((await this.ctx.storage.get('schedule_v1'))||SEED);
+    if(ensureBaristaProfiles(s))await this.ctx.storage.put('schedule_v1',s);
+    return s;
+  }
   async write(value){await this.ctx.storage.put('schedule_v1',value)}
   publicView(s,url){
     const today=todayShanghai();const start=validDate(url.searchParams.get('start'))?url.searchParams.get('start'):mondayOf(today);const count=Math.max(1,Math.min(31,Number(url.searchParams.get('days'))||7));
-    const names=Object.fromEntries(s.baristas.map(b=>[String(b.id),b.name]));const days=[];
-    for(let i=0;i<count;i++){const date=nextDate(start,i),hours=resolvedHours(s,date);const shifts=s.shifts.filter(x=>x.date===date).sort((a,b)=>a.start.localeCompare(b.start)).map(x=>({...x,name:names[String(x.baristaId)]||'Former barista'}));days.push({date,...hours,shifts})}
-    return {today,start,days,baristas:s.baristas.filter(b=>b.active).map(({id,name})=>({id,name}))};
+    const profiles=Object.fromEntries(s.baristas.map(b=>[String(b.id),b]));const days=[];
+    for(let i=0;i<count;i++){
+      const date=nextDate(start,i),hours=resolvedHours(s,date);
+      const shifts=s.shifts.filter(x=>x.date===date).sort((a,b)=>a.start.localeCompare(b.start)).map(x=>{
+        const profile=profiles[String(x.baristaId)];
+        return {...x,name:profile?.name||'Former barista',color:profile?.color||'#789ec9',bio:profile?.bio||DEFAULT_BARISTA_BIO};
+      });
+      days.push({date,...hours,shifts});
+    }
+    return {today,start,days,baristas:s.baristas.filter(b=>b.active).map(({id,name,color,bio})=>({id,name,color,bio}))};
   }
   async fetch(request){
     const url=new URL(request.url),path=url.pathname,method=request.method.toUpperCase();
@@ -118,9 +150,20 @@ export class ScheduleStore extends DurableObject{
       await this.write(s);return json({ok:true,override:s.overrides[date]||null});
     }
     if(path==='/schedule/baristas'&&method==='POST'){
-      let body;try{body=await request.json()}catch{return json({error:'Invalid request body.'},400)}const name=clean(body.name,60);if(!name)return json({error:'Barista name is required.'},400);const s=await this.read();if(s.baristas.some(b=>b.active&&b.name.toLowerCase()===name.toLowerCase()))return json({error:'This barista is already active.'},409);const id=s.baristas.reduce((m,b)=>Math.max(m,Number(b.id)||0),0)+1;const barista={id,name,active:true,createdAt:new Date().toISOString(),removedAt:null};s.baristas.push(barista);await this.write(s);return json({barista},201);
+      let body;try{body=await request.json()}catch{return json({error:'Invalid request body.'},400)}
+      const s=await this.read();let profile;try{profile=profileInput(body,null,s.baristas.length)}catch(e){return json({error:e.message},400)}
+      if(s.baristas.some(b=>b.active&&b.name.toLowerCase()===profile.name.toLowerCase()))return json({error:'This barista is already active.'},409);
+      const id=s.baristas.reduce((m,b)=>Math.max(m,Number(b.id)||0),0)+1;
+      const barista={id,...profile,active:true,createdAt:new Date().toISOString(),removedAt:null};s.baristas.push(barista);await this.write(s);return json({barista},201);
     }
     const baristaMatch=path.match(/^\/schedule\/baristas\/(\d+)$/);
+    if(baristaMatch&&method==='PUT'){
+      let body;try{body=await request.json()}catch{return json({error:'Invalid request body.'},400)}
+      const s=await this.read(),barista=s.baristas.find(b=>Number(b.id)===Number(baristaMatch[1]));if(!barista)return json({error:'Barista not found.'},404);
+      let profile;try{profile=profileInput(body,barista,s.baristas.indexOf(barista))}catch(e){return json({error:e.message},400)}
+      if(s.baristas.some(b=>b.active&&Number(b.id)!==Number(barista.id)&&b.name.toLowerCase()===profile.name.toLowerCase()))return json({error:'Another active barista already uses this name.'},409);
+      Object.assign(barista,profile,{updatedAt:new Date().toISOString()});await this.write(s);return json({ok:true,barista});
+    }
     if(baristaMatch&&method==='DELETE'){const s=await this.read(),barista=s.baristas.find(b=>Number(b.id)===Number(baristaMatch[1]));if(!barista)return json({error:'Barista not found.'},404);barista.active=false;barista.removedAt=new Date().toISOString();await this.write(s);return json({ok:true,barista})}
     if(path==='/schedule/shifts'&&method==='POST'){
       let body;try{body=await request.json()}catch{return json({error:'Invalid request body.'},400)}const s=await this.read(),input={date:clean(body.date,10),baristaId:Number(body.baristaId),start:clean(body.start,5),end:clean(body.end,5)};try{validateShift(s,input)}catch(e){return json({error:e.message},409)}const id=s.shifts.reduce((m,x)=>Math.max(m,Number(x.id)||0),0)+1,shift={id,...input};s.shifts.push(shift);await this.write(s);return json({shift},201);
