@@ -31,6 +31,15 @@
         #adminMenuEditor .admin-copy-prompt{display:none!important}
         .admin-view-switch{display:none!important}
         .admin-preview-hint{display:none!important}
+
+        /* Ordering is not enabled yet. Keep only the availability indicator. */
+        #menuGrid .add-btn:not(:disabled){display:none!important}
+        #menuGrid .add-btn:disabled{display:inline-flex!important;pointer-events:none}
+
+        /* Feedback is contact-only for now. */
+        #panel-feedback>label,
+        #panel-feedback>button.primary{display:none!important}
+        #panel-feedback .compact-block{margin-top:22px}
       `;
       document.head.appendChild(style);
     }
@@ -38,6 +47,12 @@
     const menuCopy=document.querySelector('#menu .page-hero p');
     if(menuCopy){
       menuCopy.textContent='Prices below are suggested. They help cover ingredients and daily operations. Feel free to pay more to support Ling Cafe, or less if needed.';
+    }
+
+    const feedbackPanel=document.querySelector('#panel-feedback');
+    if(feedbackPanel){
+      feedbackPanel.querySelector(':scope>label')?.remove();
+      feedbackPanel.querySelector(':scope>button.primary')?.remove();
     }
 
     const sessionHint=document.querySelector('.admin-session small');
