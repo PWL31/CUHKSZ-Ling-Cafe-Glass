@@ -8,13 +8,13 @@
   const styles=document.createElement('style');
   styles.id='ling-support-station-styles';
   styles.textContent=`
-    /* Home hero uses a Deep Teal palette in light mode so it harmonizes with Tiffany-blue accents. Dark mode stays unchanged. */
+    /* Home hero uses a warmer cafe palette in light mode. Dark mode stays unchanged. */
     html[data-theme="light"] #home .hero-copy h1{
-      color:#164E4B;
+      color:#4A3C36;
       text-shadow:none;
     }
     html[data-theme="light"] #home .hero-copy .lead{
-      color:#4F6966;
+      color:#73655F;
       font-weight:500;
       text-shadow:none;
     }
