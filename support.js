@@ -11,12 +11,12 @@
     /* Home hero uses the Cocoa / Taupe palette only in light mode. Dark mode keeps its existing palette. */
     html[data-theme="light"] #home .hero-copy h1{
       color:#4A342D;
-      text-shadow:0 1px 0 rgba(255,252,247,.52),0 2px 16px rgba(255,250,241,.38);
+      text-shadow:none;
     }
     html[data-theme="light"] #home .hero-copy .lead{
       color:#756158;
       font-weight:500;
-      text-shadow:0 1px 0 rgba(255,252,247,.58),0 2px 12px rgba(255,250,241,.42);
+      text-shadow:none;
     }
 
     .support-station{
