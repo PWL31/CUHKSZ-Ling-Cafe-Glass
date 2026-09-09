@@ -357,7 +357,7 @@
     try{
       const data=await requestJson(`/api/admin/menu/${id}`,{method:'PUT',body:JSON.stringify(draft)});
       replaceMenu(data.items||[]);
-      renderMenuEditor();
+      syncPopularControls();
       toast('Menu item saved');
     }catch(err){toast(err.message)}finally{if(btn){btn.disabled=false;btn.textContent='Save changes'}}
   }
