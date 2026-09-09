@@ -8,13 +8,13 @@
   const styles=document.createElement('style');
   styles.id='ling-support-station-styles';
   styles.textContent=`
-    /* Home hero uses a warmer cafe palette in light mode. Dark mode stays unchanged. */
+    /* Home hero uses an olive-gray palette in light mode. Dark mode stays unchanged. */
     html[data-theme="light"] #home .hero-copy h1{
-      color:#4A3C36;
+      color:#3F4A3F;
       text-shadow:none;
     }
     html[data-theme="light"] #home .hero-copy .lead{
-      color:#73655F;
+      color:#667067;
       font-weight:500;
       text-shadow:none;
     }
