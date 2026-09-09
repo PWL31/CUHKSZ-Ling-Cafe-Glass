@@ -7,21 +7,10 @@ const menu = [
   {id:6, cat:'Food', name:'Croissant', desc:'Daily limited', amount:18, available:false, popular:false, image:'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=900&q=88'}
 ];
 
-const roster = [
-  {name:'Ling', color:'#8fb969', bio:'Morning espresso, calm service.'},
-  {name:'Trent', color:'#c98562', bio:'Afternoon coffee and pour-over.'},
-  {name:'Mori', color:'#789ec9', bio:'Filter coffee and late shifts.'}
-];
-
-const weekData = [
-  {date:'2026-09-07', label:'Mon', day:7, shifts:[['Ling','10:00','16:00'],['Trent','14:00','21:00']]},
-  {date:'2026-09-08', label:'Tue', day:8, shifts:[['Ling','12:00','18:00'],['Mori','15:00','22:00']]},
-  {date:'2026-09-09', label:'Wed', day:9, shifts:[['Trent','14:00','21:30'],['Mori','10:00','15:00']]},
-  {date:'2026-09-10', label:'Thu', day:10, shifts:[['Ling','10:00','16:00']]},
-  {date:'2026-09-11', label:'Fri', day:11, shifts:[['Ling','11:00','17:00'],['Trent','16:00','22:00']]},
-  {date:'2026-09-12', label:'Sat', day:12, shifts:[['Trent','15:30','22:00'],['Mori','10:00','17:30']]},
-  {date:'2026-09-13', label:'Sun', day:13, shifts:[['Ling','12:00','18:00']]}
-];
+// Schedule data is intentionally empty at bootstrap. Public opening hours,
+// baristas and shifts are hydrated only from /api/schedule.
+const roster = [];
+const weekData = [];
 
 const state = {
   theme: localStorage.getItem('ling-glass-theme') || 'light',
@@ -132,12 +121,13 @@ function renderCart(){
   }));
 }
 
-function minutes(v){const [h,m]=v.split(':').map(Number);return h*60+m}
-function pct(v){return ((minutes(v)-600)/720)*100}
+function minutes(v){const [h,m]=String(v||'00:00').split(':').map(Number);return h*60+m}
+function pct(){return 0}
 
 function renderDayStrip(){
   const root=$('#dayStrip');
   if(!root) return;
+  if(!weekData.length){root.innerHTML='<div class="schedule-empty">Loading schedule…</div>';return}
   root.innerHTML=weekData.map((d,i)=>`<button class="day-btn ${i===state.selectedDay?'active':''}" data-day="${i}"><small>${d.label}</small><strong>${d.day}</strong></button>`).join('');
   root.querySelectorAll('[data-day]').forEach(btn=>btn.addEventListener('click',()=>{
     state.selectedDay=Number(btn.dataset.day);
@@ -149,32 +139,25 @@ function renderDayStrip(){
 function renderScheduleRows(){
   const day=weekData[state.selectedDay];
   const title=$('#selectedDayTitle');
-  if(title) title.textContent=`${day.label}, Sep ${day.day}`;
   const root=$('#scheduleRows');
-  if(!root) return;
-  const rows=[['Cafe','10:00','22:00','cafe'],...day.shifts.map(([n,s,e])=>[n,s,e,n.toLowerCase()])];
-  root.innerHTML=rows.map(([name,start,end,klass],idx)=>`<div class="timeline-row ${idx===0?'cafe-row':''}"><span class="person">${esc(name)}</span><div class="timeline-track"><span class="shift ${klass}" style="left:${Math.max(0,pct(start))}%;width:${Math.max(0,pct(end)-pct(start))}%"></span></div><span class="time">${start}–${end}</span></div>`).join('');
+  if(!day){
+    if(title) title.textContent='Loading schedule…';
+    if(root) root.innerHTML='<div class="schedule-empty">Loading schedule…</div>';
+    return;
+  }
 }
 
 function renderRoster(){
   const root=$('#rosterList');
   if(!root) return;
+  if(!roster.length){root.innerHTML='<div class="schedule-empty">Loading roster…</div>';return}
   root.innerHTML=roster.map(r=>`<div class="roster-person"><div class="avatar-dot" style="background:${r.color}">${r.name[0]}</div><div><strong>${r.name}</strong><div class="muted" style="font-size:11px;margin-top:3px">${r.bio}</div></div><button class="summon-btn" data-summon="${r.name}">Summon</button></div>`).join('');
   root.querySelectorAll('[data-summon]').forEach(b=>b.addEventListener('click',()=>toast(`Request sent for ${b.dataset.summon}`)));
 }
 
 function fillTimes(){
   const sel=$('#reserveTime');
-  if(sel){
-    let html='';
-    for(let h=10;h<22;h+=.5){
-      const hour=Math.floor(h),min=h%1?'30':'00';
-      html+=`<option>${String(hour).padStart(2,'0')}:${min}</option>`;
-    }
-    sel.innerHTML=html;
-  }
-  const date=$('#reserveDate');
-  if(date) date.value=new Date().toISOString().slice(0,10);
+  if(sel){sel.innerHTML='<option>Loading schedule…</option>';sel.disabled=true}
 }
 
 function bindGlobal(){
@@ -186,8 +169,6 @@ function bindGlobal(){
     $$('.more-panel').forEach(x=>x.classList.remove('active'));
     $('#panel-'+btn.dataset.panel)?.classList.add('active');
   }));
-  $('#prevWeek')?.addEventListener('click',()=>toast('Previous week · static demo'));
-  $('#nextWeek')?.addEventListener('click',()=>toast('Next week · static demo'));
 }
 
 applyTheme(state.theme);
@@ -214,8 +195,10 @@ navPolish.textContent=`
 `;
 document.head.appendChild(navPolish);
 
-function loadScript(src,onload){
+function loadScript(src,onload,id){
+  if(id&&document.getElementById(id)) return document.getElementById(id);
   const script=document.createElement('script');
+  if(id) script.id=id;
   script.src=src;
   script.async=false;
   if(onload) script.onload=onload;
@@ -223,15 +206,13 @@ function loadScript(src,onload){
   return script;
 }
 
-// Paint the public UI first. Secondary features load after the first frame.
+// Hydrate backend schedule immediately after the first public paint. Other
+// secondary features can load afterwards without owning any schedule values.
 requestAnimationFrame(()=>{
+  loadScript('schedule-public.js',null,'ling-schedule-public-script');
   loadScript('preference.js',()=>loadScript('preference-card.js'));
   loadScript('support.js');
 
-  // admin.js used to observe every subtree mutation inside the menu cards.
-  // Because the observer itself writes category labels, that produced an
-  // endless MutationObserver microtask loop on Safari. Restrict only those
-  // two list observers to direct child changes while admin.js initializes.
   const NativeMutationObserver=window.MutationObserver;
   window.MutationObserver=class SafeMutationObserver extends NativeMutationObserver{
     observe(target,options={}){
