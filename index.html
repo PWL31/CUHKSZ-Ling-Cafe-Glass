@@ -10,10 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Caslon+Display&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
   <style>
-    /* Small layout refinements kept local to the static demo. */
     .header-capsule{width:94px;height:46px;flex:0 0 94px;padding:0;pointer-events:none}
-
-    /* Home: merge status, order CTA, and schedule into one full-width card. */
     .home-hero{min-height:500px;display:block;padding:58px 54px 34px}
     .hero-copy{max-width:900px}
     .today-panel{width:100%;border-radius:var(--radius-lg);padding:30px;margin:0 0 22px}
@@ -85,7 +82,6 @@
     </header>
 
     <main>
-      <!-- HOME -->
       <section class="page active" id="home">
         <div class="home-hero">
           <div class="hero-copy">
@@ -98,12 +94,12 @@
         <section class="today-panel glass home-schedule-card">
           <div class="panel-head home-status-head">
             <div class="home-open-heading">
-              <span class="live-dot"></span>
+              <span id="homeStatusDot" class="live-dot"></span>
               <div>
                 <div class="eyebrow">TODAY</div>
-                <h2>Open now</h2>
+                <h2 id="homeScheduleStatus">Loading schedule…</h2>
               </div>
-              <strong class="home-open-hours">10:00 – 22:00</strong>
+              <strong id="homeOpenHours" class="home-open-hours">—</strong>
             </div>
             <button class="text-link" data-page="schedule">Schedule detail →</button>
           </div>
@@ -112,23 +108,9 @@
             <button class="primary schedule-order" data-page="menu">Order <span>→</span></button>
           </div>
 
-          <div class="timeline-axis"><span>10</span><span>14</span><span>18</span><span>22</span></div>
-          <div class="timeline-row cafe-row">
-            <span class="person">Cafe</span>
-            <div class="timeline-track"><span class="shift cafe" style="left:0;width:100%"></span></div>
-            <span class="time">10–22</span>
-          </div>
-          <div class="timeline-row">
-            <span class="person">Ling</span>
-            <div class="timeline-track"><span class="shift ling" style="left:0;width:50%"></span></div>
-            <span class="time">10–16</span>
-          </div>
-          <div class="timeline-row">
-            <span class="person">Trent</span>
-            <div class="timeline-track"><span class="shift trent" style="left:33.3%;width:58.3%"></span></div>
-            <span class="time">14–21</span>
-          </div>
-          <div class="onbar-note"><span class="live-dot small"></span> Two baristas overlap from 14:00–16:00.</div>
+          <div id="homeTimelineAxis" class="timeline-axis"></div>
+          <div id="homeScheduleRows"><div class="schedule-empty">Loading schedule…</div></div>
+          <div id="homeOverlapNote" class="onbar-note" style="display:none"></div>
         </section>
 
         <section class="glass content-strip">
@@ -152,15 +134,14 @@
         </section>
       </section>
 
-      <!-- MENU -->
       <section class="page" id="menu">
         <div class="page-hero glass">
           <div>
             <div class="eyebrow">ORDER / RESERVE</div>
             <h1>Today’s Menu</h1>
-            <p>Prices below are suggested and help cover ingredients and daily operations. You’re welcome to pay a little more to support Ling Cafe, or a little less when needed.</p>
+            <p>Prices below are suggested. They help cover ingredients and daily operations. Feel free to pay more to support Ling Cafe, or less if needed.</p>
           </div>
-          <div class="open-pill"><span class="live-dot small"></span> Open now · 10:00–22:00</div>
+          <div id="menuOpenPill" class="open-pill">Schedule loading…</div>
         </div>
 
         <button class="primary preference-cta" data-page="more">Personal Preference <span>→</span></button>
@@ -178,7 +159,7 @@
             <div id="cartList" class="cart"></div>
             <div class="form-grid">
               <label><span>Date</span><input id="reserveDate" type="date"></label>
-              <label><span>Time</span><select id="reserveTime"></select></label>
+              <label><span>Time</span><select id="reserveTime"><option>Loading schedule…</option></select></label>
             </div>
             <label><span>Your name</span><input id="reserveName" placeholder="e.g. Alex Tan"></label>
             <label><span>Order notes</span><textarea id="reserveNote" placeholder="oat milk, less ice…"></textarea></label>
@@ -189,7 +170,6 @@
         </div>
       </section>
 
-      <!-- SCHEDULE -->
       <section class="page" id="schedule">
         <div class="page-hero glass schedule-hero">
           <div>
@@ -197,14 +177,14 @@
             <h1>Who’s on bar?</h1>
             <p>Date-based shifts with café opening hours shown as the reference timeline.</p>
           </div>
-          <div class="open-pill"><span class="live-dot small"></span> Today · 10:00–22:00</div>
+          <div id="scheduleOpenPill" class="open-pill">Schedule loading…</div>
         </div>
 
         <div class="schedule-layout">
           <section class="glass schedule-main">
             <div class="week-switcher">
               <button id="prevWeek" class="icon-btn">←</button>
-              <strong id="weekLabel">Sep 7 – Sep 13, 2026</strong>
+              <strong id="weekLabel">Loading schedule…</strong>
               <button id="nextWeek" class="icon-btn">→</button>
             </div>
             <div id="dayStrip" class="day-strip"></div>
@@ -212,23 +192,22 @@
             <div class="schedule-title-row">
               <div>
                 <div class="eyebrow">SELECTED DAY</div>
-                <h2 id="selectedDayTitle">Monday, Sep 7</h2>
+                <h2 id="selectedDayTitle">Loading schedule…</h2>
               </div>
             </div>
 
-            <div class="timeline-axis schedule-axis"><span>10</span><span>12</span><span>14</span><span>16</span><span>18</span><span>20</span><span>22</span></div>
-            <div id="scheduleRows"></div>
+            <div id="scheduleAxis" class="timeline-axis schedule-axis"></div>
+            <div id="scheduleRows"><div class="schedule-empty">Loading schedule…</div></div>
           </section>
 
           <aside class="glass roster">
             <div class="eyebrow">BARISTA ROSTER</div>
             <h2>People behind the bar</h2>
-            <div id="rosterList"></div>
+            <div id="rosterList"><div class="schedule-empty">Loading roster…</div></div>
           </aside>
         </div>
       </section>
 
-      <!-- MORE -->
       <section class="page" id="more">
         <div class="page-hero glass">
           <div>
