@@ -8,13 +8,13 @@
   const styles=document.createElement('style');
   styles.id='ling-support-station-styles';
   styles.textContent=`
-    /* Home hero uses the Cocoa / Taupe palette only in light mode. Dark mode keeps its existing palette. */
+    /* Home hero uses a Deep Teal palette in light mode so it harmonizes with Tiffany-blue accents. Dark mode stays unchanged. */
     html[data-theme="light"] #home .hero-copy h1{
-      color:#4A342D;
+      color:#164E4B;
       text-shadow:none;
     }
     html[data-theme="light"] #home .hero-copy .lead{
-      color:#756158;
+      color:#4F6966;
       font-weight:500;
       text-shadow:none;
     }
