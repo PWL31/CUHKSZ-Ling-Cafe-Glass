@@ -2,6 +2,10 @@
   if(window.__lingAdminStabilityInstalled) return;
   window.__lingAdminStabilityInstalled=true;
 
+  const MENU_COLUMNS=4;
+  const MENU_ROWS=5;
+  const MENU_MAX_ID=19;
+
   function detachObservedMenuRoots(){
     const menuRoot=document.getElementById('menuGrid');
     const homeRoot=document.getElementById('homeDrinks');
@@ -21,6 +25,41 @@
     try{window.renderHome?.()}catch(_){}
   }
 
+  function polishMenuCards(){
+    document.querySelectorAll('.drink-card[data-menu-id]').forEach(card=>{
+      const id=Number(card.dataset.menuId);
+      const image=card.querySelector('.drink-image');
+      if(image && id>=1 && id<=MENU_MAX_ID){
+        const index=id-1;
+        const col=index%MENU_COLUMNS;
+        const row=Math.floor(index/MENU_COLUMNS);
+        const x=col*(100/(MENU_COLUMNS-1));
+        const y=row*(100/(MENU_ROWS-1));
+        image.style.setProperty('background-image',"url('/menu-sprite.jpg')",'important');
+        image.style.setProperty('background-size','400% 500%','important');
+        image.style.setProperty('background-position',`${x}% ${y}%`,'important');
+        image.style.setProperty('background-repeat','no-repeat','important');
+      }
+
+      const amount=card.querySelector('.amount');
+      if(amount){
+        const numeric=(amount.textContent.match(/¥\s*(\d+(?:\.\d+)?)/)||[])[1];
+        amount.style.display=Number(numeric)>0?'':'none';
+      }
+    });
+  }
+
+  function installMenuObserver(){
+    if(window.__lingMenuCardObserverInstalled) return;
+    window.__lingMenuCardObserverInstalled=true;
+    const observer=new MutationObserver(()=>polishMenuCards());
+    ['menuGrid','homeDrinks'].forEach(id=>{
+      const root=document.getElementById(id);
+      if(root) observer.observe(root,{childList:true});
+    });
+    polishMenuCards();
+  }
+
   function applyRequestedUIFixes(){
     if(!document.getElementById('ling-admin-editor-cleanup')){
       const style=document.createElement('style');
@@ -35,6 +74,9 @@
         /* Ordering is not enabled yet. Keep only the availability indicator. */
         #menuGrid .add-btn:not(:disabled){display:none!important}
         #menuGrid .add-btn:disabled{display:inline-flex!important;pointer-events:none}
+
+        /* New catalog donations start unset. Do not show a fake ¥0 value. */
+        .drink-card .amount[style*="display: none"]{margin:0!important}
 
         /* Feedback is contact-only for now. */
         #panel-feedback>label,
@@ -75,6 +117,7 @@
       if(copy) copy.textContent='Calendar-based backend scheduling: weekly opening hours, date overrides, frozen history, barista roster, and daily shifts.';
     }
 
+    polishMenuCards();
     try{window.updateHeaderDate?.()}catch(_){}
   }
 
@@ -109,6 +152,7 @@
 
   setTimeout(()=>{
     detachObservedMenuRoots();
+    installMenuObserver();
     applyRequestedUIFixes();
     settleAdminUI();
     loadOnce('schedule-public.js','ling-schedule-public-script');
