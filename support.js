@@ -8,13 +8,26 @@
   const styles=document.createElement('style');
   styles.id='ling-support-station-styles';
   styles.textContent=`
-    /* Home hero uses a high-contrast cool charcoal palette in light mode. Dark mode stays unchanged. */
+    /* Home hero uses cream text over a subtle local dark scrim in light mode. Dark mode stays unchanged. */
+    html[data-theme="light"] #home .hero-copy{
+      position:relative;
+      isolation:isolate;
+    }
+    html[data-theme="light"] #home .hero-copy::before{
+      content:"";
+      position:absolute;
+      inset:-28px -72px -28px -34px;
+      z-index:-1;
+      pointer-events:none;
+      border-radius:36px;
+      background:linear-gradient(90deg,rgba(18,32,31,.32) 0%,rgba(18,32,31,.18) 58%,rgba(18,32,31,0) 100%);
+    }
     html[data-theme="light"] #home .hero-copy h1{
-      color:#222B2C;
+      color:#FFF8EF;
       text-shadow:none;
     }
     html[data-theme="light"] #home .hero-copy .lead{
-      color:#4B5555;
+      color:#EDE1D6;
       font-weight:500;
       text-shadow:none;
     }
@@ -85,6 +98,11 @@
     .support-pane[hidden]{display:none!important}
 
     @media(max-width:760px),(orientation:portrait){
+      html[data-theme="light"] #home .hero-copy::before{
+        inset:-20px -20px -22px -16px;
+        border-radius:28px;
+        background:linear-gradient(90deg,rgba(18,32,31,.34) 0%,rgba(18,32,31,.19) 72%,rgba(18,32,31,.04) 100%);
+      }
       .support-station{
         grid-template-columns:1fr;
         gap:16px;
