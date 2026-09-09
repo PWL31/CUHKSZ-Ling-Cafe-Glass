@@ -9,14 +9,28 @@ const DEMO_SESSION_SECRET = 'ling-cafe-glass-demo-session-secret-2026-change-bef
 const COOKIE_NAME = 'ling_admin_session';
 const SESSION_SECONDS = 60 * 60 * 8;
 const MENU_STORE_NAME = 'ling-cafe-menu';
+const MENU_CATALOG_VERSION = 2;
 
 const SEED_MENU = [
-  {id:1, cat:'Espresso', name:'Americano', desc:'Classic espresso + water', amount:28, available:true, popular:true, image:'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=88'},
-  {id:2, cat:'Milk', name:'Latte', desc:'Espresso · steamed milk', amount:32, available:true, popular:true, image:'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?auto=format&fit=crop&w=900&q=88'},
-  {id:3, cat:'Milk', name:'Dirty', desc:'Cold milk · espresso', amount:34, available:true, popular:true, image:'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=900&q=88'},
-  {id:4, cat:'Filter', name:'Today’s Pour-over', desc:'Bean list updates daily', amount:38, available:true, popular:true, image:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=88'},
-  {id:5, cat:'Non-coffee', name:'Matcha Milk', desc:'Matcha · milk', amount:29, available:true, popular:false, image:'https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?auto=format&fit=crop&w=900&q=88'},
-  {id:6, cat:'Food', name:'Croissant', desc:'Daily limited', amount:18, available:false, popular:false, image:'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=900&q=88'}
+  {id:1, cat:'Milk Coffee', name:'Caffè Latte', desc:'Espresso · steamed milk · hot / iced', amount:0, available:true, popular:true, image:'/menu-sprite.jpg'},
+  {id:2, cat:'Milk Coffee', name:'Cappuccino', desc:'Espresso · steamed milk · milk foam', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
+  {id:3, cat:'Milk Coffee', name:'Latte Macchiato', desc:'Layered milk · espresso', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
+  {id:4, cat:'Milk Coffee', name:'Espresso Macchiato', desc:'Espresso · touch of milk foam', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
+  {id:5, cat:'Milk Coffee', name:'Flat White', desc:'Espresso · silky microfoam', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
+  {id:6, cat:'Black Coffee', name:'Espresso', desc:'Straight espresso', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
+  {id:7, cat:'Black Coffee', name:'Americano', desc:'Espresso · water · hot / iced', amount:0, available:true, popular:true, image:'/menu-sprite.jpg'},
+  {id:8, cat:'Black Coffee', name:'Lungo', desc:'Long-pulled espresso', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
+  {id:9, cat:'Pour-over', name:'Single-Origin Pour-over', desc:'SOE beans · hand brewed', amount:0, available:true, popular:true, image:'/menu-sprite.jpg'},
+  {id:10, cat:'Specials', name:'Custom Tea-Coffee', desc:'Tea · coffee · made to order', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
+  {id:11, cat:'Specials', name:'House Coffee Special', desc:'Ling Cafe house-style coffee creation', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
+  {id:12, cat:'Non-coffee', name:'Hot Milk', desc:'Steamed milk', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
+  {id:13, cat:'Non-coffee', name:'Pure Tea', desc:'Freshly brewed tea', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
+  {id:14, cat:'Non-coffee', name:'Monk Fruit Tea', desc:'Monk fruit infusion', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
+  {id:15, cat:'Non-coffee', name:'Hand-Shaken Lemon Black Tea', desc:'Lemon · black tea · hand shaken', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
+  {id:16, cat:'Non-coffee', name:'Jasmine Iced Lemon Tea', desc:'Jasmine tea · lemon · iced', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
+  {id:17, cat:'Non-coffee', name:'Matcha Latte', desc:'Matcha · milk', amount:0, available:true, popular:true, image:'/menu-sprite.jpg'},
+  {id:18, cat:'Non-coffee', name:'Matcha Milk Tea', desc:'Matcha · milk tea', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
+  {id:19, cat:'Non-coffee', name:'Bottled Cold Brew Tea', desc:'Slow-steeped chilled tea', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'}
 ];
 
 function json(data, status = 200, extraHeaders = {}) {
@@ -52,9 +66,11 @@ export class MenuStore extends DurableObject {
   constructor(ctx, env) {
     super(ctx, env);
     ctx.blockConcurrencyWhile(async () => {
+      const version = await ctx.storage.get('menu_catalog_version');
       const existing = await ctx.storage.get('menu');
-      if (!Array.isArray(existing) || existing.length === 0) {
+      if (version !== MENU_CATALOG_VERSION || !Array.isArray(existing) || existing.length === 0) {
         await ctx.storage.put('menu', SEED_MENU.map(item => ({...item})));
+        await ctx.storage.put('menu_catalog_version', MENU_CATALOG_VERSION);
       }
     });
   }
@@ -165,11 +181,7 @@ function base64UrlDecode(value) {
 
 async function hmac(value, secret) {
   const key = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
+    'raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
   );
   return base64UrlEncode(await crypto.subtle.sign('HMAC', key, encoder.encode(value)));
 }
@@ -206,11 +218,9 @@ function getCookie(request, name) {
 function sessionCookie(token) {
   return `${COOKIE_NAME}=${encodeURIComponent(token)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${SESSION_SECONDS}`;
 }
-
 function expiredCookie() {
   return `${COOKIE_NAME}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`;
 }
-
 async function requireAdmin(request, env) {
   return verifySession(getCookie(request, COOKIE_NAME), env);
 }
@@ -222,8 +232,7 @@ async function login(request, env) {
   const password = String(body.password || '');
   const expectedUsername = env.ADMIN_USERNAME || DEMO_USERNAME;
   const expectedHash = env.ADMIN_PASSWORD_HASH || DEMO_PASSWORD_SHA256;
-  const passwordHash = await sha256Hex(password);
-  if (username !== expectedUsername || passwordHash !== expectedHash) {
+  if (username !== expectedUsername || await sha256Hex(password) !== expectedHash) {
     return json({error:'Invalid username or password.'},401);
   }
   const token = await makeSession(username, env);
@@ -234,7 +243,6 @@ async function session(request, env) {
   const data = await requireAdmin(request, env);
   return json(data ? {authenticated:true, username:data.username} : {authenticated:false});
 }
-
 function logout() {
   return json({ok:true},200,{'set-cookie':expiredCookie()});
 }
@@ -248,19 +256,12 @@ async function forwardMenu(request, env, internalPath) {
   const target = `https://menu.internal${internalPath}`;
   const method = request.method.toUpperCase();
   const init = { method, headers: new Headers(request.headers) };
-  if (method !== 'GET' && method !== 'HEAD') {
-    init.body = await request.arrayBuffer();
-  }
+  if (method !== 'GET' && method !== 'HEAD') init.body = await request.arrayBuffer();
   return menuStore(env).fetch(new Request(target, init));
 }
 
 async function health(env) {
-  const result = {
-    ok: true,
-    worker: true,
-    assets: Boolean(env.ASSETS),
-    menuStore: Boolean(env.MENU_STORE),
-  };
+  const result = { ok:true, worker:true, assets:Boolean(env.ASSETS), menuStore:Boolean(env.MENU_STORE) };
   if (env.MENU_STORE) {
     try {
       const response = await menuStore(env).fetch('https://menu.internal/menu');
@@ -277,15 +278,11 @@ export default {
   async fetch(request, env) {
     try {
       const url = new URL(request.url);
-
       if (url.pathname === '/api/health' && request.method === 'GET') return health(env);
       if (url.pathname === '/api/admin/login' && request.method === 'POST') return login(request, env);
       if (url.pathname === '/api/admin/session' && request.method === 'GET') return session(request, env);
       if (url.pathname === '/api/admin/logout' && request.method === 'POST') return logout();
-
-      if (url.pathname === '/api/menu' && request.method === 'GET') {
-        return forwardMenu(request, env, '/menu');
-      }
+      if (url.pathname === '/api/menu' && request.method === 'GET') return forwardMenu(request, env, '/menu');
 
       const adminMenuMatch = url.pathname.match(/^\/api\/admin\/menu(?:\/(\d+))?(\/image)?$/);
       if (adminMenuMatch) {
@@ -293,8 +290,7 @@ export default {
         if (!admin) return json({error:'Authentication required.'},401);
         const id = adminMenuMatch[1];
         const imageSuffix = adminMenuMatch[2] || '';
-        const path = id ? `/menu/${id}${imageSuffix}` : '/menu';
-        return forwardMenu(request, env, path);
+        return forwardMenu(request, env, id ? `/menu/${id}${imageSuffix}` : '/menu');
       }
 
       if (url.pathname.startsWith('/api/')) return json({error:'Not found.'},404);
