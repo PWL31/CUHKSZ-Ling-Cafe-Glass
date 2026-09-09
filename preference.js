@@ -5,7 +5,7 @@
   const $=s=>document.querySelector(s);
   const $$=s=>[...document.querySelectorAll(s)];
 
-  const defaults={temp:0,ice:1,hot:1,strength:1,milkType:0,milk:1,sweet:1};
+  const defaults={temp:0,ice:1,hot:1,strength:1,milkType:0,milk:1,sweet:1,cream:0};
   const options={
     temp:['Cold','Hot'],
     ice:['No ice','Less ice','Regular ice'],
@@ -13,7 +13,8 @@
     strength:['Light','Normal','Extra'],
     milkType:['Dairy milk','Oat milk'],
     milk:['Less','Normal','More'],
-    sweet:['No sugar','Less sugar','Regular sugar']
+    sweet:['No sugar','Less sugar','Regular sugar'],
+    cream:['No','Yes']
   };
 
   function readJSON(key,fallback){
@@ -143,6 +144,13 @@
             </div>
           </div>
         </section>
+        <section class="glass preference-card wide">
+          <div class="section-head"><div><div class="eyebrow">TOPPING</div><h2>Whipped cream</h2></div></div>
+          <div class="binary-select" id="prefCreamChoices">
+            <button class="binary-choice" type="button" data-pref-cream="0">No</button>
+            <button class="binary-choice" type="button" data-pref-cream="1">Yes</button>
+          </div>
+        </section>
       </div>
       <section class="glass preference-summary">
         <div class="eyebrow">CURRENT DEFAULT</div><h2>Your usual</h2>
@@ -169,11 +177,12 @@
   function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
   function summary(p=pref){
     const second=Number(p.temp)===1?options.hot[clamp(Number(p.hot),0,1)]:options.ice[clamp(Number(p.ice),0,2)];
-    return [options.temp[clamp(Number(p.temp),0,1)],second,`${options.strength[clamp(Number(p.strength),0,2)]} coffee`,options.milkType[clamp(Number(p.milkType),0,1)],`${options.milk[clamp(Number(p.milk),0,2)]} milk`,options.sweet[clamp(Number(p.sweet),0,2)]].join(' · ');
+    const cream=Number(p.cream)===1?'Whipped cream':'No whipped cream';
+    return [options.temp[clamp(Number(p.temp),0,1)],second,`${options.strength[clamp(Number(p.strength),0,2)]} coffee`,options.milkType[clamp(Number(p.milkType),0,1)],`${options.milk[clamp(Number(p.milk),0,2)]} milk`,options.sweet[clamp(Number(p.sweet),0,2)],cream].join(' · ');
   }
   function persistDraft(){localStorage.setItem('ling-glass-preference-draft',JSON.stringify(pref))}
   function renderBinary(selector,activeValue){
-    $$(selector).forEach(btn=>btn.classList.toggle('active',Number(btn.dataset.prefTemp ?? btn.dataset.prefHot ?? btn.dataset.prefMilkType)===Number(activeValue)));
+    $$(selector).forEach(btn=>btn.classList.toggle('active',Number(btn.dataset.prefTemp ?? btn.dataset.prefHot ?? btn.dataset.prefMilkType ?? btn.dataset.prefCream)===Number(activeValue)));
   }
 
   function render(){
@@ -181,6 +190,7 @@
     renderBinary('[data-pref-temp]',pref.temp);
     renderBinary('[data-pref-milk-type]',pref.milkType);
     renderBinary('[data-pref-hot]',pref.hot);
+    renderBinary('[data-pref-cream]',pref.cream);
     $('#prefStrength').value=pref.strength;$('#prefStrengthValue').textContent=options.strength[pref.strength];
     $('#prefMilk').value=pref.milk;$('#prefMilkValue').textContent=options.milk[pref.milk];
     $('#prefSweet').value=pref.sweet;$('#prefSweetValue').textContent=options.sweet[pref.sweet];
@@ -205,6 +215,7 @@
     $$('[data-pref-temp]').forEach(btn=>btn.addEventListener('click',()=>{pref.temp=Number(btn.dataset.prefTemp);persistDraft();render()}));
     $$('[data-pref-hot]').forEach(btn=>btn.addEventListener('click',()=>{pref.hot=Number(btn.dataset.prefHot);persistDraft();render()}));
     $$('[data-pref-milk-type]').forEach(btn=>btn.addEventListener('click',()=>{pref.milkType=Number(btn.dataset.prefMilkType);persistDraft();render()}));
+    $$('[data-pref-cream]').forEach(btn=>btn.addEventListener('click',()=>{pref.cream=Number(btn.dataset.prefCream);persistDraft();render()}));
     $('#prefSecondary').addEventListener('input',e=>{pref.ice=Number(e.target.value);persistDraft();render()});
     $('#prefStrength').addEventListener('input',e=>{pref.strength=Number(e.target.value);persistDraft();render()});
     $('#prefMilk').addEventListener('input',e=>{pref.milk=Number(e.target.value);persistDraft();render()});
