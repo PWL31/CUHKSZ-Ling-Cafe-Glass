@@ -105,7 +105,9 @@
     settleAdminUI();
     loadOnce('schedule-public.js','ling-schedule-public-script');
     loadOnce('schedule-admin.js','ling-schedule-admin-script',()=>{
-      loadOnce('schedule-layout-fix.js','ling-schedule-layout-fix-script');
+      loadOnce('schedule-layout-fix.js','ling-schedule-layout-fix-script',()=>{
+        loadOnce('schedule-ui-polish.js','ling-schedule-ui-polish-script');
+      });
     });
   },0);
 })();
