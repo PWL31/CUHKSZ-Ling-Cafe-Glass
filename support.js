@@ -8,13 +8,13 @@
   const styles=document.createElement('style');
   styles.id='ling-support-station-styles';
   styles.textContent=`
-    /* Home hero uses a high-contrast ink teal palette in light mode. Dark mode stays unchanged. */
+    /* Home hero uses a high-contrast cool charcoal palette in light mode. Dark mode stays unchanged. */
     html[data-theme="light"] #home .hero-copy h1{
-      color:#123B3C;
+      color:#222B2C;
       text-shadow:none;
     }
     html[data-theme="light"] #home .hero-copy .lead{
-      color:#36595A;
+      color:#4B5555;
       font-weight:500;
       text-shadow:none;
     }
