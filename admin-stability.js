@@ -40,6 +40,7 @@
         #panel-feedback>label,
         #panel-feedback>button.primary{display:none!important}
         #panel-feedback .compact-block{margin-top:22px}
+        #panel-feedback .feedback-note{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.5}
       `;
       document.head.appendChild(style);
     }
@@ -53,6 +54,15 @@
     if(feedbackPanel){
       feedbackPanel.querySelector(':scope>label')?.remove();
       feedbackPanel.querySelector(':scope>button.primary')?.remove();
+      if(!feedbackPanel.querySelector('.feedback-note')){
+        const title=feedbackPanel.querySelector('h2');
+        if(title){
+          const note=document.createElement('p');
+          note.className='feedback-note';
+          note.textContent='Feel free to share any thoughts or suggestions.';
+          title.insertAdjacentElement('afterend',note);
+        }
+      }
     }
 
     const sessionHint=document.querySelector('.admin-session small');
