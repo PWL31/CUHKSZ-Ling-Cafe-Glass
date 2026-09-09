@@ -9,28 +9,28 @@ const DEMO_SESSION_SECRET = 'ling-cafe-glass-demo-session-secret-2026-change-bef
 const COOKIE_NAME = 'ling_admin_session';
 const SESSION_SECONDS = 60 * 60 * 8;
 const MENU_STORE_NAME = 'ling-cafe-menu';
-const MENU_CATALOG_VERSION = 2;
+const MENU_CATALOG_VERSION = 3;
 
 const SEED_MENU = [
-  {id:1, cat:'Milk Coffee', name:'Caffè Latte', desc:'Espresso · steamed milk · hot / iced', amount:0, available:true, popular:true, image:'/menu-sprite.jpg'},
-  {id:2, cat:'Milk Coffee', name:'Cappuccino', desc:'Espresso · steamed milk · milk foam', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
-  {id:3, cat:'Milk Coffee', name:'Latte Macchiato', desc:'Layered milk · espresso', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
-  {id:4, cat:'Milk Coffee', name:'Espresso Macchiato', desc:'Espresso · touch of milk foam', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
-  {id:5, cat:'Milk Coffee', name:'Flat White', desc:'Espresso · silky microfoam', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
-  {id:6, cat:'Black Coffee', name:'Espresso', desc:'Straight espresso', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
-  {id:7, cat:'Black Coffee', name:'Americano', desc:'Espresso · water · hot / iced', amount:0, available:true, popular:true, image:'/menu-sprite.jpg'},
-  {id:8, cat:'Black Coffee', name:'Lungo', desc:'Long-pulled espresso', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
-  {id:9, cat:'Pour-over', name:'Single-Origin Pour-over', desc:'SOE beans · hand brewed', amount:0, available:true, popular:true, image:'/menu-sprite.jpg'},
-  {id:10, cat:'Specials', name:'Custom Tea-Coffee', desc:'Tea · coffee · made to order', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
-  {id:11, cat:'Specials', name:'House Coffee Special', desc:'Ling Cafe house-style coffee creation', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
-  {id:12, cat:'Non-coffee', name:'Hot Milk', desc:'Steamed milk', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
-  {id:13, cat:'Non-coffee', name:'Pure Tea', desc:'Freshly brewed tea', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
-  {id:14, cat:'Non-coffee', name:'Monk Fruit Tea', desc:'Monk fruit infusion', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
-  {id:15, cat:'Non-coffee', name:'Hand-Shaken Lemon Black Tea', desc:'Lemon · black tea · hand shaken', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
-  {id:16, cat:'Non-coffee', name:'Jasmine Iced Lemon Tea', desc:'Jasmine tea · lemon · iced', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
-  {id:17, cat:'Non-coffee', name:'Matcha Latte', desc:'Matcha · milk', amount:0, available:true, popular:true, image:'/menu-sprite.jpg'},
-  {id:18, cat:'Non-coffee', name:'Matcha Milk Tea', desc:'Matcha · milk tea', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'},
-  {id:19, cat:'Non-coffee', name:'Bottled Cold Brew Tea', desc:'Slow-steeped chilled tea', amount:0, available:true, popular:false, image:'/menu-sprite.jpg'}
+  {id:1, cat:'Milk Coffee', name:'Caffè Latte', desc:'Espresso · steamed milk · hot / iced', amount:0, available:true, popular:true, image:'/menu-sprite-v3.jpg?v=3'},
+  {id:2, cat:'Milk Coffee', name:'Cappuccino', desc:'Espresso · steamed milk · milk foam', amount:0, available:true, popular:false, image:'/menu-sprite-v3.jpg?v=3'},
+  {id:3, cat:'Milk Coffee', name:'Latte Macchiato', desc:'Layered milk · espresso', amount:0, available:true, popular:false, image:'/menu-sprite-v3.jpg?v=3'},
+  {id:4, cat:'Milk Coffee', name:'Espresso Macchiato', desc:'Espresso · touch of milk foam', amount:0, available:true, popular:false, image:'/menu-sprite-v3.jpg?v=3'},
+  {id:5, cat:'Milk Coffee', name:'Flat White', desc:'Espresso · silky microfoam', amount:0, available:true, popular:false, image:'/menu-sprite-v3.jpg?v=3'},
+  {id:6, cat:'Black Coffee', name:'Espresso', desc:'Straight espresso', amount:0, available:true, popular:false, image:'/menu-sprite-v3.jpg?v=3'},
+  {id:7, cat:'Black Coffee', name:'Americano', desc:'Espresso · water · hot / iced', amount:0, available:true, popular:true, image:'/menu-sprite-v3.jpg?v=3'},
+  {id:8, cat:'Black Coffee', name:'Lungo', desc:'Long-pulled espresso', amount:0, available:true, popular:false, image:'/menu-sprite-v3.jpg?v=3'},
+  {id:9, cat:'Pour-over', name:'Single-Origin Pour-over', desc:'SOE beans · hand brewed', amount:0, available:true, popular:true, image:'/menu-sprite-v3.jpg?v=3'},
+  {id:10, cat:'Specials', name:'Custom Tea-Coffee', desc:'Tea · coffee · made to order', amount:0, available:true, popular:false, image:'/menu-sprite-v3.jpg?v=3'},
+  {id:11, cat:'Specials', name:'House Coffee Special', desc:'Ling Cafe house-style coffee creation', amount:0, available:true, popular:false, image:'/menu-sprite-v3.jpg?v=3'},
+  {id:12, cat:'Non-coffee', name:'Hot Milk', desc:'Steamed milk', amount:0, available:true, popular:false, image:'/menu-sprite-v3.jpg?v=3'},
+  {id:13, cat:'Non-coffee', name:'Pure Tea', desc:'Freshly brewed tea', amount:0, available:true, popular:false, image:'/menu-sprite-v3.jpg?v=3'},
+  {id:14, cat:'Non-coffee', name:'Monk Fruit Tea', desc:'Monk fruit infusion', amount:0, available:true, popular:false, image:'/menu-sprite-v3.jpg?v=3'},
+  {id:15, cat:'Non-coffee', name:'Hand-Shaken Lemon Black Tea', desc:'Lemon · black tea · hand shaken', amount:0, available:true, popular:false, image:'/menu-sprite-v3.jpg?v=3'},
+  {id:16, cat:'Non-coffee', name:'Jasmine Iced Lemon Tea', desc:'Jasmine tea · lemon · iced', amount:0, available:true, popular:false, image:'/menu-sprite-v3.jpg?v=3'},
+  {id:17, cat:'Non-coffee', name:'Matcha Latte', desc:'Matcha · milk', amount:0, available:true, popular:true, image:'/menu-sprite-v3.jpg?v=3'},
+  {id:18, cat:'Non-coffee', name:'Matcha Milk Tea', desc:'Matcha · milk tea', amount:0, available:true, popular:false, image:'/menu-sprite-v3.jpg?v=3'},
+  {id:19, cat:'Non-coffee', name:'Bottled Cold Brew Tea', desc:'Slow-steeped chilled tea', amount:0, available:true, popular:false, image:'/menu-sprite-v3.jpg?v=3'}
 ];
 
 function json(data, status = 200, extraHeaders = {}) {
