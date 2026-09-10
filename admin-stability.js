@@ -2,10 +2,6 @@
   if(window.__lingAdminStabilityInstalled) return;
   window.__lingAdminStabilityInstalled=true;
 
-  const MENU_COLUMNS=4;
-  const MENU_ROWS=5;
-  const MENU_MAX_ID=19;
-
   function detachObservedMenuRoots(){
     const menuRoot=document.getElementById('menuGrid');
     const homeRoot=document.getElementById('homeDrinks');
@@ -27,17 +23,14 @@
 
   function polishMenuCards(){
     document.querySelectorAll('.drink-card[data-menu-id]').forEach(card=>{
-      const id=Number(card.dataset.menuId);
       const image=card.querySelector('.drink-image');
-      if(image && id>=1 && id<=MENU_MAX_ID){
-        const index=id-1;
-        const col=index%MENU_COLUMNS;
-        const row=Math.floor(index/MENU_COLUMNS);
-        const x=col*(100/(MENU_COLUMNS-1));
-        const y=row*(100/(MENU_ROWS-1));
-        image.style.setProperty('background-image',"url('/menu-sprite-v3.jpg?v=3')",'important');
-        image.style.setProperty('background-size','400% 500%','important');
-        image.style.setProperty('background-position',`${x}% ${y}%`,'important');
+      if(image){
+        const current=image.style.backgroundImage||'';
+        if(current.includes('menu-sprite')){
+          image.style.setProperty('background-image',"url('/menu-placeholder.svg')",'important');
+        }
+        image.style.setProperty('background-size','cover','important');
+        image.style.setProperty('background-position','center','important');
         image.style.setProperty('background-repeat','no-repeat','important');
         image.style.setProperty('image-rendering','auto','important');
       }
@@ -66,11 +59,13 @@
       const style=document.createElement('style');
       style.id='ling-admin-editor-cleanup';
       style.textContent=`
-        #adminMenuEditor .admin-menu-item{display:block!important;grid-template-columns:none!important}
-        #adminMenuEditor .admin-menu-item>div:first-child{display:none!important}
         #adminMenuEditor .admin-copy-prompt{display:none!important}
         .admin-view-switch{display:none!important}
         .admin-preview-hint{display:none!important}
+
+        /* Menu imagery is now 4:3 and comes from each item's backend image path. */
+        .drink-card .drink-image{height:auto!important;aspect-ratio:4/3!important;background-size:cover!important;background-position:center!important}
+        .compact-grid .drink-image{height:auto!important}
 
         /* Ordering is not enabled yet. Keep only the availability indicator. */
         #menuGrid .add-btn:not(:disabled){display:none!important}
@@ -156,6 +151,7 @@
     installMenuObserver();
     applyRequestedUIFixes();
     settleAdminUI();
+    loadOnce('menu-image-upload.js','ling-menu-image-upload-script');
     loadOnce('schedule-public.js','ling-schedule-public-script');
     loadOnce('schedule-admin.js','ling-schedule-admin-script',()=>{
       loadOnce('schedule-layout-fix.js','ling-schedule-layout-fix-script',()=>{
