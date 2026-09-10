@@ -10,6 +10,8 @@ const COOKIE_NAME = 'ling_admin_session';
 const SESSION_SECONDS = 60 * 60 * 8;
 const MENU_STORE_NAME = 'ling-cafe-menu';
 const MENU_CATALOG_VERSION = 3;
+const MENU_IMAGE_MAX_BYTES = 1_900_000;
+const MENU_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
 const SEED_MENU = [
   {id:1, cat:'Milk Coffee', name:'Caffè Latte', desc:'Espresso · steamed milk · hot / iced', amount:0, available:true, popular:true, image:'/menu-sprite-v3.jpg?v=3'},
@@ -62,6 +64,16 @@ function normalizeMenuInput(body, current = null) {
   return next;
 }
 
+function menuImageKey(id) {
+  return `menu_image_${Number(id)}`;
+}
+
+function validFourThree(width, height) {
+  const w = Number(width), h = Number(height);
+  if (!Number.isInteger(w) || !Number.isInteger(h) || w <= 0 || h <= 0) return false;
+  return Math.abs((w / h) - (4 / 3)) <= 0.01;
+}
+
 export class MenuStore extends DurableObject {
   constructor(ctx, env) {
     super(ctx, env);
@@ -111,6 +123,57 @@ export class MenuStore extends DurableObject {
       return json({item:next, items:candidate},201);
     }
 
+    const imageMatch = path.match(/^\/menu\/(\d+)\/image$/);
+    if (imageMatch && method === 'GET') {
+      const id = Number(imageMatch[1]);
+      const record = await this.ctx.storage.get(menuImageKey(id));
+      if (!record?.bytes) return new Response('Menu image not found.', {status:404});
+      return new Response(record.bytes, {
+        headers: {
+          'content-type': record.contentType || 'image/webp',
+          'cache-control': 'public, max-age=31536000, immutable',
+          'x-content-type-options': 'nosniff',
+        },
+      });
+    }
+
+    if (imageMatch && method === 'PUT') {
+      const id = Number(imageMatch[1]);
+      const items = await this.readMenu();
+      const index = items.findIndex(item => Number(item.id) === id);
+      if (index < 0) return json({error:'Menu item not found.'},404);
+
+      const contentType = (request.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
+      if (!MENU_IMAGE_TYPES.has(contentType)) return json({error:'Use a JPG, PNG, or WebP image.'},415);
+
+      const width = Number(request.headers.get('x-image-width'));
+      const height = Number(request.headers.get('x-image-height'));
+      if (!validFourThree(width, height)) return json({error:'Menu images must use a 4:3 aspect ratio.'},400);
+
+      const buffer = await request.arrayBuffer();
+      if (!buffer.byteLength) return json({error:'The selected image is empty.'},400);
+      if (buffer.byteLength > MENU_IMAGE_MAX_BYTES) return json({error:'Optimized image is too large. Keep it below 1.9 MB.'},413);
+
+      const updatedAt = Date.now();
+      await this.ctx.storage.put(menuImageKey(id), {
+        bytes: new Uint8Array(buffer),
+        contentType,
+        width,
+        height,
+        updatedAt,
+      });
+
+      const image = `/api/menu-images/${id}?v=${updatedAt}`;
+      const updated = {...items[index], image};
+      const next = items.map((item,i)=>i===index?updated:item);
+      await this.writeMenu(next);
+      return json({
+        item:updated,
+        items:next,
+        image:{contentType,width,height,bytes:buffer.byteLength,updatedAt}
+      });
+    }
+
     const itemMatch = path.match(/^\/menu\/(\d+)$/);
     if (itemMatch && method === 'PUT') {
       const id = Number(itemMatch[1]);
@@ -133,24 +196,9 @@ export class MenuStore extends DurableObject {
       const items = await this.readMenu();
       if (!items.some(item => Number(item.id) === id)) return json({error:'Menu item not found.'},404);
       const next = items.filter(item => Number(item.id) !== id);
+      await this.ctx.storage.delete(menuImageKey(id));
       await this.writeMenu(next);
       return json({ok:true, items:next});
-    }
-
-    const imageMatch = path.match(/^\/menu\/(\d+)\/image$/);
-    if (imageMatch && method === 'PUT') {
-      const id = Number(imageMatch[1]);
-      let body;
-      try { body = await request.json(); } catch { return json({error:'Invalid request body.'},400); }
-      const image = cleanText(body.image, 1200);
-      if (!image) return json({error:'Image path or URL is required.'},400);
-      const items = await this.readMenu();
-      const index = items.findIndex(item => Number(item.id) === id);
-      if (index < 0) return json({error:'Menu item not found.'},404);
-      const updated = {...items[index], image};
-      const next = items.map((item,i)=>i===index?updated:item);
-      await this.writeMenu(next);
-      return json({item:updated, items:next});
     }
 
     return json({error:'Not found.'},404);
@@ -283,6 +331,11 @@ export default {
       if (url.pathname === '/api/admin/session' && request.method === 'GET') return session(request, env);
       if (url.pathname === '/api/admin/logout' && request.method === 'POST') return logout();
       if (url.pathname === '/api/menu' && request.method === 'GET') return forwardMenu(request, env, '/menu');
+
+      const publicImageMatch = url.pathname.match(/^\/api\/menu-images\/(\d+)$/);
+      if (publicImageMatch && (request.method === 'GET' || request.method === 'HEAD')) {
+        return forwardMenu(request, env, `/menu/${publicImageMatch[1]}/image`);
+      }
 
       const adminMenuMatch = url.pathname.match(/^\/api\/admin\/menu(?:\/(\d+))?(\/image)?$/);
       if (adminMenuMatch) {
