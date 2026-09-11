@@ -151,7 +151,7 @@
     installMenuObserver();
     applyRequestedUIFixes();
     settleAdminUI();
-    loadOnce('menu-image-upload.js','ling-menu-image-upload-script');
+    loadOnce('menu-image-upload.js?v=20260911-4','ling-menu-image-upload-script');
     loadOnce('schedule-public.js','ling-schedule-public-script');
     loadOnce('schedule-admin.js','ling-schedule-admin-script',()=>{
       loadOnce('schedule-layout-fix.js','ling-schedule-layout-fix-script',()=>{
