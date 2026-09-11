@@ -240,7 +240,7 @@ requestAnimationFrame(()=>{
 
   const adminScript=loadScript('admin.js?v=20260911-6',()=>{
     window.MutationObserver=NativeMutationObserver;
-    loadScript('admin-stability.js?v=20260911-6');
+    loadScript('admin-stability.js?v=20260911-8');
     [0,250,750,1500,3000].forEach(delay=>setTimeout(updateHeaderDate,delay));
   });
   adminScript.onerror=()=>{window.MutationObserver=NativeMutationObserver};
