@@ -4,7 +4,11 @@
 
   const MAX_SOURCE_BYTES=20*1024*1024;
   const MAX_OUTPUT_WIDTH=1200;
-  const MAX_OUTPUT_BYTES=1_850_000;
+  // SQLite-backed Durable Object values are capped at 2 MB. Keep a healthy
+  // margin for metadata/serialization instead of accepting a blob right at
+  // the platform limit.
+  const MAX_OUTPUT_BYTES=1_600_000;
+  const MIN_OUTPUT_WIDTH=720;
   const ALLOWED_TYPES=new Set(['image/jpeg','image/png','image/webp']);
 
   function toastMessage(message){
@@ -29,6 +33,41 @@
     return new Promise(resolve=>canvas.toBlob(resolve,type,quality));
   }
 
+  function renderCanvas(image,width){
+    const targetWidth=Math.max(1,Math.round(width));
+    const targetHeight=Math.max(1,Math.round(targetWidth*3/4));
+    const canvas=document.createElement('canvas');
+    canvas.width=targetWidth;
+    canvas.height=targetHeight;
+    const context=canvas.getContext('2d',{alpha:false});
+    context.imageSmoothingEnabled=true;
+    context.imageSmoothingQuality='high';
+    context.drawImage(image,0,0,targetWidth,targetHeight);
+    return canvas;
+  }
+
+  function candidateWidths(sourceWidth){
+    const first=Math.min(sourceWidth,MAX_OUTPUT_WIDTH);
+    const candidates=[first,1100,1000,900,800,MIN_OUTPUT_WIDTH]
+      .map(width=>Math.min(first,width))
+      .filter(width=>width>0);
+    return [...new Set(candidates)].sort((a,b)=>b-a);
+  }
+
+  async function compressCanvas(canvas){
+    for(const quality of [.90,.84,.78,.72,.66,.60,.54]){
+      const blob=await canvasBlob(canvas,'image/webp',quality);
+      if(blob&&blob.size<=MAX_OUTPUT_BYTES) return blob;
+    }
+    // Safari/WebKit can occasionally produce unexpectedly large WebP blobs
+    // for highly detailed generated images. JPEG gives us a second encoder.
+    for(const quality of [.88,.80,.72,.64,.56,.48]){
+      const blob=await canvasBlob(canvas,'image/jpeg',quality);
+      if(blob&&blob.size<=MAX_OUTPUT_BYTES) return blob;
+    }
+    return null;
+  }
+
   async function prepareFourThreeImage(file){
     if(!ALLOWED_TYPES.has(file.type)) throw new Error('Choose a JPG, PNG, or WebP image.');
     if(file.size>MAX_SOURCE_BYTES) throw new Error('Choose an image smaller than 20 MB.');
@@ -40,35 +79,24 @@
       throw new Error(`Image must be 4:3. Selected image is ${sourceWidth}×${sourceHeight}.`);
     }
 
-    const targetWidth=Math.min(sourceWidth,MAX_OUTPUT_WIDTH);
-    const targetHeight=Math.round(targetWidth*3/4);
-    const canvas=document.createElement('canvas');
-    canvas.width=targetWidth;
-    canvas.height=targetHeight;
-    const context=canvas.getContext('2d',{alpha:false});
-    context.imageSmoothingEnabled=true;
-    context.imageSmoothingQuality='high';
-    context.drawImage(image,0,0,targetWidth,targetHeight);
-
-    let blob=null;
-    for(const quality of [.9,.84,.78,.7]){
-      blob=await canvasBlob(canvas,'image/webp',quality);
-      if(blob&&blob.size<=MAX_OUTPUT_BYTES) break;
-    }
-    if(!blob){
-      blob=await canvasBlob(canvas,'image/jpeg',.88);
-    }
-    if(!blob||blob.size>MAX_OUTPUT_BYTES){
-      throw new Error('The optimized image is still too large. Try a smaller 4:3 file.');
+    // Start at 1200×900 and automatically step down only when necessary.
+    // This lets a user select a high-resolution generated image directly;
+    // they do not need to resize it themselves first.
+    for(const width of candidateWidths(sourceWidth)){
+      const canvas=renderCanvas(image,width);
+      const blob=await compressCanvas(canvas);
+      if(blob){
+        return {blob,width:canvas.width,height:canvas.height};
+      }
     }
 
-    return {blob,width:targetWidth,height:targetHeight};
+    throw new Error('Could not optimize this image for upload. Try exporting it as JPG or WebP.');
   }
 
   async function uploadImage(id,file,row){
     const status=row.querySelector('[data-menu-image-status]');
     const button=row.querySelector('[data-menu-image-button]');
-    if(status) status.textContent='Checking 4:3 image…';
+    if(status) status.textContent='Checking and optimizing 4:3 image…';
     if(button) button.classList.add('is-busy');
 
     try{
@@ -94,7 +122,8 @@
       document.querySelectorAll(`.drink-card[data-menu-id="${id}"] .drink-image`).forEach(el=>{
         if(imageUrl) el.style.setProperty('background-image',`url("${String(imageUrl).replace(/"/g,'%22')}")`,'important');
       });
-      if(status) status.textContent=`Uploaded · ${prepared.width}×${prepared.height}`;
+      const sizeKb=Math.max(1,Math.round(prepared.blob.size/1024));
+      if(status) status.textContent=`Uploaded · ${prepared.width}×${prepared.height} · ${sizeKb} KB`;
       toastMessage('Menu image updated');
       setTimeout(()=>location.reload(),650);
     }catch(error){
@@ -128,7 +157,7 @@
         <input data-menu-image-input type="file" accept="image/jpeg,image/png,image/webp">
         <span>Choose 4:3 image</span>
       </label>
-      <div class="admin-image-upload-help">JPG / PNG / WebP · exact 4:3 · optimized to max 1200×900</div>
+      <div class="admin-image-upload-help">JPG / PNG / WebP · exact 4:3 · originals up to 20 MB · optimized automatically</div>
       <div class="admin-image-upload-status" data-menu-image-status></div>`;
     media.appendChild(uploader);
 
@@ -144,7 +173,7 @@
     card.dataset.imageUploadNote='1';
     const workflow=card.querySelector('.admin-image-workflow');
     if(workflow){
-      workflow.innerHTML='<strong>Image:</strong> Add the item first. Then use <strong>Choose 4:3 image</strong> on its item card. Recommended generation size: 1200×900 or 1536×1152.';
+      workflow.innerHTML='<strong>Image:</strong> Add the item first. Then use <strong>Choose 4:3 image</strong> on its item card. Recommended generation size: 1200×900 or 1536×1152. Large originals are optimized automatically.';
     }
   }
 
