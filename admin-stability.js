@@ -2,6 +2,31 @@
   if(window.__lingAdminStabilityInstalled) return;
   window.__lingAdminStabilityInstalled=true;
 
+  const initialPage=document.querySelector('.page.active')?.id||'home';
+  let userInteracted=false;
+  let restoredAfterSession=false;
+
+  document.addEventListener('pointerdown',()=>{userInteracted=true},{capture:true,once:true});
+  document.addEventListener('keydown',()=>{userInteracted=true},{capture:true,once:true});
+
+  function restorePublicPageAfterSession(){
+    if(restoredAfterSession||userInteracted) return;
+    if(!document.body.classList.contains('admin-authenticated')) return;
+    restoredAfterSession=true;
+
+    const activePage=document.querySelector('.page.active')?.id;
+    const accessActive=document.querySelector('#panel-access.active');
+    if(activePage==='more'&&accessActive){
+      try{window.setPage?.(initialPage==='more'?'home':initialPage)}catch(_){}
+    }
+
+    document.querySelector('.admin-view-switch')?.remove();
+    try{window.updateHeaderDate?.()}catch(_){}
+  }
+
+  const authObserver=new MutationObserver(()=>setTimeout(restorePublicPageAfterSession,0));
+  authObserver.observe(document.body,{attributes:true,attributeFilter:['class','data-admin-preview']});
+
   function detachObservedMenuRoots(){
     const menuRoot=document.getElementById('menuGrid');
     const homeRoot=document.getElementById('homeDrinks');
@@ -106,7 +131,9 @@
     }
 
     polishMenuCards();
+    document.querySelector('.admin-view-switch')?.remove();
     try{window.updateHeaderDate?.()}catch(_){}
+    restorePublicPageAfterSession();
   }
 
   function loadOnce(src,id,onload){
@@ -143,7 +170,7 @@
     installMenuObserver();
     applyRequestedUIFixes();
     settleAdminUI();
-    loadOnce('menu-image-upload.js?v=20260911-6','ling-menu-image-upload-script-v6');
+    loadOnce('menu-image-upload-v5.js?v=20260911-7','ling-menu-image-upload-script-v7');
     loadOnce('schedule-public.js','ling-schedule-public-script');
     loadOnce('schedule-admin.js','ling-schedule-admin-script',()=>{
       loadOnce('schedule-layout-fix.js','ling-schedule-layout-fix-script',()=>{
