@@ -1,13 +1,13 @@
 (function(){
-  const VERSION=4;
+  const VERSION=6;
   if((window.__lingMenuImageUploadVersion||0)>=VERSION) return;
   window.__lingMenuImageUploadVersion=VERSION;
   window.__lingMenuImageUploadInstalled=true;
 
   const MAX_SOURCE_BYTES=30*1024*1024;
-  const TARGET_BYTES=650*1024;
-  const OUTPUT_WIDTHS=[960,840,720,640];
-  const JPEG_QUALITIES=[.82,.74,.66,.58,.50,.42];
+  const TARGET_BYTES=420*1024;
+  const OUTPUT_WIDTHS=[800,720,640,560];
+  const JPEG_QUALITIES=[.72,.64,.56,.48,.40,.34];
   const ALLOWED_TYPES=new Set(['image/jpeg','image/png','image/webp']);
 
   function toastMessage(message){
@@ -59,9 +59,9 @@
       throw new Error(`Image must be 4:3. Selected image is ${sourceWidth}×${sourceHeight}.`);
     }
 
-    const widths=[Math.min(sourceWidth,960),...OUTPUT_WIDTHS]
-      .filter(width=>width>0&&width<=sourceWidth)
-      .filter((width,index,array)=>array.indexOf(width)===index)
+    const widths=OUTPUT_WIDTHS
+      .map(width=>Math.min(width,sourceWidth))
+      .filter((width,index,array)=>width>0&&array.indexOf(width)===index)
       .sort((a,b)=>b-a);
 
     let smallest=null;
@@ -79,8 +79,8 @@
       }
     }
 
-    if(smallest&&smallest.blob.size<1_200_000) return smallest;
-    throw new Error('Could not optimize this image on this device. Please try the same image again after refreshing the page.');
+    if(smallest&&smallest.blob.size<=900*1024) return smallest;
+    throw new Error('This browser could not compress the image enough. Try the same file again after refreshing.');
   }
 
   async function uploadImage(id,file,row){
@@ -144,8 +144,7 @@
     const current=preview.style.backgroundImage||'';
     if(current.includes('menu-sprite')) preview.style.backgroundImage="url('/menu-placeholder.svg')";
 
-    const oldUploader=media.querySelector('.admin-image-uploader');
-    oldUploader?.remove();
+    media.querySelector('.admin-image-uploader')?.remove();
     const oldLabel=media.querySelector('.admin-image-label');
     if(oldLabel) oldLabel.textContent='Menu image · 4:3';
 
@@ -156,7 +155,7 @@
         <input data-menu-image-input type="file" accept="image/jpeg,image/png,image/webp">
         <span>Choose 4:3 image</span>
       </label>
-      <div class="admin-image-upload-help">JPG / PNG / WebP · exact 4:3 · originals up to 30 MB · automatically resized for upload</div>
+      <div class="admin-image-upload-help">JPG / PNG / WebP · exact 4:3 · originals up to 30 MB · automatically compressed for upload</div>
       <div class="admin-image-upload-status" data-menu-image-status></div>`;
     media.appendChild(uploader);
 
@@ -171,7 +170,7 @@
     if(!card) return;
     const workflow=card.querySelector('.admin-image-workflow');
     if(workflow){
-      workflow.innerHTML='<strong>Image:</strong> Add the item first, then use <strong>Choose 4:3 image</strong>. You can select a 1536×1152 generated image directly; the browser will resize it automatically.';
+      workflow.innerHTML='<strong>Image:</strong> Add the item first, then use <strong>Choose 4:3 image</strong>. A 1536×1152 generated image can be selected directly; it will be compressed automatically.';
     }
   }
 
