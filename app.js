@@ -7,8 +7,6 @@ const menu = [
   {id:6, cat:'Food', name:'Croissant', desc:'Daily limited', amount:18, available:false, popular:false, image:'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=900&q=88'}
 ];
 
-// Schedule data is intentionally empty at bootstrap. Public opening hours,
-// baristas and shifts are hydrated only from /api/schedule.
 const roster = [];
 const weekData = [];
 
@@ -225,8 +223,6 @@ function loadScript(src,onload,id){
   return script;
 }
 
-// Hydrate backend schedule immediately after the first public paint. Other
-// secondary features can load afterwards without owning any schedule values.
 requestAnimationFrame(()=>{
   loadScript('schedule-public.js',null,'ling-schedule-public-script');
   loadScript('preference.js',()=>loadScript('preference-card.js'));
@@ -242,9 +238,9 @@ requestAnimationFrame(()=>{
     }
   };
 
-  const adminScript=loadScript('admin.js',()=>{
+  const adminScript=loadScript('admin.js?v=20260911-6',()=>{
     window.MutationObserver=NativeMutationObserver;
-    loadScript('admin-stability.js');
+    loadScript('admin-stability.js?v=20260911-6');
     [0,250,750,1500,3000].forEach(delay=>setTimeout(updateHeaderDate,delay));
   });
   adminScript.onerror=()=>{window.MutationObserver=NativeMutationObserver};
