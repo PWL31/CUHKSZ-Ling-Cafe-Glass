@@ -62,19 +62,11 @@
         #adminMenuEditor .admin-copy-prompt{display:none!important}
         .admin-view-switch{display:none!important}
         .admin-preview-hint{display:none!important}
-
-        /* Menu imagery is now 4:3 and comes from each item's backend image path. */
         .drink-card .drink-image{height:auto!important;aspect-ratio:4/3!important;background-size:cover!important;background-position:center!important}
         .compact-grid .drink-image{height:auto!important}
-
-        /* Ordering is not enabled yet. Keep only the availability indicator. */
         #menuGrid .add-btn:not(:disabled){display:none!important}
         #menuGrid .add-btn:disabled{display:inline-flex!important;pointer-events:none}
-
-        /* New catalog donations start unset. Do not show a fake ¥0 value. */
         .drink-card .amount[style*="display: none"]{margin:0!important}
-
-        /* Feedback is contact-only for now. */
         #panel-feedback>label,
         #panel-feedback>button.primary{display:none!important}
         #panel-feedback .compact-block{margin-top:22px}
@@ -151,7 +143,7 @@
     installMenuObserver();
     applyRequestedUIFixes();
     settleAdminUI();
-    loadOnce('menu-image-upload.js?v=20260911-4','ling-menu-image-upload-script');
+    loadOnce('menu-image-upload.js?v=20260911-6','ling-menu-image-upload-script-v6');
     loadOnce('schedule-public.js','ling-schedule-public-script');
     loadOnce('schedule-admin.js','ling-schedule-admin-script',()=>{
       loadOnce('schedule-layout-fix.js','ling-schedule-layout-fix-script',()=>{
