@@ -240,9 +240,9 @@ requestAnimationFrame(()=>{
     }
   };
 
-  const adminScript=loadScript('admin.js?v=20260920-cost',()=>{
+  const adminScript=loadScript('admin.js?v=20260920-thanks',()=>{
     window.MutationObserver=NativeMutationObserver;
-    loadScript('admin-stability.js?v=20260920-cost');
+    loadScript('admin-stability.js?v=20260920-thanks');
     [0,250,750,1500,3000].forEach(delay=>setTimeout(updateHeaderDate,delay));
   });
   adminScript.onerror=()=>{window.MutationObserver=NativeMutationObserver};

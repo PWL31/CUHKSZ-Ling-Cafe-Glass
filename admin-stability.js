@@ -103,7 +103,7 @@
 
     const menuCopy=document.querySelector('#menu .page-hero p');
     if(menuCopy){
-      menuCopy.textContent='Prices below are at cost and help keep Ling Cafe running.';
+      menuCopy.textContent='Prices below are at cost and help keep Ling Cafe running. Thank you for every bit of support that keeps the coffee flowing and the warmth alive.';
     }
 
     const feedbackPanel=document.querySelector('#panel-feedback');

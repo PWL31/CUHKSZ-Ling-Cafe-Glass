@@ -16,7 +16,7 @@
     'TODAY’S EASY PICKS':'今日推荐','Popular drinks':'人气饮品','See full menu →':'完整菜单 →',
     'IN OUR MIND':'心之所向','LOVE & SUPPORT STATION':'爱心补给站','LOVE❤️':'热爱❤️','&COFFEE☕':'与咖啡☕',
     'MENU':'菜单','Today’s Menu':'今日菜单',
-    'Prices below are at cost and help keep Ling Cafe running.':'以下为成本价，用于维护 Cafe 的正常运营。',
+    'Prices below are at cost and help keep Ling Cafe running. Thank you for every bit of support that keeps the coffee flowing and the warmth alive.':'以下为成本价，用于维护 Cafe 的正常运营。感谢每一份支持，让这份咖啡香与温暖延续。',
     'All':'全部','Other':'其他','Milk Coffee':'奶咖','Black Coffee':'黑咖啡','Pour-over':'手冲咖啡','Specials':'特调','Non-coffee':'非咖啡','Food':'轻食','Milk':'牛奶','Filter':'手冲',
     'Caffè Latte':'拿铁','Latte':'拿铁','Cappuccino':'卡布奇诺','Latte Macchiato':'拿铁玛奇朵','Espresso Macchiato':'浓缩玛奇朵','Flat White':'馥芮白','Espresso':'意式浓缩','Americano':'美式咖啡','Lungo':'长萃浓缩',
     'Single-Origin Pour-over':'单一产地手冲','Custom Tea-Coffee':'定制茶咖','House Coffee Special':'道扬特调咖啡','Hot Milk':'热牛奶','Pure Tea':'纯茶','Monk Fruit Tea':'罗汉果茶','Hand-Shaken Lemon Black Tea':'手打柠檬红茶','Jasmine Iced Lemon Tea':'茉莉冰柠茶','Matcha Latte':'抹茶拿铁','Matcha Milk Tea':'抹茶奶茶','Bottled Cold Brew Tea':'瓶装冷萃茶',

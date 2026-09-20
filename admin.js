@@ -100,7 +100,7 @@
       const eyebrow=menuHero.querySelector('.eyebrow');
       const copy=menuHero.querySelector('p');
       if(eyebrow) eyebrow.textContent='MENU';
-      if(copy) copy.textContent='Prices below are at cost and help keep Ling Cafe running.';
+      if(copy) copy.textContent='Prices below are at cost and help keep Ling Cafe running. Thank you for every bit of support that keeps the coffee flowing and the warmth alive.';
     }
 
     const more=$('#more');
