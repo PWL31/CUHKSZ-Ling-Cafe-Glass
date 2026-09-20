@@ -35,6 +35,88 @@ const SEED_MENU = [
   {id:19, cat:'Non-coffee', name:'Bottled Cold Brew Tea', desc:'Slow-steeped chilled tea', amount:0, available:true, popular:false, image:'/menu-sprite-v3.jpg?v=3'}
 ];
 
+// Repository photos fill missing legacy artwork without resetting the saved menu.
+const REPOSITORY_MENU_IMAGES = new Map([
+  [
+    3,
+    "/menu-images/03-latte-macchiato.webp"
+  ],
+  [
+    4,
+    "/menu-images/04-espresso-macchiato.webp"
+  ],
+  [
+    5,
+    "/menu-images/05-flat-white.webp"
+  ],
+  [
+    6,
+    "/menu-images/06-espresso.webp"
+  ],
+  [
+    7,
+    "/menu-images/07-americano.webp"
+  ],
+  [
+    8,
+    "/menu-images/08-lungo.webp"
+  ],
+  [
+    9,
+    "/menu-images/09-single-origin-pour-over.webp"
+  ],
+  [
+    10,
+    "/menu-images/10-custom-tea-coffee.webp"
+  ],
+  [
+    11,
+    "/menu-images/11-house-coffee-special.webp"
+  ],
+  [
+    12,
+    "/menu-images/12-hot-milk.webp"
+  ],
+  [
+    13,
+    "/menu-images/13-pure-tea.webp"
+  ],
+  [
+    14,
+    "/menu-images/14-monk-fruit-tea.webp"
+  ],
+  [
+    15,
+    "/menu-images/15-hand-shaken-lemon-black-tea.webp"
+  ],
+  [
+    16,
+    "/menu-images/16-jasmine-iced-lemon-tea.webp"
+  ],
+  [
+    17,
+    "/menu-images/17-matcha-latte.webp"
+  ],
+  [
+    18,
+    "/menu-images/18-matcha-milk-tea.webp"
+  ],
+  [
+    19,
+    "/menu-images/19-bottled-cold-brew-tea.webp"
+  ]
+]);
+
+function withRepositoryImage(item) {
+  const seed = SEED_MENU.find(candidate => candidate.id === Number(item.id));
+  const image = REPOSITORY_MENU_IMAGES.get(Number(item.id));
+  const current = String(item.image || '');
+  const missing = !current || /^\/?menu-placeholder\.svg(?:[?#]|$)/.test(current)
+    || /^\/?menu-sprite(?:-v\d+)?\.jpg(?:[?#]|$)/.test(current);
+  // Match both ID and name so deleted/reused IDs never receive another drink's photo.
+  return image && seed?.name === item.name && missing ? {...item, image} : item;
+}
+
 function json(data, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(data), {
     status,
@@ -81,7 +163,7 @@ export class MenuStore extends DurableObject {
       const version = await ctx.storage.get('menu_catalog_version');
       const existing = await ctx.storage.get('menu');
       if (version !== MENU_CATALOG_VERSION || !Array.isArray(existing) || existing.length === 0) {
-        await ctx.storage.put('menu', SEED_MENU.map(item => ({...item})));
+        await ctx.storage.put('menu', SEED_MENU.map(item => withRepositoryImage({...item})));
         await ctx.storage.put('menu_catalog_version', MENU_CATALOG_VERSION);
       }
     });
@@ -89,7 +171,7 @@ export class MenuStore extends DurableObject {
 
   async readMenu() {
     const items = await this.ctx.storage.get('menu');
-    return Array.isArray(items) ? items : [];
+    return Array.isArray(items) ? items.map(withRepositoryImage) : [];
   }
 
   async writeMenu(items) {

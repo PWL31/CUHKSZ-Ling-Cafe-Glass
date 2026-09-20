@@ -140,3 +140,18 @@ Before production use, replace the demo session secret and preferably configure 
 ## Local static preview
 
 Opening `index.html` directly still previews the fallback static UI, but persistent menu data and admin login require running through the Cloudflare Worker / Wrangler deployment.
+
+## Repository menu photos
+
+Menu photos for items 03–19 are included as individual 4:3 WebP assets in
+`menu-images/`. They are deployed with this repository. `worker.js` supplies
+these photos for matching catalog items that still have an empty image, the
+placeholder, or legacy sprite artwork. Existing admin-uploaded images take
+precedence; saved names, prices, availability, Popular status and deleted items
+are preserved. The menu catalog version is unchanged.
+
+To replace a repository photo, update its file at the path listed in
+`REPOSITORY_MENU_IMAGES` (use a new filename when changing the content to avoid
+stale browser caches), then deploy. Admin uploads continue to override these
+defaults. The two Specials images are illustrative serving concepts; confirm
+the final recipes before treating them as exact product representations.
