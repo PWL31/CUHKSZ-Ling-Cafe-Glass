@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Trent (PWL31). Original repository: https://github.com/PWL31/CUHKSZ-Ling-Cafe-Glass. See COPYRIGHT.md. */
 import { DurableObject } from "cloudflare:workers";
 
 const encoder = new TextEncoder();

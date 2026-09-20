@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Trent (PWL31). Original repository: https://github.com/PWL31/CUHKSZ-Ling-Cafe-Glass. See COPYRIGHT.md. */
 const menu = [
   {id:1, cat:'Espresso', name:'Americano', desc:'Classic espresso + water', amount:28, available:true, popular:true, image:'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=88'},
   {id:2, cat:'Milk', name:'Latte', desc:'Espresso · steamed milk', amount:32, available:true, popular:true, image:'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?auto=format&fit=crop&w=900&q=88'},
