@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Trent (PWL31). Original repository: https://github.com/PWL31/CUHKSZ-Ling-Cafe-Glass. See COPYRIGHT.md. */
 (function(){
   const VERSION=6;
   if((window.__lingMenuImageUploadVersion||0)>=VERSION) return;

@@ -1,5 +1,9 @@
 # Ling Coffee — glass redesign prototype
 
+Designed and developed by **Trent (PWL31)**. Copyright © 2026 Trent.
+Original repository: https://github.com/PWL31/CUHKSZ-Ling-Cafe-Glass
+See [COPYRIGHT.md](COPYRIGHT.md) for attribution information.
+
 This repository contains the current glass / liquid-glass prototype for Ling Cafe.
 
 ## Current user-facing flows
