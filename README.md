@@ -51,7 +51,7 @@ The Admin Menu editor supports:
 - category
 - item name
 - short note / description
-- suggested donation amount
+- cost price
 - availability today
 - inclusion in Home → Popular drinks
 
@@ -63,7 +63,7 @@ Images are intentionally **not editable from Admin Tools**. Existing image data 
 
 Product images are handled separately from normal barista editing so the visual language stays consistent.
 
-1. Add or update the menu metadata in Admin Tools first: category, name, short note, suggested donation, availability and Popular status.
+1. Add or update the menu metadata in Admin Tools first: category, name, short note, cost price, availability and Popular status.
 2. Ask ChatGPT to generate the missing image using the canonical Ling Cafe image style below.
 3. Install the generated image for that item separately. Do not expose free-form image editing in the barista Admin UI.
 
@@ -120,7 +120,7 @@ For future menu additions, the preferred handoff is:
 Name: ...
 Category: ...
 Short note: ...
-Suggested donation: ...
+Cost price: ...
 Available: yes / no
 Popular: yes / no
 Optional image detail: ...

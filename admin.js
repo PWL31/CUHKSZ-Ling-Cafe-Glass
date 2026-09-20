@@ -100,7 +100,7 @@
       const eyebrow=menuHero.querySelector('.eyebrow');
       const copy=menuHero.querySelector('p');
       if(eyebrow) eyebrow.textContent='MENU';
-      if(copy) copy.textContent='Choose from today’s menu by category. The amount shown is a suggested donation, not a price.';
+      if(copy) copy.textContent='Prices below are at cost and help keep Ling Cafe running.';
     }
 
     const more=$('#more');
@@ -216,7 +216,7 @@
       <div id="adminLoggedIn" class="hidden admin-only">
         <div class="admin-session"><div><strong id="adminSessionName">Signed in</strong><small>Use the header switch to preview the public User view.</small></div><button id="adminLogout" class="admin-logout">Log out</button></div>
         <div class="admin-scope">
-          <div class="admin-scope-card"><strong>Menu</strong><span>Full backend CRUD: add, edit and delete items. Category, name, note, donation, availability and Popular status are editable. Images are GPT-managed and locked here.</span></div>
+          <div class="admin-scope-card"><strong>Menu</strong><span>Full backend CRUD: add, edit and delete items. Category, name, note, cost price, availability and Popular status are editable. Images are GPT-managed and locked here.</span></div>
           <div class="admin-scope-card pending"><strong>Schedule</strong><span>Schedule editing remains reserved for the next iteration; its shift logic will be defined separately.</span></div>
         </div>
         <div id="adminMenuEditor"></div>
@@ -265,7 +265,7 @@
           <label data-full><span>Category</span><input id="newItemCategory" placeholder="Espresso / Milk / Food"></label>
           <label data-full><span>Name</span><input id="newItemName" placeholder="Product name"></label>
           <label class="admin-add-desc"><span>Short note</span><input id="newItemDesc" placeholder="Short product description"></label>
-          <label data-amount><span>Donation ¥</span><input id="newItemAmount" type="number" min="0" step="1" value="0"></label>
+          <label data-amount><span>Cost price ¥</span><input id="newItemAmount" type="number" min="0" step="1" value="0"></label>
           <div class="admin-check-row">
             <label class="admin-check"><input id="newItemAvailable" type="checkbox" checked> Available today</label>
             <label class="admin-check"><input id="newItemPopular" type="checkbox" data-popular-control> Popular</label>
@@ -289,7 +289,7 @@
               <label data-full><span>Category</span><input data-admin-field="cat" value="${esc(item.cat)}"></label>
               <label data-full><span>Name</span><input data-admin-field="name" value="${esc(item.name)}"></label>
               <label class="admin-field-wide"><span>Short note</span><input data-admin-field="desc" value="${esc(item.desc)}"></label>
-              <label data-amount><span>Donation ¥</span><input data-admin-field="amount" type="number" min="0" step="1" value="${Number(item.amount)}"></label>
+              <label data-amount><span>Cost price ¥</span><input data-admin-field="amount" type="number" min="0" step="1" value="${Number(item.amount)}"></label>
               <div class="admin-check-row">
                 <label class="admin-check"><input data-admin-field="available" type="checkbox" ${item.available?'checked':''}> Available today</label>
                 <label class="admin-check"><input data-admin-field="popular" data-popular-control type="checkbox" ${item.popular?'checked':''}> Popular</label>

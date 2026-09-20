@@ -58,7 +58,7 @@ function cardHTML(m,showAdd=true){
       <h3>${esc(m.name)}</h3>
       <p>${esc(m.desc)}</p>
       <div class="drink-foot">
-        <div class="amount">Suggested <strong>¥${m.amount}</strong></div>
+        <div class="amount">Cost price <strong>¥${m.amount}</strong></div>
         ${showAdd?`<button class="add-btn" data-add="${m.id}" ${m.available?'':'disabled'}>${m.available?'+ Add':'Not today'}</button>`:''}
       </div>
     </div>
@@ -110,7 +110,7 @@ function renderCart(){
     .filter(x=>x.item);
   if(!entries.length){root.innerHTML='<div class="cart-empty">No items yet.</div>';return}
   const total=entries.reduce((s,{item,q})=>s+item.amount*q,0);
-  root.innerHTML=entries.map(({item,q})=>`<div class="cart-row"><div><strong>${esc(item.name)}</strong><div class="muted" style="font-size:11px">¥${item.amount} × ${q}</div></div><div class="qty"><button data-qty="${item.id}" data-delta="-1">−</button><span>${q}</span><button data-qty="${item.id}" data-delta="1">+</button></div></div>`).join('')+`<div class="cart-total"><span>Total suggested</span><span>¥${total}</span></div>`;
+  root.innerHTML=entries.map(({item,q})=>`<div class="cart-row"><div><strong>${esc(item.name)}</strong><div class="muted" style="font-size:11px">¥${item.amount} × ${q}</div></div><div class="qty"><button data-qty="${item.id}" data-delta="-1">−</button><span>${q}</span><button data-qty="${item.id}" data-delta="1">+</button></div></div>`).join('')+`<div class="cart-total"><span>Total cost</span><span>¥${total}</span></div>`;
   root.querySelectorAll('[data-qty]').forEach(btn=>btn.addEventListener('click',()=>{
     const id=Number(btn.dataset.qty);
     state.cart[id]=(state.cart[id]||0)+Number(btn.dataset.delta);
@@ -240,9 +240,9 @@ requestAnimationFrame(()=>{
     }
   };
 
-  const adminScript=loadScript('admin.js?v=20260920-i18n',()=>{
+  const adminScript=loadScript('admin.js?v=20260920-cost',()=>{
     window.MutationObserver=NativeMutationObserver;
-    loadScript('admin-stability.js?v=20260920-i18n');
+    loadScript('admin-stability.js?v=20260920-cost');
     [0,250,750,1500,3000].forEach(delay=>setTimeout(updateHeaderDate,delay));
   });
   adminScript.onerror=()=>{window.MutationObserver=NativeMutationObserver};
