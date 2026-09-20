@@ -28,6 +28,27 @@
     Number(p.cream)===1?'Whipped cream':'No whipped cream'
   ].join(' · ');
 
+  // Local line icons use explicit SVG strokes so the downloaded PNG matches the preview.
+  const iconPaths={
+    cold:'<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9 5l3 3 3-3M9 19l3-3 3 3M4.5 11l4.1-1.1-1.1-4.1M19.5 13l-4.1 1.1 1.1 4.1M7.5 18.2l1.1-4.1-4.1-1.1M16.5 5.8l-1.1 4.1 4.1 1.1"/>',
+    hot:'<path d="M4 10h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5v-5ZM17 11h1a3 3 0 0 1 0 6h-1M7 7c-2-2 2-2 0-4M12 7c-2-2 2-2 0-4M3 22h16"/>',
+    ice:'<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Zm-8 4.5 8 4.5 8-4.5M12 12v9M8 7l4-2"/>',
+    heat:'<path d="M9 14.5V5a3 3 0 0 1 6 0v9.5a5 5 0 1 1-6 0ZM12 8v10M18 6h3M18 10h2"/><circle cx="12" cy="18" r="1"/>',
+    coffee:'<ellipse cx="12" cy="12" rx="7" ry="10" transform="rotate(35 12 12)"/><path d="M16.5 5c-8 2-1 11-9 14"/>',
+    dairy:'<path d="M8 3h8v4l3 4v10H5V11l3-4V3Zm0 4h8M5 11h14M10 3v4l3 4v10"/>',
+    oat:'<path d="M12 21V5M12 16c-5 0-7-3-7-6 4 0 7 2 7 6Zm0-5c-4 0-6-3-6-6 4 0 6 2 6 6Zm0 7c5 0 7-3 7-6-4 0-7 2-7 6Zm0-6c4 0 6-3 6-6-4 0-6 2-6 6ZM12 6c-2-2-2-4 0-5 2 1 2 3 0 5Z"/>',
+    milk:'<path d="M12 3C10 6 5 11 5 15a7 7 0 0 0 14 0c0-4-5-9-7-12ZM8 15a4 4 0 0 0 4 4"/>',
+    sugar:'<rect x="4" y="7" width="12" height="13" rx="2"/><path d="m5 7 4-4h10a2 2 0 0 1 2 2v10l-5 4M16 8l4-4M8 11h.01M12 15h.01M8 17h.01"/>',
+    cream:'<path d="M5 16h14l-2 5H7l-2-5ZM5 16c-2-3 0-5 3-5-2-3 1-5 4-5 2 0 3-2 2-4 6 4 5 7 3 9 4 0 5 3 2 5M8 11h9M10 7h5"/>'
+  };
+  const iconSource=name=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#078f8b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${iconPaths[name]}</svg>`);
+  const valueMarkup=(id,icon)=>`<div class="export-value"><img class="export-value-icon" data-export-icon="${id}" src="${iconSource(icon)}" width="26" height="26" alt="" aria-hidden="true"><strong id="${id}"></strong></div>`;
+  function setIcon(id,name){
+    const image=document.querySelector(`[data-export-icon="${id}"]`);
+    const source=iconSource(name);
+    if(image&&image.getAttribute('src')!==source)image.src=source;
+  }
+
   function loadHtml2Canvas(){
     if(window.html2canvas) return Promise.resolve(window.html2canvas);
     if(window.__lingH2C) return window.__lingH2C;
@@ -92,7 +113,9 @@
       .export-item{display:flex;flex-direction:column;justify-content:space-between;min-width:0;min-height:112px;padding:16px;border-radius:20px;background:rgba(255,255,255,.24);border:1px solid rgba(255,255,255,.44)}
       .export-item.wide{grid-column:1/-1}
       .export-item small{display:block;font-size:10px;letter-spacing:.16em;font-weight:700;text-transform:uppercase;color:rgba(120,95,83,.92);margin-bottom:8px}
-      .export-item strong{display:block;font-size:30px;font-weight:700;line-height:1.18;letter-spacing:-.02em;color:#3e2417;overflow-wrap:break-word}
+      .export-value{display:flex;align-items:center;gap:10px;min-width:0}
+      .export-value-icon{display:block;flex:0 0 26px;width:26px;height:26px;object-fit:contain}
+      .export-item strong{min-width:0;max-width:100%;display:block;font-size:30px;font-weight:700;line-height:1.18;letter-spacing:-.02em;color:#3e2417;overflow-wrap:break-word}
       .export-summary{margin-top:16px;padding:16px 18px;border-radius:22px;background:rgba(255,255,255,.28);border:1px solid rgba(255,255,255,.44)}
       .export-summary small{display:block;font-size:10px;letter-spacing:.16em;font-weight:700;text-transform:uppercase;color:rgba(120,95,83,.92);margin-bottom:8px}
       .export-summary p{margin:0;color:#3e2417;line-height:1.55;font-size:14px}
@@ -133,7 +156,21 @@
         .export-dot{width:42px;height:42px;flex-basis:42px}
         .download-card-copy{padding-bottom:8px}
       }
-      @media(max-width:360px){.export-item strong{font-size:22px}.export-item{min-height:104px}}
+      @media(max-width:420px){
+        .export-value{flex-direction:column;align-items:flex-start;gap:7px}
+        .export-value-icon{flex-basis:22px;width:22px;height:22px}
+        .export-item{min-height:136px}
+        .export-item.wide .export-value{flex-direction:row;align-items:center;gap:10px}
+        .export-item.wide{min-height:104px}
+      }
+      @media(max-width:360px){
+        .download-card-panel{padding-inline:8px}
+        .preference-export-card{padding:12px}
+        .export-item{padding-inline:10px}
+        .export-item small{letter-spacing:.1em;overflow-wrap:anywhere}
+        .export-item strong{font-size:22px}
+        .export-item:not(.wide){min-height:136px}
+      }
     `;
     document.head.appendChild(style);
 
@@ -149,13 +186,13 @@
             <div class="export-kicker">Saved style</div>
             <div class="export-title">My usual</div>
             <div class="export-grid">
-              <div class="export-item"><small>Temperature</small><strong id="exportTemp"></strong></div>
-              <div class="export-item"><small id="exportSecondLabel"></small><strong id="exportSecond"></strong></div>
-              <div class="export-item"><small>Coffee</small><strong id="exportStrength"></strong></div>
-              <div class="export-item"><small>Milk type</small><strong id="exportMilkType"></strong></div>
-              <div class="export-item"><small>Milk level</small><strong id="exportMilk"></strong></div>
-              <div class="export-item"><small>Sweetness</small><strong id="exportSweet"></strong></div>
-              <div class="export-item wide"><small>Whipped cream</small><strong id="exportCream"></strong></div>
+              <div class="export-item"><small>Temperature</small>${valueMarkup('exportTemp','cold')}</div>
+              <div class="export-item"><small id="exportSecondLabel"></small>${valueMarkup('exportSecond','ice')}</div>
+              <div class="export-item"><small>Coffee</small>${valueMarkup('exportStrength','coffee')}</div>
+              <div class="export-item"><small>Milk type</small>${valueMarkup('exportMilkType','dairy')}</div>
+              <div class="export-item"><small>Milk level</small>${valueMarkup('exportMilk','milk')}</div>
+              <div class="export-item"><small>Sweetness</small>${valueMarkup('exportSweet','sugar')}</div>
+              <div class="export-item wide"><small>Whipped cream</small>${valueMarkup('exportCream','cream')}</div>
             </div>
             <div class="export-summary"><small>Summary</small><p id="exportSummary"></p></div>
           </div>
@@ -178,6 +215,9 @@
 
   function render(){
     const p=pref(),hot=Number(p.temp)===1;
+    setIcon('exportTemp',hot?'hot':'cold');
+    setIcon('exportSecond',hot?'heat':'ice');
+    setIcon('exportMilkType',Number(p.milkType)===1?'oat':'dairy');
     $('#exportTemp').textContent=options.temp[p.temp];
     $('#exportSecondLabel').textContent=hot?'Heat':'Ice';
     $('#exportSecond').textContent=second(p);
@@ -196,6 +236,7 @@
 
     const html2canvas=await loadHtml2Canvas();
     window.lingI18n?.refresh(card);
+    await Promise.all([...card.querySelectorAll('.export-value-icon')].map(image=>image.decode()));
     const rect=card.getBoundingClientRect();
     const canvas=await html2canvas(card,{
       backgroundColor:'#efe7df',

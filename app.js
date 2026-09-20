@@ -227,7 +227,7 @@ function loadScript(src,onload,id){
 
 requestAnimationFrame(()=>{
   loadScript('schedule-public.js?v=20260920-i18n',null,'ling-schedule-public-script');
-  loadScript('preference.js?v=20260920-i18n',()=>loadScript('preference-card.js?v=20260920-cardtype'));
+  loadScript('preference.js?v=20260920-i18n',()=>loadScript('preference-card.js?v=20260920-cardicons'));
   loadScript('support.js?v=20260920-i18n');
 
   const NativeMutationObserver=window.MutationObserver;
