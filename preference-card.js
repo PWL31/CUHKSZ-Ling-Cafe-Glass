@@ -89,10 +89,10 @@
       .export-kicker{font-size:11px;letter-spacing:.18em;font-weight:700;text-transform:uppercase;color:rgba(7,143,139,.88)}
       .export-title{margin:10px 0 18px;font:400 54px/.92 var(--serif);letter-spacing:-.05em;color:#3e2417}
       .export-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-      .export-item{padding:14px 14px 15px;border-radius:20px;background:rgba(255,255,255,.24);border:1px solid rgba(255,255,255,.44)}
+      .export-item{display:flex;flex-direction:column;justify-content:space-between;min-width:0;min-height:112px;padding:16px;border-radius:20px;background:rgba(255,255,255,.24);border:1px solid rgba(255,255,255,.44)}
       .export-item.wide{grid-column:1/-1}
       .export-item small{display:block;font-size:10px;letter-spacing:.16em;font-weight:700;text-transform:uppercase;color:rgba(120,95,83,.92);margin-bottom:8px}
-      .export-item strong{font-size:16px;color:#3e2417}
+      .export-item strong{display:block;font-size:30px;font-weight:700;line-height:1.18;letter-spacing:-.02em;color:#3e2417;overflow-wrap:break-word}
       .export-summary{margin-top:16px;padding:16px 18px;border-radius:22px;background:rgba(255,255,255,.28);border:1px solid rgba(255,255,255,.44)}
       .export-summary small{display:block;font-size:10px;letter-spacing:.16em;font-weight:700;text-transform:uppercase;color:rgba(120,95,83,.92);margin-bottom:8px}
       .export-summary p{margin:0;color:#3e2417;line-height:1.55;font-size:14px}
@@ -123,9 +123,9 @@
         .export-main{margin-top:28px}
         .export-title{font-size:44px;margin-bottom:16px}
         .export-grid{gap:10px}
-        .export-item{padding:13px 12px;border-radius:17px;min-height:88px}
+        .export-item{padding:14px 12px;border-radius:17px;min-height:108px}
         .export-item small{font-size:9px;margin-bottom:7px}
-        .export-item strong{font-size:14px;line-height:1.2}
+        .export-item strong{font-size:24px;line-height:1.2}
         .export-summary{margin-top:12px;padding:14px 15px}
         .export-summary p{font-size:12px;line-height:1.45}
         .export-footer{margin-top:16px;padding-top:15px}
@@ -133,6 +133,7 @@
         .export-dot{width:42px;height:42px;flex-basis:42px}
         .download-card-copy{padding-bottom:8px}
       }
+      @media(max-width:360px){.export-item strong{font-size:22px}.export-item{min-height:104px}}
     `;
     document.head.appendChild(style);
 

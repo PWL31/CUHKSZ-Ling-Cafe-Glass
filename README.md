@@ -8,7 +8,7 @@ This repository contains the current glass / liquid-glass prototype for Ling Caf
 
 ## Current user-facing flows
 
-- Home: opening state, today’s barista schedule, Order shortcut, Popular drinks, and the bilingual Love & Support section.
+- Home: opening state, today’s barista schedule, View menu shortcut, Popular drinks, and the bilingual Love & Support section.
 - Menu: category-aware menu cards and Personal Preference. Pickup reservation is intentionally hidden for now.
 - Personal Preference: drink preferences and a downloadable preference card.
 - Schedule: date-based shifts and barista roster. Admin editing logic for Schedule will be defined separately.

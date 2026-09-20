@@ -12,7 +12,7 @@
     'Home':'首页','Menu':'菜单','Schedule':'排班','More':'更多','AT LING COLLEGE':'道扬书院',
     'Made for your moment':'留一点时间，给自己','Enjoy your cup':'慢享一杯好时光',
     'Good coffee, shared kindly. Ling Cafe is a student-run, non-profit space for rest, conversation, and community.':'用一杯咖啡，分享善意。道扬咖啡馆由学生运营，坚持非营利，为休息、交流与相聚留一处空间。',
-    'TODAY':'今日','Today':'今天','Schedule detail →':'查看排班 →','Order':'浏览菜单',
+    'TODAY':'今日','Today':'今天','Schedule detail →':'查看排班 →','View menu':'查看菜单',
     'TODAY’S EASY PICKS':'今日推荐','Popular drinks':'人气饮品','See full menu →':'完整菜单 →',
     'IN OUR MIND':'心之所向','LOVE & SUPPORT STATION':'爱心补给站','LOVE❤️':'热爱❤️','&COFFEE☕':'与咖啡☕',
     'MENU':'菜单','Today’s Menu':'今日菜单',
