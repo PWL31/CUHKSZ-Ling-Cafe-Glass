@@ -366,7 +366,7 @@
   async function deleteItem(id){
     const item=menu.find(entry=>Number(entry.id)===id);
     if(!item) return;
-    if(!window.confirm(`Delete ${item.name} from the menu?`)) return;
+    if(!window.confirm(window.lingI18n.t(`Delete ${item.name} from the menu?`))) return;
     try{
       const data=await requestJson(`/api/admin/menu/${id}`,{method:'DELETE'});
       replaceMenu(data.items||[]);

@@ -17,20 +17,20 @@
   }
 
   function dayLabel(date){
-    return new Intl.DateTimeFormat('en-US',{weekday:'short',timeZone:'Asia/Shanghai'}).format(new Date(`${date}T12:00:00+08:00`));
+    return new Intl.DateTimeFormat(window.lingI18n?.locale||'en-US',{weekday:'short',timeZone:'Asia/Shanghai'}).format(new Date(`${date}T12:00:00+08:00`));
   }
 
   function prettyDate(date){
-    return new Intl.DateTimeFormat('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'Asia/Shanghai'}).format(new Date(`${date}T12:00:00+08:00`));
+    return new Intl.DateTimeFormat(window.lingI18n?.locale||'en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'Asia/Shanghai'}).format(new Date(`${date}T12:00:00+08:00`));
   }
 
   function weekLabel(days){
     if(!days?.length) return 'Schedule unavailable';
     const first=new Date(`${days[0].date}T12:00:00+08:00`);
     const last=new Date(`${days[days.length-1].date}T12:00:00+08:00`);
-    const fmt=new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',timeZone:'Asia/Shanghai'});
+    const fmt=new Intl.DateTimeFormat(window.lingI18n?.locale||'en-US',{month:'short',day:'numeric',timeZone:'Asia/Shanghai'});
     const year=new Intl.DateTimeFormat('en-US',{year:'numeric',timeZone:'Asia/Shanghai'}).format(last);
-    return `${fmt.format(first)} – ${fmt.format(last)}, ${year}`;
+    return window.lingI18n?.language==='zh'?`${year}年 ${fmt.format(first)} – ${fmt.format(last)}`:`${fmt.format(first)} – ${fmt.format(last)}, ${year}`;
   }
 
   function shanghaiMinutesNow(){
@@ -255,5 +255,10 @@
   window.addEventListener('focus',()=>loadSchedule(activeStart,true));
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadSchedule(activeStart,true)});
   setInterval(()=>{if(todayDay){renderHome(todayDay);renderOpenPills(todayDay)}},60000);
+  window.addEventListener('ling:languagechange',()=>{
+    weekData.forEach(day=>{day.label=dayLabel(day.date)});
+    const label=document.querySelector('#weekLabel');if(label&&weekData.length)label.textContent=weekLabel(weekData);
+    renderDayStrip();renderScheduleRows();renderHome(todayDay);renderOpenPills(todayDay);
+  });
   window.refreshLingSchedule=()=>loadSchedule(activeStart,true);
 })();

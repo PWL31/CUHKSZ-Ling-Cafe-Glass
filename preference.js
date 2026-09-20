@@ -113,7 +113,7 @@
             <div class="value-chip" id="prefSecondaryValue">Less ice</div>
           </div>
           <div class="slider-wrap secondary-slider" id="prefSecondarySliderWrap">
-            <input class="pref-slider" id="prefSecondary" type="range" min="0" max="2" step="1" value="1">
+            <input class="pref-slider" id="prefSecondary" aria-label="Ice level" type="range" min="0" max="2" step="1" value="1">
             <div class="detents" id="prefSecondaryDetents"><span></span><span></span><span></span></div>
           </div>
           <div class="binary-select secondary-binary" id="prefHotChoices">
@@ -123,11 +123,11 @@
         </section>
         <section class="glass preference-card">
           <div class="section-head"><div><div class="eyebrow">COFFEE STRENGTH</div><h2>How bold?</h2></div><div class="value-chip" id="prefStrengthValue">Normal</div></div>
-          <div class="slider-wrap"><input class="pref-slider" id="prefStrength" type="range" min="0" max="2" step="1" value="1"><div class="detents"><span></span><span></span><span></span></div></div>
+          <div class="slider-wrap"><input class="pref-slider" id="prefStrength" aria-label="Coffee strength" type="range" min="0" max="2" step="1" value="1"><div class="detents"><span></span><span></span><span></span></div></div>
         </section>
         <section class="glass preference-card">
           <div class="section-head"><div><div class="eyebrow">SWEETNESS</div><h2>Sweetness</h2></div><div class="value-chip" id="prefSweetValue">Less sugar</div></div>
-          <div class="slider-wrap"><input class="pref-slider" id="prefSweet" type="range" min="0" max="2" step="1" value="1"><div class="detents"><span></span><span></span><span></span></div></div>
+          <div class="slider-wrap"><input class="pref-slider" id="prefSweet" aria-label="Sweetness" type="range" min="0" max="2" step="1" value="1"><div class="detents"><span></span><span></span><span></span></div></div>
         </section>
         <section class="glass preference-card wide">
           <div class="section-head"><div><div class="eyebrow">MILK</div><h2>Milk preference</h2></div></div>
@@ -141,7 +141,7 @@
             </div>
             <div class="sub-control">
               <div class="sub-control-head"><span>Milk level</span><div class="value-chip" id="prefMilkValue">Normal</div></div>
-              <div class="slider-wrap"><input class="pref-slider" id="prefMilk" type="range" min="0" max="2" step="1" value="1"><div class="detents"><span></span><span></span><span></span></div></div>
+              <div class="slider-wrap"><input class="pref-slider" id="prefMilk" aria-label="Milk level" type="range" min="0" max="2" step="1" value="1"><div class="detents"><span></span><span></span><span></span></div></div>
             </div>
           </div>
         </section>
@@ -203,8 +203,9 @@
       $('#prefSecondaryEyebrow').textContent='ICE';$('#prefSecondaryTitle').textContent='Ice level';
       sliderWrap.classList.remove('hidden-control');hotChoices.classList.remove('active');secondary.max='2';secondary.value=pref.ice;dots.innerHTML='<span></span><span></span><span></span>';secondaryValue.style.display='inline-flex';secondaryValue.textContent=options.ice[pref.ice];
     }
-    $('#preferenceSummaryLine').textContent=summary();
+    if($('#preferenceSummaryLine')) $('#preferenceSummaryLine').textContent=summary();
     const card=$('#savedPreferenceCard');
+    if(!card)return;
     if(saved){card.classList.remove('hidden');$('#savedPreferenceText').textContent=saved.summary||summary(saved);$('#savePreferenceCard').innerHTML='Update preference card <span>→</span>'}
     else{card.classList.add('hidden');$('#savePreferenceCard').innerHTML='Save as preference card <span>→</span>'}
   }

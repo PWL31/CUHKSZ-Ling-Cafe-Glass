@@ -159,3 +159,31 @@ To replace a repository photo, update its file at the path listed in
 stale browser caches), then deploy. Admin uploads continue to override these
 defaults. The two Specials images are illustrative serving concepts; confirm
 the final recipes before treating them as exact product representations.
+
+## English / 中文 interface
+
+The Language capsules in More → Settings switch the full interface and persist
+`ling-glass-language` on the current device. `i18n.js` owns the reviewed Chinese
+copy, including the 19 catalog drinks, navigation, preferences, schedule,
+admin labels and errors. English remains the default. Existing custom menu
+names/descriptions and staff names retain their original content unless a
+translation is explicitly added to the dictionary.
+
+Translations update text nodes and accessible labels without replacing form
+controls or changing API records, filter values, admin input values, or drafts.
+An observer handles asynchronously rendered UI and restores the original
+English on language changes. Add `translate="no"` to any literal content that
+must never be translated. Support paragraphs use their existing bilingual
+panes; dates are formatted with the selected locale. Preference card exports
+use the selected language as well.
+
+Chinese typography uses system CJK fonts, roomier line heights, compact
+headings and wrapping controls. The shared footer keeps Trent's copyright,
+author credit and source link on a small transparent glass surface.
+
+Translation regression checks (Node.js plus jsdom installed outside this repo):
+
+```sh
+npm install --prefix ../ling-test-deps --no-audit --no-fund jsdom@26
+NODE_PATH=../ling-test-deps/node_modules node --test tests/i18n.test.cjs
+```

@@ -97,7 +97,7 @@
 
   function formatMonth(month){
     const [y,m]=month.split('-').map(Number);
-    return new Intl.DateTimeFormat('en-US',{month:'long',year:'numeric',timeZone:'Asia/Shanghai'}).format(new Date(Date.UTC(y,m-1,15)));
+    return new Intl.DateTimeFormat(window.lingI18n?.locale||'en-US',{month:'long',year:'numeric',timeZone:'Asia/Shanghai'}).format(new Date(Date.UTC(y,m-1,15)));
   }
 
   function addMonths(month,delta){
@@ -175,7 +175,7 @@
     const active=activeBaristas();
     root.innerHTML=active.length?active.map(b=>`<div class="barista-row"><strong>${esc(b.name)}</strong><button class="day-danger" data-remove-barista="${b.id}">Remove</button></div>`).join(''):'<div class="schedule-empty">No active baristas.</div>';
     root.querySelectorAll('[data-remove-barista]').forEach(btn=>btn.addEventListener('click',async()=>{
-      if(!confirm('Remove this barista from future Add Shift choices? Existing shifts and history will remain.')) return;
+      if(!confirm(window.lingI18n.t('Remove this barista from future Add Shift choices? Existing shifts and history will remain.'))) return;
       const id=Number(btn.dataset.removeBarista);
       await mutate(`/api/admin/schedule/baristas/${id}`,{method:'DELETE'},result=>{
         const index=data.baristas.findIndex(b=>Number(b.id)===id);
@@ -264,7 +264,7 @@
     document.querySelectorAll('[data-delete-shift]').forEach(btn=>btn.addEventListener('click',()=>{
       const row=btn.closest('[data-shift-id]');
       const id=Number(row.dataset.shiftId);
-      if(!confirm('Delete this shift?')) return;
+      if(!confirm(window.lingI18n.t('Delete this shift?'))) return;
       mutate(`/api/admin/schedule/shifts/${id}`,{method:'DELETE'},()=>{
         data.shifts=data.shifts.filter(shift=>Number(shift.id)!==id);
         renderCalendar();
@@ -323,5 +323,6 @@
     if(event.target.closest?.('#adminLogin')) setTimeout(()=>{if(document.body.classList.contains('admin-authenticated'))load()},500);
   });
 
+  window.addEventListener('ling:languagechange',()=>{if(data)renderCalendar();});
   bootstrap();
 })();

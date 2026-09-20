@@ -172,8 +172,8 @@
     applyRequestedUIFixes();
     settleAdminUI();
     loadOnce('menu-image-upload-v5.js?v=20260911-7','ling-menu-image-upload-script-v7');
-    loadOnce('schedule-public.js','ling-schedule-public-script');
-    loadOnce('schedule-admin.js','ling-schedule-admin-script',()=>{
+    loadOnce('schedule-public.js?v=20260920-i18n','ling-schedule-public-script');
+    loadOnce('schedule-admin.js?v=20260920-i18n','ling-schedule-admin-script',()=>{
       loadOnce('schedule-layout-fix.js','ling-schedule-layout-fix-script',()=>{
         loadOnce('schedule-ui-polish.js','ling-schedule-ui-polish-script');
       });

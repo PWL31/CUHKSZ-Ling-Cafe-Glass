@@ -6,3 +6,6 @@ README.md
 worker.js
 wrangler.toml
 .assetsignore
+
+tests
+tests/**

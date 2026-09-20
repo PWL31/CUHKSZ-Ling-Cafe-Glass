@@ -4,7 +4,6 @@
   window.__lingSupportStationInstalled=true;
 
   const DONATE_URL='https://alumni-sys.cuhk.edu.cn/donate-h5/#/subject-detail?id=37';
-  const LANGUAGE_KEY='ling-glass-language';
 
   const styles=document.createElement('style');
   styles.id='ling-support-station-styles';
@@ -130,29 +129,6 @@
   `;
   document.head.appendChild(styles);
 
-  function normalizeLanguage(value){
-    const raw=String(value||'').trim().toLowerCase();
-    return /中文|chi|chinese|zh/.test(raw)?'zh':'en';
-  }
-
-  function getSettingsLanguageSelect(){
-    return document.querySelector('#panel-settings .small-select');
-  }
-
-  function getCurrentLanguage(){
-    const saved=localStorage.getItem(LANGUAGE_KEY);
-    if(saved==='zh'||saved==='en') return saved;
-    const select=getSettingsLanguageSelect();
-    return normalizeLanguage(select?.value||'English');
-  }
-
-  function syncSettingsSelect(lang){
-    const select=getSettingsLanguageSelect();
-    if(!select) return;
-    const matching=[...select.options].find(opt=>normalizeLanguage(opt.value||opt.textContent)===lang);
-    if(matching && select.value!==matching.value) select.value=matching.value;
-  }
-
   function applySupportLanguage(section,lang){
     const next=lang==='zh'?'zh':'en';
     section.querySelectorAll('[data-support-pane]').forEach(pane=>{
@@ -164,20 +140,8 @@
   }
 
   function bindLanguageSetting(section){
-    const select=getSettingsLanguageSelect();
-    const initial=getCurrentLanguage();
-    syncSettingsSelect(initial);
-    applySupportLanguage(section,initial);
-
-    if(!select||select.dataset.supportLanguageBound==='true') return;
-    select.dataset.supportLanguageBound='true';
-    select.addEventListener('change',()=>{
-      const lang=normalizeLanguage(select.value);
-      localStorage.setItem(LANGUAGE_KEY,lang);
-      const current=document.querySelector('#home .support-station');
-      if(current) applySupportLanguage(current,lang);
-      window.dispatchEvent(new CustomEvent('ling:languagechange',{detail:{language:lang}}));
-    });
+    applySupportLanguage(section,window.lingI18n?.language||'en');
+    window.addEventListener('ling:languagechange',event=>applySupportLanguage(section,event.detail.language));
   }
 
   function render(){

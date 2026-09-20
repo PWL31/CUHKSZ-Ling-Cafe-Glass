@@ -37,7 +37,7 @@ function applyTheme(theme){
   state.theme=theme;
   document.documentElement.dataset.theme=theme;
   localStorage.setItem('ling-glass-theme',theme);
-  $$('[data-theme-choice]').forEach(btn=>btn.classList.toggle('active',btn.dataset.themeChoice===theme));
+  $$('[data-theme-choice]').forEach(btn=>{const active=btn.dataset.themeChoice===theme;btn.classList.toggle('active',active);btn.setAttribute('aria-pressed',String(active));});
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content',theme==='light'?'#eee7db':'#17110e');
 }
 
@@ -160,7 +160,7 @@ function fillTimes(){
 function shanghaiMonthDay(){
   const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Shanghai',month:'short',day:'numeric'}).formatToParts(new Date());
   const map=Object.fromEntries(parts.map(part=>[part.type,part.value]));
-  return `${map.month}/${Number(map.day)}`;
+  return window.lingI18n?.language==='zh'?`${new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Shanghai',month:'numeric',day:'numeric'}).format(new Date())}`:`${map.month}/${Number(map.day)}`;
 }
 
 function updateHeaderDate(){
@@ -197,6 +197,7 @@ fillTimes();
 bindGlobal();
 updateHeaderDate();
 setInterval(updateHeaderDate,60000);
+window.addEventListener('ling:languagechange',updateHeaderDate);
 
 const navPolish=document.createElement('style');
 navPolish.id='ling-nav-polish';
@@ -225,9 +226,9 @@ function loadScript(src,onload,id){
 }
 
 requestAnimationFrame(()=>{
-  loadScript('schedule-public.js',null,'ling-schedule-public-script');
-  loadScript('preference.js',()=>loadScript('preference-card.js'));
-  loadScript('support.js');
+  loadScript('schedule-public.js?v=20260920-i18n',null,'ling-schedule-public-script');
+  loadScript('preference.js?v=20260920-i18n',()=>loadScript('preference-card.js?v=20260920-i18n'));
+  loadScript('support.js?v=20260920-i18n');
 
   const NativeMutationObserver=window.MutationObserver;
   window.MutationObserver=class SafeMutationObserver extends NativeMutationObserver{
@@ -239,9 +240,9 @@ requestAnimationFrame(()=>{
     }
   };
 
-  const adminScript=loadScript('admin.js?v=20260911-6',()=>{
+  const adminScript=loadScript('admin.js?v=20260920-i18n',()=>{
     window.MutationObserver=NativeMutationObserver;
-    loadScript('admin-stability.js?v=20260911-8');
+    loadScript('admin-stability.js?v=20260920-i18n');
     [0,250,750,1500,3000].forEach(delay=>setTimeout(updateHeaderDate,delay));
   });
   adminScript.onerror=()=>{window.MutationObserver=NativeMutationObserver};

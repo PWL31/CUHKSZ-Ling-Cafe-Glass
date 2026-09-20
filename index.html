@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Caslon+Display&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260920-credit" />
+  <link rel="stylesheet" href="styles.css?v=20260920-i18n" />
   <style>
     .header-capsule{width:94px;height:46px;flex:0 0 94px;padding:0;pointer-events:none}
     .home-hero{min-height:500px;display:block;padding:58px 54px 34px}
@@ -186,9 +186,9 @@
         <div class="schedule-layout">
           <section class="glass schedule-main">
             <div class="week-switcher">
-              <button id="prevWeek" class="icon-btn">←</button>
+              <button id="prevWeek" class="icon-btn" aria-label="Previous week">←</button>
               <strong id="weekLabel">Loading schedule…</strong>
-              <button id="nextWeek" class="icon-btn">→</button>
+              <button id="nextWeek" class="icon-btn" aria-label="Next week">→</button>
             </div>
             <div id="dayStrip" class="day-strip"></div>
 
@@ -250,11 +250,14 @@
               <div class="eyebrow">SETTINGS</div><h2>Appearance & language</h2>
               <div class="setting-row">
                 <div><strong>Appearance</strong><small>Persistent on this device.</small></div>
-                <div class="theme-switch large"><button class="theme-choice active" data-theme-choice="light">Light</button><button class="theme-choice" data-theme-choice="dark">Dark</button></div>
+                <div class="theme-switch large" role="group" aria-label="Appearance"><button class="theme-choice active" data-theme-choice="light">Light</button><button class="theme-choice" data-theme-choice="dark">Dark</button></div>
               </div>
               <div class="setting-row">
-                <div><strong>Language</strong><small>Demo switch; core content stays English.</small></div>
-                <select class="small-select"><option>English</option><option>中文</option></select>
+                <div><strong>Language</strong><small>Remembered on this device.</small></div>
+                <div class="theme-switch large language-switch" role="group" aria-label="Language">
+                  <button type="button" class="theme-choice active" data-language-choice="en" lang="en" translate="no" aria-pressed="true">English</button>
+                  <button type="button" class="theme-choice" data-language-choice="zh" lang="zh-CN" translate="no" aria-pressed="false">中文</button>
+                </div>
               </div>
             </section>
 
@@ -288,9 +291,10 @@
       </section>
     </main>
 
-    <footer class="site-credit" aria-label="Website credits">
-      <p>Designed &amp; developed by <a href="https://github.com/PWL31" rel="author">Trent</a></p>
-      <p>© 2026 Trent. All rights reserved. <span aria-hidden="true">·</span> <a href="https://github.com/PWL31/CUHKSZ-Ling-Cafe-Glass">Source code</a></p>
+    <footer class="site-credit glass" aria-label="Website credits">
+      <span>© 2026 <a href="https://github.com/PWL31" rel="author">Trent</a></span>
+      <span class="credit-role">Designed &amp; developed by <a href="https://github.com/PWL31" rel="author">Trent</a></span>
+      <a href="https://github.com/PWL31/CUHKSZ-Ling-Cafe-Glass">Source code</a>
     </footer>
 
     <nav class="mobile-nav glass" aria-label="Mobile navigation">
@@ -302,6 +306,7 @@
   </div>
 
   <div id="toast" class="toast">Saved</div>
-  <script src="app.js?v=20260911-9"></script>
+  <script src="i18n.js?v=20260920-1"></script>
+  <script src="app.js?v=20260920-i18n"></script>
 </body>
 </html>

@@ -162,7 +162,7 @@
         </div>
         <div class="download-card-copy">
           <div class="eyebrow">DOWNLOAD</div><h2>Keep your usual.</h2>
-          <p>The saved image keeps the same layout while using a flattened export surface to avoid browser glass-rendering artifacts.</p>
+          <p>Save this card to your phone and show it to your barista next time.</p>
           <button class="primary download-card-btn" id="downloadPreferenceCard">Save card to phone <span>→</span></button>
         </div>
       </div>`;
@@ -194,6 +194,7 @@
     if(document.fonts?.ready){try{await document.fonts.ready}catch(_){}}
 
     const html2canvas=await loadHtml2Canvas();
+    window.lingI18n?.refresh(card);
     const rect=card.getBoundingClientRect();
     const canvas=await html2canvas(card,{
       backgroundColor:'#efe7df',
