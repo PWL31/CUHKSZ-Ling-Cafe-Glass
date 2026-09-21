@@ -9,3 +9,5 @@ wrangler.toml
 
 tests
 tests/**
+deploy
+deploy/**

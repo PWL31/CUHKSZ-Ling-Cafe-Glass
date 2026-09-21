@@ -6,6 +6,15 @@ See [COPYRIGHT.md](COPYRIGHT.md) for attribution information.
 
 This repository contains the current glass / liquid-glass prototype for Ling Cafe.
 
+## Kangle + PHP + MySQL deployment
+
+For conventional PHP hosting, use the additional target in
+[deploy/php](deploy/php/README.md). It includes the backend, a full-data export
+tool, a package builder and [deployment instructions](deploy/php/DEPLOYMENT.md).
+The root frontend and Worker remain the Cloudflare target. A GitHub source ZIP
+does not include the live menu, uploaded images or schedule database; export and
+import those separately using the PHP deployment workflow.
+
 ## Current user-facing flows
 
 - Home: opening state, today’s barista schedule, View menu shortcut, Popular drinks, and the bilingual Love & Support section.

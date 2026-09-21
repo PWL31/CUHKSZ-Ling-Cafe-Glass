@@ -1,0 +1,68 @@
+[
+  {
+    "file": "cafe-background.jpg",
+    "bytes": 526002,
+    "source": "https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&w=2200&q=90",
+    "sha256": "b569ce99b6cc70aff0eeddcab9a0f6e6c8b0f0fa85c79b57e58404658528a12c"
+  },
+  {
+    "file": "community.jpg",
+    "bytes": 267831,
+    "source": "https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1200&q=88",
+    "sha256": "834f5c2789541886e195f67124d81258aca78b1d85a32be7b65670d1e599c468"
+  },
+  {
+    "file": "html2canvas.min.js",
+    "bytes": 198689,
+    "source": "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
+    "sha256": "e87e550794322e574a1fda0c1549a3c70dae5a93d9113417a429016838eab8cb"
+  },
+  {
+    "file": "html2canvas-LICENSE.txt",
+    "bytes": 1061,
+    "source": "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/LICENSE",
+    "sha256": "86200ce4e92d9a22c41c8647a55f7a5fddff304ff89b4d36ecc699ed8c123d2c"
+  },
+  {
+    "file": "dm-sans-OFL.txt",
+    "bytes": 4482,
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/dmsans/OFL.txt",
+    "sha256": "9af36190332437f5ecd09974de43c1f7c77a310a996cdd8ceb25628b458840e1"
+  },
+  {
+    "file": "libre-caslon-display-OFL.txt",
+    "bytes": 4403,
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/librecaslondisplay/OFL.txt",
+    "sha256": "9cc8cef15f5e8bcbe99a13ee8d268f6f6f6a5811cd1ed05056ef4608c9b16fd1"
+  },
+  {
+    "file": "font-0.ttf",
+    "bytes": 48280,
+    "source": "https://fonts.gstatic.com/s/dmsans/v17/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwAopxhTg.ttf",
+    "sha256": "b0ae3e89a7d3ef2b1838bb4b1ceb0b17cc3435af061eee809d76aa623ff116e9"
+  },
+  {
+    "file": "font-1.ttf",
+    "bytes": 48308,
+    "source": "https://fonts.gstatic.com/s/dmsans/v17/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwAkJxhTg.ttf",
+    "sha256": "376427b5322148d8de1e03f263bcca4935a2d60ba71d9f94f4947ab664c711ae"
+  },
+  {
+    "file": "font-2.ttf",
+    "bytes": 48280,
+    "source": "https://fonts.gstatic.com/s/dmsans/v17/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwAfJthTg.ttf",
+    "sha256": "b79a2ea7a38f33fd96a282fadb9ce97626bb0724a44d21075859f0e50239993a"
+  },
+  {
+    "file": "font-3.ttf",
+    "bytes": 48200,
+    "source": "https://fonts.gstatic.com/s/dmsans/v17/rP2tp2ywxg089UriI5-g4vlH9VoD8CmcqZG40F9JadbnoEwARZthTg.ttf",
+    "sha256": "2a8e7f713ee79fbccdef3cef5c787aff47580299f7da60144961e7db2ec08211"
+  },
+  {
+    "file": "font-4.ttf",
+    "bytes": 91588,
+    "source": "https://fonts.gstatic.com/s/librecaslondisplay/v18/TuGOUUFxWphYQ6YI6q9Xp61FQzxDRKmzr2lR.ttf",
+    "sha256": "199b2a7deefd8d7d9bae05d34902c4c6486bd11b8e5d1a22c0cea8862943a5a1"
+  }
+]
